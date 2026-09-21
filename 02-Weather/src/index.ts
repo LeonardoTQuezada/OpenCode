@@ -7,6 +7,7 @@ import {
   searchAndListCities,
 } from "./actions/cities.ts";
 import { getUnit, setUnit } from "./actions/settings.ts";
+import { green, red } from "./utils/colors.ts";
 import { SEPARATOR, OPTIONS, renderMenu } from "./presentation/menu.ts";
 import { formatWeather, renderSettingsScreen } from "./presentation/display.ts";
 import { cityLabel, formatNumberedList } from "./utils/format.ts";
@@ -38,7 +39,7 @@ async function showDefaultWeather(): Promise<void> {
       console.log(formatWeather(result));
     }
   } catch (err) {
-    console.log(`  ${errorMessage(err)}`);
+    console.log(red(`  ${errorMessage(err)}`));
   }
   await pause();
 }
@@ -55,7 +56,7 @@ async function showAllWeather(): Promise<void> {
       }
     }
   } catch (err) {
-    console.log(`  ${errorMessage(err)}`);
+    console.log(red(`  ${errorMessage(err)}`));
   }
   await pause();
 }
@@ -68,22 +69,22 @@ async function searchAndAddCityFlow(): Promise<void> {
   try {
     const results = await searchAndListCities(name);
     if (results.length === 0) {
-      console.log(`  No se encontraron resultados para "${name}".`);
+      console.log(red(`  No se encontraron resultados para "${name}".`));
     } else {
       console.log(`${SEPARATOR}\n  Resultados para "${name}"\n${SEPARATOR}`);
       console.log(formatNumberedList(results.map(cityLabel)));
       const pick = await prompt("  Selecciona un número (0 para cancelar): ");
       const chosen = results[Number(pick) - 1];
       if (!chosen) {
-        console.log("  Selección inválida.");
+        console.log(red("  Selección inválida."));
       } else if (saveCity(chosen)) {
-        console.log(`  "${cityLabel(chosen)}" guardada.`);
+        console.log(green(`  "${cityLabel(chosen)}" guardada.`));
       } else {
         console.log(`  "${cityLabel(chosen)}" ya estaba guardada.`);
       }
     }
   } catch (err) {
-    console.log(`  ${errorMessage(err)}`);
+    console.log(red(`  ${errorMessage(err)}`));
   }
   await pause();
 }
@@ -100,9 +101,9 @@ async function removeCityFlow(): Promise<void> {
   const pick = await prompt("  Selecciona un número (0 para cancelar): ");
   const chosen = cities[Number(pick) - 1];
   if (!chosen) {
-    console.log("  Selección inválida.");
+    console.log(red("  Selección inválida."));
   } else if (removeSavedCity(chosen.id)) {
-    console.log(`  "${cityLabel(chosen)}" eliminada.`);
+    console.log(green(`  "${cityLabel(chosen)}" eliminada.`));
   }
   await pause();
 }
@@ -119,9 +120,9 @@ async function setDefaultCityFlow(): Promise<void> {
   const pick = await prompt("  Selecciona un número (0 para cancelar): ");
   const chosen = cities[Number(pick) - 1];
   if (!chosen) {
-    console.log("  Selección inválida.");
+    console.log(red("  Selección inválida."));
   } else if (persistSetDefaultCity(chosen.id)) {
-    console.log(`  Ciudad default: "${cityLabel(chosen)}".`);
+    console.log(green(`  Ciudad default: "${cityLabel(chosen)}".`));
   }
   await pause();
 }
@@ -131,10 +132,10 @@ async function settingsFlow(): Promise<void> {
   const pick = await prompt("  Opción: ");
   if (pick === "1") {
     setUnit("celsius");
-    console.log("  Unidad configurada: °C");
+    console.log(green("  Unidad configurada: °C"));
   } else if (pick === "2") {
     setUnit("fahrenheit");
-    console.log("  Unidad configurada: °F");
+    console.log(green("  Unidad configurada: °F"));
   }
   await pause();
 }
@@ -173,17 +174,17 @@ async function main(): Promise<void> {
         running = false;
         break;
       default:
-        console.log("  Opción inválida.");
+        console.log(red("  Opción inválida."));
         await pause();
     }
   }
   closePrompt();
   console.log(SEPARATOR);
-  console.log("  ¡Hasta luego!");
+  console.log(green("  ¡Hasta luego!"));
   console.log(SEPARATOR);
 }
 
 main().catch((err) => {
-  console.error("Error fatal:", err);
+  console.error(red(`Error fatal: ${errorMessage(err)}`));
   process.exit(1);
 });

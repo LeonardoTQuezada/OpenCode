@@ -1,6 +1,6 @@
 # Revisión Weather CLI
 
-- [ ] **Colores:** no hay ninguno; falta definir cyan (menú), amarillo (temp), verde/rojo (ok/error).
+- [x] **Colores:** cyan (menú), amarillo (temp), verde/rojo (ok/error) implementados en `src/utils/colors.ts`.
 - [ ] **AGENTS.md:** dice que `index.ts` es stub, pero la app ya funciona — hay que actualizarlo.
 - [ ] **Ciudades:** geocoding solo trae 1 resultado; nombres ambiguos pueden fallar.
 - [ ] **Tests:** no existen; conviene al menos probar storage y las APIs con mocks.
