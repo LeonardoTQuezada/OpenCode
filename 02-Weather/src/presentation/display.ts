@@ -1,5 +1,6 @@
 import type { ForecastResult, Settings, Unit, WeatherResult } from "../types/index.ts";
 import { cityLabel, formatTemperature, unitSymbol, weatherCodeLabel } from "../utils/format.ts";
+import { cyan, yellow } from "../utils/colors.ts";
 import { SEPARATOR } from "./menu.ts";
 
 /** Bloque formateado con el clima actual de una ciudad. */
