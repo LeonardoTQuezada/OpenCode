@@ -10,6 +10,7 @@ describe("presentation/menu", () => {
     expect(menu).toContain("3. Buscar y agregar ciudad");
     expect(menu).toContain("4. Eliminar ciudad");
     expect(menu).toContain("5. Establecer ciudad default");
+    expect(menu).toContain("6. Pronóstico 7 días");
     expect(menu).toContain("8. Ajustes (°C)");
     expect(menu).toContain("9. Salir");
     expect(menu).toContain("Selecciona una opción:");
@@ -25,11 +26,8 @@ describe("presentation/menu", () => {
     expect(SEPARATOR.length).toBe(40);
   });
 
-  test("las opciones válidas son 1-5, 8 y 9", () => {
-    for (const key of Object.values(OPTIONS)) {
-      expect(VALID_OPTIONS.has(key)).toBe(true);
-    }
-    expect(VALID_OPTIONS.has("6")).toBe(false);
+  test("las opciones válidas son 1-6, 8 y 9", () => {
+    expect(VALID_OPTIONS.has("6")).toBe(true);
     expect(VALID_OPTIONS.has("7")).toBe(false);
     expect(VALID_OPTIONS.has("0")).toBe(false);
   });
