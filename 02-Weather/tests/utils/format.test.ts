@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { cityLabel, formatNumberedList, formatTemperature, unitSymbol } from "../../src/utils/format.ts";
+import {
+  cityLabel,
+  formatNumberedList,
+  formatTemperature,
+  unitSymbol,
+  weatherCodeLabel,
+} from "../../src/utils/format.ts";
 
 describe("utils/format", () => {
   test("unitSymbol devuelve el símbolo correcto", () => {
@@ -28,5 +34,18 @@ describe("utils/format", () => {
 
   test("formatNumberedList enumera desde 1", () => {
     expect(formatNumberedList(["a", "b", "c"])).toBe("  1. a\n  2. b\n  3. c");
+  });
+
+  test("weatherCodeLabel traduce códigos WMO conocidos", () => {
+    expect(weatherCodeLabel(0)).toBe("Despejado");
+    expect(weatherCodeLabel(2)).toBe("Parcialmente nublado");
+    expect(weatherCodeLabel(3)).toBe("Nublado");
+    expect(weatherCodeLabel(61)).toBe("Lluvia ligera");
+    expect(weatherCodeLabel(95)).toBe("Tormenta");
+    expect(weatherCodeLabel(99)).toBe("Tormenta con granizo intenso");
+  });
+
+  test("weatherCodeLabel devuelve un fallback para códigos desconocidos", () => {
+    expect(weatherCodeLabel(999)).toBe("Código 999");
   });
 });

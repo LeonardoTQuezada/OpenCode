@@ -48,3 +48,18 @@ export interface WeatherResult {
   unitSymbol: string;
   time: string;
 }
+
+/** Un día del pronóstico de 7 días. */
+export interface DailyForecastDay {
+  date: string;
+  tempMin: number;
+  tempMax: number;
+  weatherCode: number;
+}
+
+/** Pronóstico de 7 días combinado con la ciudad a la que pertenece. */
+export interface ForecastResult {
+  city: StoredCity;
+  unitSymbol: string;
+  days: DailyForecastDay[];
+}

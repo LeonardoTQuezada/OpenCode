@@ -1,4 +1,4 @@
-import { getAllCitiesWeather, getDefaultCityWeather } from "./actions/weather.ts";
+import { getAllCitiesForecast, getAllCitiesWeather, getDefaultCityWeather } from "./actions/weather.ts";
 import {
   listSavedCities,
   persistSetDefaultCity,
@@ -8,7 +8,7 @@ import {
 } from "./actions/cities.ts";
 import { getUnit, setUnit } from "./actions/settings.ts";
 import { SEPARATOR, OPTIONS, renderMenu } from "./presentation/menu.ts";
-import { formatWeather, renderSettingsScreen } from "./presentation/display.ts";
+import { formatForecast, formatWeather, renderSettingsScreen } from "./presentation/display.ts";
 import { cityLabel, formatNumberedList } from "./utils/format.ts";
 import { closePrompt, isPromptClosed, prompt } from "./utils/prompt.ts";
 import { migrateLegacyData } from "./storage/migrate.ts";
@@ -51,6 +51,23 @@ async function showAllWeather(): Promise<void> {
     } else {
       for (const result of results) {
         console.log(formatWeather(result));
+        console.log("");
+      }
+    }
+  } catch (err) {
+    console.log(`  ${errorMessage(err)}`);
+  }
+  await pause();
+}
+
+async function showAllForecast(): Promise<void> {
+  try {
+    const results = await getAllCitiesForecast();
+    if (results.length === 0) {
+      console.log("  No hay ciudades guardadas. Usa la opción 3.");
+    } else {
+      for (const result of results) {
+        console.log(formatForecast(result));
         console.log("");
       }
     }
@@ -156,6 +173,9 @@ async function main(): Promise<void> {
         break;
       case OPTIONS.ALL_WEATHER:
         await showAllWeather();
+        break;
+      case OPTIONS.FORECAST:
+        await showAllForecast();
         break;
       case OPTIONS.SEARCH_ADD:
         await searchAndAddCityFlow();
