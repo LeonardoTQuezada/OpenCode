@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "02-Weather/package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Crear tag y release
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      created: ${{ steps.tag.outputs.created }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Calcular tag desde package.json y verificar si ya existe
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v$(jq -r .version 02-Weather/package.json)"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "El release $TAG ya existe; se omite la creación."
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "El release $TAG no existe; se creará."
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Crear release (tag + notas automáticas)
+        if: steps.tag.outputs.created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ steps.tag.outputs.tag }}" --target "${{ github.sha }}" --generate-notes
+
+  build:
+    name: Compilar binario (${{ matrix.os }})
+    needs: release
+    if: needs.release.outputs.created == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            bin: weather
+            asset: weather-linux
+          - os: windows-latest
+            bin: weather.exe
+            asset: weather.exe
+          - os: macos-latest
+            bin: weather
+            asset: weather-macos
+    defaults:
+      run:
+        working-directory: 02-Weather
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Instalar dependencias
+        run: bun install
+
+      - name: "Compilar binario (bun run build: tests + compile)"
+        run: bun run build
+
+      - name: Renombrar binario para el release
+        shell: bash
+        run: |
+          if [ "${{ matrix.bin }}" != "${{ matrix.asset }}" ]; then
+            mv "${{ matrix.bin }}" "${{ matrix.asset }}"
+          fi
+
+      - name: Subir binario al release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release.outputs.tag }}
+        run: gh release upload "$TAG" "${{ matrix.asset }}" --clobber
