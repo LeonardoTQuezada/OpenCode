@@ -1,3 +1,5 @@
+import { cyan } from "../utils/colors.ts";
+
 export const SEPARATOR = "════════════════════════════════════════";
 
 export const OPTIONS = {
@@ -17,7 +19,7 @@ export const VALID_OPTIONS = new Set<string>(Object.values(OPTIONS));
  * ciudades guardadas. El formato sigue el ejemplo del README.
  */
 export function renderMenu(cityCount: number): string {
-  return `${SEPARATOR}
+  const content = `${SEPARATOR}
          WEATHER CLI
 ${SEPARATOR}
   1. Clima de ciudad default
@@ -29,4 +31,5 @@ ${SEPARATOR}
   9. Salir
 ${SEPARATOR}
   Selecciona una opción: `;
+  return cyan(content);
 }
