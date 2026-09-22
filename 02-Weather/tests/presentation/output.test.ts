@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { formatForecast, formatWeather, renderSettingsScreen } from "../../src/presentation/display.ts";
-import type { ForecastResult, StoredCity, WeatherResult } from "../../src/types/index.ts";
+import { formatForecast, formatWeather, renderSettingsScreen } from "../../src/presentation/output.ts";
+import type { StoredCity } from "../../src/types/City.ts";
+import type { ForecastResult, WeatherResult } from "../../src/types/Weather.ts";
 
 const ottawa: StoredCity = {
   id: 1,
@@ -32,7 +33,7 @@ const forecast: ForecastResult = {
   ],
 };
 
-describe("presentation/display", () => {
+describe("presentation/output", () => {
   test("formatWeather muestra la ciudad, temperatura y hora", () => {
     const out = formatWeather(result);
     expect(out).toContain("Clima de Ottawa, Ontario, Canadá");

@@ -7,7 +7,7 @@ import {
 } from "../helpers/withTempConfig.ts";
 
 type SettingsActions = typeof import("../../src/actions/settings.ts");
-type SettingsStorage = typeof import("../../src/storage/settings.ts");
+type SettingsStorage = typeof import("../../src/storage/settingsStorage.ts");
 
 const tmpDir = createTempConfigDir();
 let actions: SettingsActions;
@@ -15,7 +15,7 @@ let storage: SettingsStorage;
 
 beforeAll(async () => {
   actions = await importWithTempConfig<SettingsActions>("../../src/actions/settings.ts", tmpDir);
-  storage = await importWithTempConfig<SettingsStorage>("../../src/storage/settings.ts", tmpDir);
+  storage = await importWithTempConfig<SettingsStorage>("../../src/storage/settingsStorage.ts", tmpDir);
 });
 
 afterAll(() => {

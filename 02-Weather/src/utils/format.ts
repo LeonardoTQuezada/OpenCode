@@ -1,4 +1,5 @@
-import type { GeoCity, StoredCity, Unit } from "../types/index.ts";
+import type { GeoCity, StoredCity } from "../types/City.ts";
+import type { Unit } from "../types/Settings.ts";
 
 /** Símbolo de la unidad de temperatura. */
 export function unitSymbol(unit: Unit): string {

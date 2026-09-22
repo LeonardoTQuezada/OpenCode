@@ -1,20 +1,18 @@
-import { getAllCitiesForecast, getAllCitiesWeather, getDefaultCityWeather } from "./actions/weather.ts";
-import {
-  listSavedCities,
-  persistSetDefaultCity,
-  removeSavedCity,
-  saveCity,
-  searchAndListCities,
-} from "./actions/cities.ts";
+import { getDefaultCityWeather, getAllCitiesWeather } from "./actions/getWeather.ts";
+import { getAllCitiesForecast } from "./actions/getForecast.ts";
+import { saveCity, searchAndListCities } from "./actions/addCity.ts";
+import { listSavedCities } from "./actions/listCities.ts";
+import { removeSavedCity } from "./actions/removeCity.ts";
+import { persistSetDefaultCity } from "./actions/setDefaultCity.ts";
 import { getUnit, setUnit } from "./actions/settings.ts";
 import { green, red } from "./utils/colors.ts";
 import { SEPARATOR, OPTIONS, renderMenu } from "./presentation/menu.ts";
-import { formatForecast, formatWeather, renderSettingsScreen } from "./presentation/display.ts";
+import { formatForecast, formatWeather, renderSettingsScreen } from "./presentation/output.ts";
 import { cityLabel, formatNumberedList } from "./utils/format.ts";
-import { closePrompt, isPromptClosed, prompt } from "./utils/prompt.ts";
+import { closePrompt, isPromptClosed, prompt } from "./presentation/input.ts";
 import { migrateLegacyData } from "./storage/migrate.ts";
-import { loadCities } from "./storage/cities.ts";
-import { loadSettings } from "./storage/settings.ts";
+import { loadCities } from "./storage/citiesStorage.ts";
+import { loadSettings } from "./storage/settingsStorage.ts";
 
 function clearScreen(): void {
   if (process.stdout.isTTY) {

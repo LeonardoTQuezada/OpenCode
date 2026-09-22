@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { PassThrough, Readable } from "node:stream";
-import { promptWithStreams } from "../../src/utils/prompt.ts";
+import { promptWithStreams } from "../../src/presentation/input.ts";
 
 function makeCaptureOutput(): { stream: PassThrough; chunks: string[] } {
   const chunks: string[] = [];
@@ -9,7 +9,7 @@ function makeCaptureOutput(): { stream: PassThrough; chunks: string[] } {
   return { stream, chunks };
 }
 
-describe("utils/prompt", () => {
+describe("presentation/input", () => {
   test("promptWithStreams hace la pregunta y recorta la respuesta", async () => {
     const input = Readable.from(["  Madrid  \n"]) as Parameters<typeof promptWithStreams>[1];
     const { stream, chunks } = makeCaptureOutput();

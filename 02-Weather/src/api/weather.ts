@@ -1,4 +1,5 @@
-import type { CurrentWeather, DailyForecastDay, Unit } from "../types/index.ts";
+import type { CurrentWeather, DailyForecastDay } from "../types/Weather.ts";
+import type { Unit } from "../types/Settings.ts";
 
 const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
 

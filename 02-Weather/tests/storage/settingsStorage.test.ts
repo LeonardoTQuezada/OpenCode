@@ -8,20 +8,20 @@ import {
   resetConfigFiles,
 } from "../helpers/withTempConfig.ts";
 
-type SettingsModule = typeof import("../../src/storage/settings.ts");
+type SettingsModule = typeof import("../../src/storage/settingsStorage.ts");
 
 const tmpDir = createTempConfigDir();
 let settings: SettingsModule;
 
 beforeAll(async () => {
-  settings = await importWithTempConfig<SettingsModule>("../../src/storage/settings.ts", tmpDir);
+  settings = await importWithTempConfig<SettingsModule>("../../src/storage/settingsStorage.ts", tmpDir);
 });
 
 afterAll(() => {
   cleanupTempDir(tmpDir);
 });
 
-describe("storage/settings", () => {
+describe("storage/settingsStorage", () => {
   test("loadSettings devuelve celsius por defecto sin archivo", () => {
     resetConfigFiles(tmpDir);
     expect(settings.loadSettings()).toEqual({ unit: "celsius" });

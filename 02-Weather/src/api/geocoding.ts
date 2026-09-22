@@ -1,4 +1,4 @@
-import type { GeoCity } from "../types/index.ts";
+import type { GeoCity } from "../types/City.ts";
 
 const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
 

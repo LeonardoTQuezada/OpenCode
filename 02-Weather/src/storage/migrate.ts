@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
-import { CITIES_FILE, CONFIG_DIR, LEGACY_FILE, SETTINGS_FILE } from "../constants.ts";
-import type { Unit } from "../types/index.ts";
+import { CITIES_FILE, CONFIG_DIR, LEGACY_FILE, SETTINGS_FILE } from "../utils/constants.ts";
+import type { Unit } from "../types/Settings.ts";
 
 /** Formato tolerante del data.json legado (pre-refactor). */
 interface LegacyData {

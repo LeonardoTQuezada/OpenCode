@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { CITIES_FILE, CONFIG_DIR } from "../constants.ts";
-import type { CitiesStore, GeoCity, StoredCity } from "../types/index.ts";
+import { CITIES_FILE, CONFIG_DIR } from "../utils/constants.ts";
+import type { CitiesStore, GeoCity, StoredCity } from "../types/City.ts";
 
 export const EMPTY_STORE: CitiesStore = { defaultCityId: null, cities: [] };
 

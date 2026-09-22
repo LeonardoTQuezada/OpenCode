@@ -1,4 +1,5 @@
-import type { ForecastResult, Settings, Unit, WeatherResult } from "../types/index.ts";
+import type { ForecastResult, WeatherResult } from "../types/Weather.ts";
+import type { Settings, Unit } from "../types/Settings.ts";
 import { cityLabel, formatTemperature, unitSymbol, weatherCodeLabel } from "../utils/format.ts";
 import { cyan, yellow } from "../utils/colors.ts";
 import { SEPARATOR } from "./menu.ts";

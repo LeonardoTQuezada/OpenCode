@@ -1,5 +1,5 @@
-import { loadSettings, saveSettings } from "../storage/settings.ts";
-import type { Unit } from "../types/index.ts";
+import { loadSettings, saveSettings } from "../storage/settingsStorage.ts";
+import type { Unit } from "../types/Settings.ts";
 
 /** Unidad de temperatura actualmente configurada. */
 export function getUnit(): Unit {

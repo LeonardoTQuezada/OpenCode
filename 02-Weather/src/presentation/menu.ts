@@ -1,4 +1,5 @@
 import { cyan } from "../utils/colors.ts";
+import type { MenuOption } from "../types/MenuOption.ts";
 
 export const SEPARATOR = "════════════════════════════════════════";
 
@@ -11,7 +12,7 @@ export const OPTIONS = {
   FORECAST: "6",
   SETTINGS: "8",
   EXIT: "9",
-} as const;
+} as const satisfies Record<string, MenuOption>;
 
 export const VALID_OPTIONS = new Set<string>(Object.values(OPTIONS));
 

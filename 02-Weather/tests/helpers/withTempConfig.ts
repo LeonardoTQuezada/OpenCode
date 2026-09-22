@@ -23,7 +23,7 @@ export function resetConfigFiles(dir: string): void {
 }
 
 /**
- * Registra un mock de `src/constants.ts` apuntando a un temp dir y
+ * Registra un mock de `src/utils/constants.ts` apuntando a un temp dir y
  * devuelve el módulo pedido importado de forma dinámica.
  *
  * Es importante que el import sea dinámico: ESM "hoistea" los imports
@@ -32,7 +32,7 @@ export function resetConfigFiles(dir: string): void {
  */
 export async function importWithTempConfig<T>(modulePath: string, tmpDir: string): Promise<T> {
   if (!REGISTERED.has(tmpDir)) {
-    mock.module("../../src/constants.ts", () => ({
+    mock.module("../../src/utils/constants.ts", () => ({
       CONFIG_DIR: tmpDir,
       CONFIG_DIR_NAME: "weather-cli",
       CITIES_FILE: join(tmpDir, "cities.json"),

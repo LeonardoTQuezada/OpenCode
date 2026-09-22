@@ -9,7 +9,7 @@ import {
 } from "../helpers/withTempConfig.ts";
 
 type MigrateModule = typeof import("../../src/storage/migrate.ts");
-type ConstantsModule = typeof import("../../src/constants.ts");
+type ConstantsModule = typeof import("../../src/utils/constants.ts");
 
 const tmpDir = createTempConfigDir();
 let migrate: MigrateModule;
@@ -17,7 +17,7 @@ let constants: ConstantsModule;
 
 beforeAll(async () => {
   migrate = await importWithTempConfig<MigrateModule>("../../src/storage/migrate.ts", tmpDir);
-  constants = await importWithTempConfig<ConstantsModule>("../../src/constants.ts", tmpDir);
+  constants = await importWithTempConfig<ConstantsModule>("../../src/utils/constants.ts", tmpDir);
 });
 
 afterAll(() => {

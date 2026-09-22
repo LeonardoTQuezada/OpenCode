@@ -7,9 +7,9 @@ import {
   importWithTempConfig,
   resetConfigFiles,
 } from "../helpers/withTempConfig.ts";
-import type { GeoCity, StoredCity } from "../../src/types/index.ts";
+import type { GeoCity, StoredCity } from "../../src/types/City.ts";
 
-type CitiesModule = typeof import("../../src/storage/cities.ts");
+type CitiesModule = typeof import("../../src/storage/citiesStorage.ts");
 
 const tmpDir = createTempConfigDir();
 let cities: CitiesModule;
@@ -25,14 +25,14 @@ const ottawa: StoredCity = {
 const madrid: StoredCity = { id: 2, name: "Madrid", latitude: 40.4168, longitude: -3.7038, country: "España" };
 
 beforeAll(async () => {
-  cities = await importWithTempConfig<CitiesModule>("../../src/storage/cities.ts", tmpDir);
+  cities = await importWithTempConfig<CitiesModule>("../../src/storage/citiesStorage.ts", tmpDir);
 });
 
 afterAll(() => {
   cleanupTempDir(tmpDir);
 });
 
-describe("storage/cities", () => {
+describe("storage/citiesStorage", () => {
   test("loadCities devuelve un store vacío si no hay archivo", () => {
     resetConfigFiles(tmpDir);
     expect(cities.loadCities()).toEqual({ defaultCityId: null, cities: [] });

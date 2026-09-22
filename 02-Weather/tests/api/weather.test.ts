@@ -14,7 +14,7 @@ function fetchUrl(): string {
   return String((fetchMock.mock.calls[0] ?? [])[0] ?? "");
 }
 
-describe("api/forecast", () => {
+describe("api/weather", () => {
   afterAll(() => {
     globalThis.fetch = originalFetch;
   });
@@ -26,7 +26,7 @@ describe("api/forecast", () => {
         current_units: { temperature_2m: "°C" },
       }),
     ) as unknown as typeof fetch;
-    const { getCurrentWeather } = await import("../../src/api/forecast.ts");
+    const { getCurrentWeather } = await import("../../src/api/weather.ts");
     const weather = await getCurrentWeather(45.41117, -75.69812);
 
     expect(weather.temperature).toBe(11.3);
@@ -47,7 +47,7 @@ describe("api/forecast", () => {
         current_units: { temperature_2m: "°F" },
       }),
     ) as unknown as typeof fetch;
-    const { getCurrentWeather } = await import("../../src/api/forecast.ts");
+    const { getCurrentWeather } = await import("../../src/api/weather.ts");
     const weather = await getCurrentWeather(45.41117, -75.69812, "fahrenheit");
 
     expect(weather.temperature).toBe(52.3);
@@ -57,13 +57,13 @@ describe("api/forecast", () => {
 
   test("getCurrentWeather lanza error si no hay temperatura", async () => {
     globalThis.fetch = mock(() => jsonResponse({ current: {} })) as unknown as typeof fetch;
-    const { getCurrentWeather } = await import("../../src/api/forecast.ts");
+    const { getCurrentWeather } = await import("../../src/api/weather.ts");
     await expect(getCurrentWeather(1, 2)).rejects.toThrow("temperatura");
   });
 
   test("getCurrentWeather lanza error si la API responde con error HTTP", async () => {
     globalThis.fetch = mock(() => jsonResponse({}, 503)) as unknown as typeof fetch;
-    const { getCurrentWeather } = await import("../../src/api/forecast.ts");
+    const { getCurrentWeather } = await import("../../src/api/weather.ts");
     await expect(getCurrentWeather(1, 2)).rejects.toThrow("HTTP 503");
   });
 
@@ -79,7 +79,7 @@ describe("api/forecast", () => {
         daily_units: { temperature_2m_max: "°C" },
       }),
     ) as unknown as typeof fetch;
-    const { getDailyForecast } = await import("../../src/api/forecast.ts");
+    const { getDailyForecast } = await import("../../src/api/weather.ts");
     const result = await getDailyForecast(45.41117, -75.69812);
 
     expect(result.days).toHaveLength(7);
@@ -106,7 +106,7 @@ describe("api/forecast", () => {
         daily_units: { temperature_2m_max: "°F" },
       }),
     ) as unknown as typeof fetch;
-    const { getDailyForecast } = await import("../../src/api/forecast.ts");
+    const { getDailyForecast } = await import("../../src/api/weather.ts");
     const result = await getDailyForecast(45.41117, -75.69812, "fahrenheit");
 
     expect(result.unitSymbol).toBe("°F");
@@ -116,7 +116,7 @@ describe("api/forecast", () => {
 
   test("getDailyForecast lanza error si no hay datos diarios", async () => {
     globalThis.fetch = mock(() => jsonResponse({})) as unknown as typeof fetch;
-    const { getDailyForecast } = await import("../../src/api/forecast.ts");
+    const { getDailyForecast } = await import("../../src/api/weather.ts");
     await expect(getDailyForecast(1, 2)).rejects.toThrow("pronóstico diario");
   });
 
@@ -131,7 +131,7 @@ describe("api/forecast", () => {
         },
       }),
     ) as unknown as typeof fetch;
-    const { getDailyForecast } = await import("../../src/api/forecast.ts");
+    const { getDailyForecast } = await import("../../src/api/weather.ts");
     await expect(getDailyForecast(1, 2)).rejects.toThrow("temperaturas diarias");
   });
 });

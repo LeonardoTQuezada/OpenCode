@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { CONFIG_DIR, SETTINGS_FILE } from "../constants.ts";
-import type { Settings, Unit } from "../types/index.ts";
+import { CONFIG_DIR, SETTINGS_FILE } from "../utils/constants.ts";
+import type { Settings, Unit } from "../types/Settings.ts";
 
 export const DEFAULT_SETTINGS: Settings = { unit: "celsius" };
 
