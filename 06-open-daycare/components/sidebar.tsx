@@ -35,10 +35,10 @@ export function SidebarContents() {
           <SunIcon width={21} height={21} />
         </span>
         <span>
-          <span className="block font-display text-[17px] font-semibold leading-none text-ink">
+          <span className="block font-display text-[17px] font-semibold leading-[1.2] text-ink">
             OpenDayCare
           </span>
-          <span className="mt-0.5 block text-[11.5px] text-muted">
+          <span className="mt-0.5 block text-[11.5px] leading-[1.36] text-muted">
             Sala Soles
           </span>
         </span>
@@ -47,7 +47,7 @@ export function SidebarContents() {
       {/* Nueva publicación */}
       <a
         href="#"
-        className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold text-white shadow-button"
+        className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold leading-[1.36] text-white shadow-button"
       >
         <PlusIcon width={17} height={17} />
         Nueva publicación
@@ -59,7 +59,7 @@ export function SidebarContents() {
           <a
             key={label}
             href="#"
-            className={`flex items-center gap-3 rounded-xl px-3 py-[11px] text-[14.5px] ${
+            className={`flex items-center gap-3 rounded-xl px-3 py-[11px] text-[14.5px] leading-[1.36] ${
               active
                 ? "bg-coral-soft font-extrabold text-coral-strong"
                 : "font-semibold text-nav"
@@ -78,10 +78,10 @@ export function SidebarContents() {
             C
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-sm font-extrabold text-ink">
+            <span className="block text-sm font-extrabold leading-[1.36] text-ink">
               Caro Giménez
             </span>
-            <span className="block text-xs text-muted">Maestra · Soles</span>
+            <span className="block text-xs leading-[1.36] text-muted">Maestra · Soles</span>
           </span>
           <a
             href="#"

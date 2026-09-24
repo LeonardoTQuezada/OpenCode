@@ -38,7 +38,7 @@ export function MobileNav() {
           >
             <MenuIcon width={20} height={20} />
           </button>
-          <span className="font-display text-[17px] font-semibold text-ink">
+          <span className="font-display text-[17px] font-semibold leading-[1.2] text-ink">
             OpenDayCare
           </span>
         </div>
