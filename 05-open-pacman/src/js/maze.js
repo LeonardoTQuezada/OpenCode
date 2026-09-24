@@ -53,13 +53,13 @@ const TUNNEL_ROW = 14;
 const PACMAN_START = { x: 13, y: 23 };
 const GHOST_STARTS = [
   { x: 13, y: 14, kind: 'chaser',   speed: 1 / 8,  corner: { x: 26, y: 1 },  release: 'immediate',
-    spawn: { x: 13, y: 11, dir: 'left' } },
+    spawn: { x: 13, y: 11, dir: 'up' } },
   { x: 14, y: 14, kind: 'ambusher', speed: 1 / 10, corner: { x: 1, y: 1 },   release: { type: 'time', frames: 150 },
-    spawn: { x: 13, y: 11, dir: 'right' } },
+    spawn: { x: 13, y: 11, dir: 'up' } },
   { x: 13, y: 13, kind: 'flanker',  speed: 1 / 10, corner: { x: 26, y: 29 }, release: { type: 'dots', count: 30 },
-    spawn: { x: 13, y: 11, dir: 'left' } },
+    spawn: { x: 13, y: 11, dir: 'up' } },
   { x: 14, y: 13, kind: 'shy',      speed: 1 / 10, corner: { x: 1, y: 29 },  release: { type: 'dots', count: 60 },
-    spawn: { x: 13, y: 11, dir: 'right' } },
+    spawn: { x: 13, y: 11, dir: 'up' } },
 ];
 
 window.MAZE = MAZE;
