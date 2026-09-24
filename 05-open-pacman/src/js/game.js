@@ -50,12 +50,15 @@ function createGame() {
       speed: PACMAN_SPEED,
     },
     ghosts: GHOST_STARTS.map( ( g ) => ( {
-      x: g.x,
-      y: g.y,
-      dir: 'up',
+      // El chaser (release inmediato) nace ya en su spawn del pasillo (13,11);
+      // el resto nace en la pen y espera quieto hasta cumplir su condicion.
+      x: g.release === 'immediate' ? g.spawn.x : g.x,
+      y: g.release === 'immediate' ? g.spawn.y : g.y,
+      dir: g.release === 'immediate' ? g.spawn.dir : 'up',
       speed: g.speed,
       kind: g.kind,
       corner: g.corner,
+      spawn: g.spawn,
       released: g.release === 'immediate',
     } ) ),
   };
@@ -219,14 +222,33 @@ function resetPositions( game ) {
   p.dir = 'left';
   p.nextDir = null;
   game.ghosts.forEach( ( g, i ) => {
-    g.x = GHOST_STARTS[ i ].x;
-    g.y = GHOST_STARTS[ i ].y;
-    g.dir = 'up';
+    if ( g.released ) {
+      // Liberados: reaparecen en el spawn del pasillo con su direccion,
+      // conservando `released` (no re-ejecutan la secuencia de liberacion).
+      g.x = g.spawn.x;
+      g.y = g.spawn.y;
+      g.dir = g.spawn.dir;
+    } else {
+      // No liberados: vuelven a su celda de la pen.
+      g.x = GHOST_STARTS[ i ].x;
+      g.y = GHOST_STARTS[ i ].y;
+      g.dir = 'up';
+    }
   } );
 }
 
 function collides( a, b ) {
   return Math.abs( a.x - b.x ) < 0.5 && Math.abs( a.y - b.y ) < 0.5;
+}
+
+// Libera a un fantasma: sale de la pen y aparece directamente en su spawn
+// del pasillo (13,11). La direccion del spawn es 'up', de modo que en el
+// primer cruce 'down' (la opuesta) queda excluida y no re-entra por la puerta.
+function releaseGhost( game, g ) {
+  g.released = true;
+  g.x = g.spawn.x;
+  g.y = g.spawn.y;
+  g.dir = g.spawn.dir;
 }
 
 function update( game ) {
@@ -248,9 +270,9 @@ function update( game ) {
   game.ghosts.forEach( ( g, i ) => {
     if ( g.released ) return;
     const rule = GHOST_STARTS[ i ].release;
-    if ( rule === 'immediate' ) g.released = true;
-    else if ( rule.type === 'time' && game.frameCount >= rule.frames ) g.released = true;
-    else if ( rule.type === 'dots' && game.totalDots - game.dotsRemaining >= rule.count ) g.released = true;
+    if ( rule === 'immediate' ) releaseGhost( game, g );
+    else if ( rule.type === 'time' && game.frameCount >= rule.frames ) releaseGhost( game, g );
+    else if ( rule.type === 'dots' && game.totalDots - game.dotsRemaining >= rule.count ) releaseGhost( game, g );
   } );
 
   movePacman( game );
