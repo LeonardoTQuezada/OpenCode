@@ -1,0 +1,19 @@
+{
+  "mcp": {
+    "servers": {
+      "playwright": {
+        "type": "local",
+        "command": [
+          "/home/edwin/.local/bin/npx",
+          "-y",
+          "@playwright/mcp@latest",
+          "--browser",
+          "chromium"
+        ],
+        "timeout": {
+          "startup": 120000
+        }
+      }
+    }
+  }
+}
