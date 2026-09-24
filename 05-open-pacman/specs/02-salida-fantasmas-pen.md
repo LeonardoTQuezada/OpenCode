@@ -1,6 +1,6 @@
 # SPEC 02 — Salida de los fantasmas desde la pen
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-09-24
 > **Objetivo:** Al liberarse, cada fantasma aparece directamente en su punto de salida del mapa en lugar de intentar salir andando de la pen, de modo que ninguno quede atrapado en la jaula.
