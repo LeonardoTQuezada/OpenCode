@@ -12,6 +12,17 @@ const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
 
 const PACMAN_SPEED = 0.125; // 1/8 celda/frame -> alinea cada 8 frames
 
+// Agenda de fases scatter/chase (duraciones en frames). La ultima es chase
+// indefinida (Infinity nunca llega a 0 al decrementar).
+const MODE_SCHEDULE = [
+  { mode: 'scatter', frames: 420 },  // 7 s
+  { mode: 'chase',   frames: 1200 }, // 20 s
+  { mode: 'scatter', frames: 420 },  // 7 s
+  { mode: 'chase',   frames: 1200 }, // 20 s
+  { mode: 'scatter', frames: 300 },  // 5 s
+  { mode: 'chase',   frames: Infinity },
+];
+
 // Crea una partida nueva. Copia MAZE (pristino) a game.grid para poder comer
 // dots sin destruir el original, y reiniciar.
 function createGame() {
@@ -29,6 +40,7 @@ function createGame() {
     dotsRemaining: dots,
     frameCount: 0,   // para liberacion por tiempo
     totalDots: dots, // para liberacion por dots
+    ghostMode: { index: 0, mode: 'scatter', timer: 420 },
     grid,
     pacman: {
       x: PACMAN_START.x,
@@ -141,12 +153,9 @@ function flankCell( game ) {
   };
 }
 
-// Objetivo de cada fantasma segun su kind:
-//   chaser:   celda de Pac-Man
-//   ambusher: 4 celdas delante de Pac-Man
-//   flanker:  flankCell (2·P − B)
-//   shy:      su esquina si Pac-Man esta a < 8 celdas, si no le persigue
+// Objetivo de cada fantasma segun su kind. En scatter, todos a su esquina.
 function ghostTarget( game, g ) {
+  if ( game.ghostMode.mode === 'scatter' ) return g.corner;
   if ( g.kind === 'chaser' ) return pacmanCell( game );
   if ( g.kind === 'ambusher' ) return aheadCell( game.pacman, 4 );
   if ( g.kind === 'flanker' ) return flankCell( game );
@@ -222,6 +231,18 @@ function collides( a, b ) {
 
 function update( game ) {
   game.frameCount++;
+
+  // Fases scatter/chase: decrementar el timer y pasar a la siguiente al llegar a 0.
+  const mode = game.ghostMode;
+  mode.timer--;
+  if ( mode.timer <= 0 ) {
+    const next = MODE_SCHEDULE[ mode.index + 1 ];
+    if ( next ) {
+      mode.index++;
+      mode.mode = next.mode;
+      mode.timer = next.frames;
+    }
+  }
 
   // Liberar fantasmas que cumplen su condicion de salida (tiempo o dots).
   game.ghosts.forEach( ( g, i ) => {
