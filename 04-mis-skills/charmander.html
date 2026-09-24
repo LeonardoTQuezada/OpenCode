@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokédex · #004 Charmander</title>
+<style>
+  :root {
+    --fire: #EE8130;
+    --fire-dark: #C2591B;
+    --pokedex-red: #DC2626;
+    --bg-dark: #17110d;
+    --card: #221a14;
+    --card-2: #2c221a;
+    --text: #f6efe7;
+    --text-dim: #b9a894;
+    --border: #3a2d22;
+    --hp: #FF5959;
+    --atk: #F08030;
+    --def: #F8D030;
+    --spa: #6890F0;
+    --spd: #78C850;
+    --spe: #FA92B2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(238,129,48,.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(220,38,38,.16), transparent 60%),
+      var(--bg-dark);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 48px;
+  }
+
+  /* ---------- Pokedex header ---------- */
+  .pokedex-bar {
+    width: 100%;
+    max-width: 1000px;
+    background: linear-gradient(135deg, var(--pokedex-red), #991b1b);
+    border: 3px solid #7f1d1d;
+    border-radius: 16px;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.45);
+  }
+  .lens {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, #93c5fd, #2563eb 55%, #1e3a8a);
+    border: 3px solid #f1f5f9;
+    box-shadow: 0 0 10px rgba(59,130,246,.8);
+    animation: blink 2.4s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { box-shadow: 0 0 10px rgba(59,130,246,.8); }
+    50%      { box-shadow: 0 0 3px rgba(59,130,246,.4); }
+  }
+  .dots { display: flex; gap: 7px; }
+  .dots span {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: #fbbf24; box-shadow: 0 0 4px rgba(251,191,36,.7);
+  }
+  .dots span:nth-child(2) { background: #4ade80; box-shadow: 0 0 4px rgba(74,222,128,.7); }
+  .dots span:nth-child(3) { background: #60a5fa; box-shadow: 0 0 4px rgba(96,165,250,.7); }
+  .pokedex-bar .title {
+    font-weight: 800;
+    letter-spacing: .35em;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,.4);
+  }
+  .screen {
+    margin-left: auto;
+    background: #0f172a;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: "Courier New", monospace;
+    color: #4ade80;
+    font-size: .85rem;
+    letter-spacing: .1em;
+  }
+
+  /* ---------- Main card ---------- */
+  .card {
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 26px;
+    background: linear-gradient(180deg, var(--card), var(--card-2));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 16px 50px rgba(0,0,0,.5);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 8px;
+    padding: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .art-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(circle at 50% 55%, rgba(238,129,48,.30), transparent 65%),
+      repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,.045) 20px),
+      repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255,255,255,.045) 20px),
+      #1b1410;
+    border-radius: 14px;
+    min-height: 300px;
+    overflow: hidden;
+  }
+  .art-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 60%, rgba(238,129,48,.25), transparent 55%);
+    animation: flame 3s ease-in-out infinite alternate;
+  }
+  @keyframes flame {
+    from { opacity: .55; transform: scale(1); }
+    to   { opacity: 1;   transform: scale(1.06); }
+  }
+  .art-wrap img {
+    position: relative;
+    width: 260px;
+    max-width: 90%;
+    filter: drop-shadow(0 14px 22px rgba(0,0,0,.6));
+    animation: float 4.5s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-12px); }
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .num {
+    font-family: "Courier New", monospace;
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    letter-spacing: .12em;
+  }
+  .type-badge {
+    padding: 5px 16px;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
+  }
+  .type-fire { background: var(--fire); box-shadow: 0 3px 12px rgba(238,129,48,.5); }
+
+  h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin: 6px 0 2px;
+    background: linear-gradient(90deg, #fff, #fed7aa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .genus { color: var(--text-dim); font-size: .95rem; margin-bottom: 16px; }
+
+  .description {
+    background: rgba(0,0,0,.28);
+    border-left: 4px solid var(--fire);
+    border-radius: 0 10px 10px 0;
+    padding: 13px 16px;
+    font-size: .95rem;
+    line-height: 1.55;
+    color: #e8dccd;
+    margin-bottom: 20px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .info-cell {
+    background: rgba(0,0,0,.25);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 13px;
+  }
+  .info-cell .label {
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+  .info-cell .value { font-size: .98rem; font-weight: 600; }
+
+  /* ---------- Sections ---------- */
+  .sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .section {
+    padding: 24px 28px;
+  }
+  .section + .section { border-left: 1px solid var(--border); }
+
+  h2 {
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .22em;
+    color: var(--fire);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--fire), transparent);
+  }
+
+  /* ---------- Stats ---------- */
+  .stat-row {
+    display: grid;
+    grid-template-columns: 110px 44px 1fr;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: .87rem;
+  }
+  .stat-name { color: var(--text-dim); text-transform: uppercase; font-size: .74rem; letter-spacing: .08em; }
+  .stat-val  { font-weight: 700; font-family: "Courier New", monospace; text-align: right; }
+  .bar {
+    height: 9px;
+    background: rgba(255,255,255,.09);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    animation: grow 1.1s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes grow { from { width: 0 !important; } }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px dashed var(--border);
+    margin-top: 14px;
+    padding-top: 12px;
+    font-weight: 700;
+    font-size: .9rem;
+  }
+  .total-row span:last-child { color: var(--fire); font-family: "Courier New", monospace; }
+
+  /* ---------- Abilities ---------- */
+  .ability {
+    background: rgba(0,0,0,.25);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 15px;
+    margin-bottom: 12px;
+  }
+  .ability-head { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; flex-wrap: wrap; }
+  .ability-name { font-weight: 700; font-size: 1rem; }
+  .tag {
+    font-size: .64rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(238,129,48,.18);
+    color: #fdba74;
+    border: 1px solid rgba(238,129,48,.4);
+  }
+  .tag.hidden-tag { background: rgba(168,85,247,.16); color: #d8b4fe; border-color: rgba(168,85,247,.4); }
+  .ability p { font-size: .85rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* ---------- Evolution ---------- */
+  .evo {
+    border-top: 1px solid var(--border);
+    padding: 24px 28px;
+  }
+  .evo-chain {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .evo-node {
+    flex: 1;
+    min-width: 170px;
+    max-width: 250px;
+    background: rgba(0,0,0,.25);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: transform .25s, border-color .25s;
+  }
+  .evo-node:hover { transform: translateY(-5px); border-color: var(--fire); }
+  .evo-node.current {
+    border-color: var(--fire);
+    background: rgba(238,129,48,.10);
+    box-shadow: 0 0 18px rgba(238,129,48,.25);
+  }
+  .evo-node img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); }
+  .evo-node .evo-num { font-size: .72rem; color: var(--text-dim); font-family: "Courier New", monospace; }
+  .evo-node .evo-name { font-weight: 700; text-transform: capitalize; margin-top: 2px; }
+  .evo-node .evo-note { font-size: .72rem; color: #fdba74; margin-top: 5px; }
+  .arrow {
+    align-self: center;
+    color: var(--fire);
+    font-size: 1.6rem;
+    padding: 0 4px;
+    animation: nudge 1.4s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(6px); }
+  }
+
+  footer {
+    margin-top: 22px;
+    color: var(--text-dim);
+    font-size: .78rem;
+    text-align: center;
+    line-height: 1.6;
+  }
+  footer a { color: var(--fire); text-decoration: none; }
+
+  @media (max-width: 840px) {
+    .hero { grid-template-columns: 1fr; }
+    .sections { grid-template-columns: 1fr; }
+    .section + .section { border-left: none; border-top: 1px solid var(--border); }
+    h1 { font-size: 2rem; }
+    .screen { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="pokedex-bar">
+    <div class="lens"></div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="title">Pokédex</div>
+    <div class="screen">ID: 004 // FUEGO</div>
+  </header>
+
+  <main class="card">
+    <section class="hero">
+      <div class="art-wrap">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png"
+             alt="Charmander, arte oficial">
+      </div>
+
+      <div class="hero-info">
+        <div class="header-row">
+          <span class="num">Nº 004</span>
+          <span class="type-badge type-fire">🔥 Fuego</span>
+        </div>
+        <h1>Charmander</h1>
+        <p class="genus">Pokémon Lagartija · Generación I (Kanto)</p>
+
+        <p class="description">
+          «Este Pokémon nace con una llama en la punta de la cola. Si la llama se
+          apagara, el Pokémon se debilitaría.»
+          <br><small style="color:#b9a894">La llama refleja su estado de ánimo: vacila cuando está alegre y arde
+          ferozmente cuando se enfada. Prefiere las cosas calientes — cuando llueve, sale
+          vapor de la punta de su cola.</small>
+        </p>
+
+        <div class="info-grid">
+          <div class="info-cell"><div class="label">Altura</div><div class="value">0,6 m</div></div>
+          <div class="info-cell"><div class="label">Peso</div><div class="value">8,5 kg</div></div>
+          <div class="info-cell"><div class="label">Exp. base</div><div class="value">62</div></div>
+          <div class="info-cell"><div class="label">Captura</div><div class="value">45 (11,8 %)</div></div>
+          <div class="info-cell"><div class="label">Género</div><div class="value">♂ 87,5 % · ♀ 12,5 %</div></div>
+          <div class="info-cell"><div class="label">Hábitat</div><div class="value">Montaña</div></div>
+          <div class="info-cell"><div class="label">Color</div><div class="value">Rojo</div></div>
+          <div class="info-cell"><div class="label">Grupo huevo</div><div class="value">Monstruo · Dragón</div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sections">
+      <section class="section">
+        <h2>Estadísticas base</h2>
+
+        <div class="stat-row">
+          <span class="stat-name">PS</span><span class="stat-val">39</span>
+          <div class="bar"><i style="width:39%; background:linear-gradient(90deg,#b91c1c,var(--hp))"></i></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Ataque</span><span class="stat-val">52</span>
+          <div class="bar"><i style="width:52%; background:linear-gradient(90deg,#c2410c,var(--atk))"></i></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Defensa</span><span class="stat-val">43</span>
+          <div class="bar"><i style="width:43%; background:linear-gradient(90deg,#a16207,var(--def))"></i></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">At. Esp.</span><span class="stat-val">60</span>
+          <div class="bar"><i style="width:60%; background:linear-gradient(90deg,#1d4ed8,var(--spa))"></i></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Def. Esp.</span><span class="stat-val">50</span>
+          <div class="bar"><i style="width:50%; background:linear-gradient(90deg,#15803d,var(--spd))"></i></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Velocidad</span><span class="stat-val">65</span>
+          <div class="bar"><i style="width:65%; background:linear-gradient(90deg,#be185d,var(--spe))"></i></div>
+        </div>
+
+        <div class="total-row"><span>Total</span><span>309</span></div>
+      </section>
+
+      <section class="section">
+        <h2>Habilidades</h2>
+
+        <div class="ability">
+          <div class="ability-head">
+            <span class="ability-name">Mar Llamas</span>
+            <span class="tag">Normal · Slot 1</span>
+          </div>
+          <p>Potencia los movimientos de tipo Fuego cuando los PS bajan a la mitad o menos.</p>
+        </div>
+
+        <div class="ability">
+          <div class="ability-head">
+            <span class="ability-name">Poder Solar</span>
+            <span class="tag hidden-tag">Oculta</span>
+          </div>
+          <p>Baja los PS en cada turno pero aumenta mucho el Ataque Especial bajo sol o clima soleado.</p>
+        </div>
+
+        <div class="ability">
+          <div class="ability-head">
+            <span class="ability-name">Crecimiento</span>
+            <span class="tag">Experiencia</span>
+          </div>
+          <p>Ritmo de crecimiento: <strong>Medio-lento</strong> · Necesita 5.100 pasos para eclosionar un huevo.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="evo">
+      <h2>Cadena evolutiva</h2>
+      <div class="evo-chain">
+        <div class="evo-node current">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-viii/icons/4.png" alt="Charmander">
+          <div class="evo-num">Nº 004</div>
+          <div class="evo-name">Charmander</div>
+          <div class="evo-note">Etapa inicial</div>
+        </div>
+
+        <div class="arrow">➜</div>
+
+        <div class="evo-node">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-viii/icons/5.png" alt="Charmeleon">
+          <div class="evo-num">Nº 005</div>
+          <div class="evo-name">Charmeleon</div>
+          <div class="evo-note">Subida de nivel 16</div>
+        </div>
+
+        <div class="arrow">➜</div>
+
+        <div class="evo-node">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-viii/icons/6.png" alt="Charizard">
+          <div class="evo-num">Nº 006</div>
+          <div class="evo-name">Charizard</div>
+          <div class="evo-note">Subida de nivel 36</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Datos reales obtenidos de <a href="https://pokeapi.co" target="_blank" rel="noopener">PokéAPI</a>
+    · Arte y sprites © Nintendo / Creatures Inc. / GAME FREAK<br>
+    Página generada el 23/09/2026
+  </footer>
+
+</body>
+</html>
