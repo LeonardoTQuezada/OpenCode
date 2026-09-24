@@ -83,6 +83,8 @@ function createGame() {
     dotsRemaining: dots,
     frameCount: 0,   // para liberacion por tiempo
     totalDots: dots, // para liberacion por dots
+    frightTimer: 0,  // frames restantes de modo asustado; 0 = sin asustado
+    frightSeq: 0,    // fantasmas comidos en la secuencia actual (200/400/800/1600)
     ghostMode: { index: 0, mode: 'scatter', timer: 420 },
     grid,
     pacman: {
@@ -103,6 +105,7 @@ function createGame() {
       corner: g.corner,
       spawn: g.spawn,
       released: g.release === 'immediate',
+      frightened: false, // azul, lento y aleatorio solo tras comer un pellet
     } ) ),
   };
 }
@@ -161,11 +164,12 @@ function movePacman( game ) {
       game.score += 10;
       game.dotsRemaining--;
     }
-    // Comer power pellet. Aun sin asustar (paso 2 de SPEC 03): solo puntos.
+    // Comer power pellet: asusta a los fantasmas liberados.
     if ( grid[ p.y ][ p.x ] === 4 ) {
       grid[ p.y ][ p.x ] = 0;
       game.score += PELLET_SCORE;
       game.dotsRemaining--;
+      startFright( game );
     }
     // Si no puede seguir, se detiene en la celda.
     if ( !canMove( grid, p.x, p.y, p.dir, 'pacman' ) ) return;
@@ -242,6 +246,16 @@ function chooseByTarget( game, g, target ) {
 }
 
 function decideGhost( game, g ) {
+  // Asustado: direccion aleatoria valida (sin volver atras) en cada cruce,
+  // en vez de la IA de objetivo. Es el zigzag clasico del modo asustado.
+  if ( g.frightened ) {
+    const options = Object.keys( DIRS ).filter(
+      ( dir ) => dir !== OPPOSITE[ g.dir ] && canMove( game.grid, g.x, g.y, dir, 'ghost' )
+    );
+    // Sin salida (callejon): permitir el giro de 180.
+    g.dir = options.length ? options[ Math.floor( Math.random() * options.length ) ] : OPPOSITE[ g.dir ];
+    return;
+  }
   g.dir = chooseByTarget( game, g, ghostTarget( game, g ) );
 }
 
@@ -259,8 +273,11 @@ function moveGhost( game, g ) {
   }
 
   const d = DIRS[ g.dir ];
-  g.x += d.x * g.speed;
-  g.y += d.y * g.speed;
+  // Asustado: mitad de velocidad (1/16 chaser, 1/20 el resto), sigue siendo
+  // fraccion unitaria de celda y no rompe la alineacion.
+  const speed = g.frightened ? g.speed * FRIGHT_SPEED_FACTOR : g.speed;
+  g.x += d.x * speed;
+  g.y += d.y * speed;
   wrapTunnel( g, width );
 }
 
@@ -300,8 +317,30 @@ function releaseGhost( game, g ) {
   g.dir = g.spawn.dir;
 }
 
+// Activa el modo asustado: reinicia temporizador y secuencia de puntos, y
+// los fantasmas liberados se vuelven azules invirtiendo su direccion.
+// Comer un pellet con el modo ya activo reinicia ambos (comportamiento arcade).
+function startFright( game ) {
+  game.frightTimer = FRIGHT_FRAMES;
+  game.frightSeq = 0;
+  game.ghosts.forEach( ( g ) => {
+    if ( !g.released ) return;
+    g.frightened = true;
+    g.dir = OPPOSITE[ g.dir ];
+  } );
+}
+
 function update( game ) {
   game.frameCount++;
+
+  // Modo asustado: decrementar el temporizador; al llegar a 0 los fantasmas
+  // recuperan color, velocidad e IA del scatter/chase vigente.
+  if ( game.frightTimer > 0 ) {
+    game.frightTimer--;
+    if ( game.frightTimer <= 0 ) {
+      game.ghosts.forEach( ( g ) => { g.frightened = false; } );
+    }
+  }
 
   // Fases scatter/chase: decrementar el timer y pasar a la siguiente al llegar a 0.
   const mode = game.ghostMode;
