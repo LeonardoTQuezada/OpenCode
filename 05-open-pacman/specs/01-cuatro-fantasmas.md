@@ -1,6 +1,6 @@
 # SPEC 01 — Cuatro fantasmas con IA clásica
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** Ninguna (primera spec del proyecto).
 > **Fecha:** 2026-09-24
 > **Objetivo:** Añadir 4 fantasmas con comportamiento propio (perseguidor agresivo, emboscador, flanqueador y tímido), fases scatter/chase, velocidad propia y salida por turnos desde la pen.
