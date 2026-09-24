@@ -1,6 +1,6 @@
 # SPEC 03 — Power pellets y modo asustado
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 02
 > **Fecha:** 2026-09-24
 > **Objetivo:** Añadir 4 power pellets por partida que, al comerse, asustan a los fantasmas (azules, con reversa, mitad de velocidad y movimiento aleatorio) durante 6 s con parpadeo de aviso, y permiten comérselos para ganar 50 puntos por pellet y 200→400→800→1600 por fantasma, como el arcade.
@@ -77,19 +77,19 @@ El valor de tile nuevo es `4` (power pellet), escrito solo en `game.grid` en la 
 
 ## Criterios de aceptación
 
-- [ ] Al abrir `src/index.html` no hay errores en la consola.
-- [ ] Cada partida tiene exactamente 4 power pellets en celdas transitables (0/2), fuera de la pen (filas 13-15, cols 11-17), fuera de (13,23) y **siempre** a ≥ 8 celdas Manhattan entre sí (nunca amontonados).
-- [ ] Cada Start recoloca los pellets al azar (dos Starts seguidos casi siempre muestran una colocación distinta).
-- [ ] Comer un power pellet suma exactamente 50 puntos y queda comido (progresa hacia ganar).
-- [ ] Al comer un pellet, todo fantasma liberado invierte su dirección, se vuelve azul y va a mitad de velocidad (1/16 el `chaser`, 1/20 el resto).
-- [ ] Los fantasmas azules eligen dirección aleatoria (sin vuelta atrás) en cada cruce, en vez de su IA de objetivo.
-- [ ] El modo asustado dura 360 frames; en los últimos 120 el fantasma parpadea azul/blanco; al acabar recupera color, velocidad e IA del scatter/chase vigente.
-- [ ] Comerse un fantasma azul suma 200, 400, 800 y 1600 en orden; cada pellet nuevo vuelve la secuencia a 200.
-- [ ] El fantasma comido vuelve a la pen y se re-libera con su regla de SPEC 01/02, naciendo con su color normal aunque queden frames de asustado.
-- [ ] Un fantasma no asustado que choca con Pac-Man sigue quitando una vida; sin asustado, la partida se juega igual que hoy.
-- [ ] Comer pellets cuenta para la liberación por dots de SPEC 01 (`dotsEaten = totalDots - dotsRemaining`).
-- [ ] Hay que comerse todos los dots y pellets para ganar; perder una vida conserva lo ya comido.
-- [ ] `MAZE` no se muta; Start regenera los 4 pellets y reinicia `frightTimer`/`frightSeq`.
+- [x] Al abrir `src/index.html` no hay errores en la consola.
+- [x] Cada partida tiene exactamente 4 power pellets en celdas transitables (0/2), fuera de la pen (filas 13-15, cols 11-17), fuera de (13,23) y **siempre** a ≥ 8 celdas Manhattan entre sí (nunca amontonados).
+- [x] Cada Start recoloca los pellets al azar (dos Starts seguidos casi siempre muestran una colocación distinta).
+- [x] Comer un power pellet suma exactamente 50 puntos y queda comido (progresa hacia ganar).
+- [x] Al comer un pellet, todo fantasma liberado invierte su dirección, se vuelve azul y va a mitad de velocidad (1/16 el `chaser`, 1/20 el resto).
+- [x] Los fantasmas azules eligen dirección aleatoria (sin vuelta atrás) en cada cruce, en vez de su IA de objetivo.
+- [x] El modo asustado dura 360 frames; en los últimos 120 el fantasma parpadea azul/blanco; al acabar recupera color, velocidad e IA del scatter/chase vigente.
+- [x] Comerse un fantasma azul suma 200, 400, 800 y 1600 en orden; cada pellet nuevo vuelve la secuencia a 200.
+- [x] El fantasma comido vuelve a la pen y se re-libera con su regla de SPEC 01/02, naciendo con su color normal aunque queden frames de asustado.
+- [x] Un fantasma no asustado que choca con Pac-Man sigue quitando una vida; sin asustado, la partida se juega igual que hoy.
+- [x] Comer pellets cuenta para la liberación por dots de SPEC 01 (`dotsEaten = totalDots - dotsRemaining`).
+- [x] Hay que comerse todos los dots y pellets para ganar; perder una vida conserva lo ya comido.
+- [x] `MAZE` no se muta; Start regenera los 4 pellets y reinicia `frightTimer`/`frightSeq`.
 
 ## Decisiones tomadas y descartadas
 
