@@ -27,6 +27,8 @@ function createGame() {
     score: 0,
     lives: 3,
     dotsRemaining: dots,
+    frameCount: 0,   // para liberacion por tiempo
+    totalDots: dots, // para liberacion por dots
     grid,
     pacman: {
       x: PACMAN_START.x,
@@ -183,6 +185,8 @@ function decideGhost( game, g ) {
 }
 
 function moveGhost( game, g ) {
+  if ( !g.released ) return; // no liberado: espera quieto en la pen
+
   const grid = game.grid;
   const width = grid[ 0 ].length;
 
@@ -217,6 +221,17 @@ function collides( a, b ) {
 }
 
 function update( game ) {
+  game.frameCount++;
+
+  // Liberar fantasmas que cumplen su condicion de salida (tiempo o dots).
+  game.ghosts.forEach( ( g, i ) => {
+    if ( g.released ) return;
+    const rule = GHOST_STARTS[ i ].release;
+    if ( rule === 'immediate' ) g.released = true;
+    else if ( rule.type === 'time' && game.frameCount >= rule.frames ) g.released = true;
+    else if ( rule.type === 'dots' && game.totalDots - game.dotsRemaining >= rule.count ) g.released = true;
+  } );
+
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
