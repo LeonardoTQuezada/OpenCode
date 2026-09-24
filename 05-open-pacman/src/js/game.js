@@ -12,6 +12,16 @@ const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
 
 const PACMAN_SPEED = 0.125; // 1/8 celda/frame -> alinea cada 8 frames
 
+// Power pellets y modo asustado (SPEC 03).
+const PELLET_COUNT = 4;
+const PELLET_SCORE = 50;
+const FRIGHT_FRAMES = 360;       // 6 s a ~60 fps
+const FRIGHT_FLASH = 120;        // ultimos 2 s: parpadeo blanco/azul
+const FRIGHT_SPEED_FACTOR = 0.5; // mitad de velocidad
+const FRIGHT_SCORES = [ 200, 400, 800, 1600 ];
+// Celdas de la pen excluidas de la colocacion (filas 13-15, cols 11-17).
+const PEN_BOX = { x0: 11, y0: 13, x1: 17, y1: 15 };
+
 // Agenda de fases scatter/chase (duraciones en frames). La ultima es chase
 // indefinida (Infinity nunca llega a 0 al decrementar).
 const MODE_SCHEDULE = [
@@ -23,15 +33,48 @@ const MODE_SCHEDULE = [
   { mode: 'chase',   frames: Infinity },
 ];
 
+// Coloca PELLET_COUNT power pellets (valor 4) en celdas transitables
+// aleatorias de la copia de MAZE. Los 4 quedan siempre a >= 8 celdas
+// Manhattan entre si: tras cada colocacion se descartan del pool las
+// celdas a < 8 de la elegida.
+function placePellets( grid ) {
+  // 1. Candidatas: celdas transitables (0 o 2) fuera de la pen y del
+  //    inicio de Pacman.
+  const candidates = [];
+  for ( let y = 0; y < grid.length; y++ ) {
+    for ( let x = 0; x < grid[ 0 ].length; x++ ) {
+      const v = grid[ y ][ x ];
+      if ( v !== 0 && v !== 2 ) continue;
+      if ( x >= PEN_BOX.x0 && x <= PEN_BOX.x1 && y >= PEN_BOX.y0 && y <= PEN_BOX.y1 ) continue;
+      if ( x === PACMAN_START.x && y === PACMAN_START.y ) continue;
+      candidates.push( { x, y } );
+    }
+  }
+
+  // 2 y 3. Elegir al azar, colocar y descartar las cercanas (a < 8
+  // Manhattan). El pool (~200 celdas) nunca se agota antes de los 4.
+  for ( let placed = 0; placed < PELLET_COUNT && candidates.length > 0; placed++ ) {
+    const chosen = candidates[ Math.floor( Math.random() * candidates.length ) ];
+    grid[ chosen.y ][ chosen.x ] = 4;
+    for ( let i = candidates.length - 1; i >= 0; i-- ) {
+      const c = candidates[ i ];
+      if ( Math.abs( c.x - chosen.x ) + Math.abs( c.y - chosen.y ) < 8 ) {
+        candidates.splice( i, 1 );
+      }
+    }
+  }
+}
+
 // Crea una partida nueva. Copia MAZE (pristino) a game.grid para poder comer
 // dots sin destruir el original, y reiniciar.
 function createGame() {
   const grid = MAZE.map( ( row ) => row.slice() );
   // La celda de inicio de Pacman arranca sin dot.
   grid[ PACMAN_START.y ][ PACMAN_START.x ] = 0;
+  placePellets( grid );
 
   let dots = 0;
-  for ( const row of grid ) for ( const v of row ) if ( v === 2 ) dots++;
+  for ( const row of grid ) for ( const v of row ) if ( v === 2 || v === 4 ) dots++;
 
   return {
     state: 'start',
@@ -116,6 +159,12 @@ function movePacman( game ) {
     if ( grid[ p.y ][ p.x ] === 2 ) {
       grid[ p.y ][ p.x ] = 0;
       game.score += 10;
+      game.dotsRemaining--;
+    }
+    // Comer power pellet. Aun sin asustar (paso 2 de SPEC 03): solo puntos.
+    if ( grid[ p.y ][ p.x ] === 4 ) {
+      grid[ p.y ][ p.x ] = 0;
+      game.score += PELLET_SCORE;
       game.dotsRemaining--;
     }
     // Si no puede seguir, se detiene en la celda.
