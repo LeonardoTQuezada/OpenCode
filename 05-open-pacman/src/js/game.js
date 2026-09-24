@@ -366,16 +366,32 @@ function update( game ) {
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
-  for ( const g of game.ghosts ) {
-    if ( collides( game.pacman, g ) ) {
-      game.lives--;
-      if ( game.lives <= 0 ) {
-        game.state = 'lost';
-        return;
-      }
-      resetPositions( game );
-      break;
+  for ( let i = 0; i < game.ghosts.length; i++ ) {
+    const g = game.ghosts[ i ];
+    if ( !collides( game.pacman, g ) ) continue;
+
+    // Fantasma liberado y asustado: Pac-Man se lo come. Puntua por la
+    // secuencia 200/400/800/1600 y el fantasma vuelve a la pen; se re-libera
+    // solo con su regla de SPEC 01/02 (creciendo con color normal).
+    if ( g.released && g.frightened ) {
+      game.score += FRIGHT_SCORES[ Math.min( game.frightSeq, 3 ) ];
+      game.frightSeq++;
+      g.released = false;
+      g.frightened = false;
+      g.x = GHOST_STARTS[ i ].x;
+      g.y = GHOST_STARTS[ i ].y;
+      g.dir = 'up';
+      continue; // seguir comprobando el resto de fantasmas
     }
+
+    // Colision normal: pierde una vida.
+    game.lives--;
+    if ( game.lives <= 0 ) {
+      game.state = 'lost';
+      return;
+    }
+    resetPositions( game );
+    break;
   }
 
   if ( game.dotsRemaining <= 0 ) game.state = 'won';
