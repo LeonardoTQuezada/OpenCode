@@ -222,9 +222,18 @@ function resetPositions( game ) {
   p.dir = 'left';
   p.nextDir = null;
   game.ghosts.forEach( ( g, i ) => {
-    g.x = GHOST_STARTS[ i ].x;
-    g.y = GHOST_STARTS[ i ].y;
-    g.dir = 'up';
+    if ( g.released ) {
+      // Liberados: reaparecen en el spawn del pasillo con su direccion,
+      // conservando `released` (no re-ejecutan la secuencia de liberacion).
+      g.x = g.spawn.x;
+      g.y = g.spawn.y;
+      g.dir = g.spawn.dir;
+    } else {
+      // No liberados: vuelven a su celda de la pen.
+      g.x = GHOST_STARTS[ i ].x;
+      g.y = GHOST_STARTS[ i ].y;
+      g.dir = 'up';
+    }
   } );
 }
 
