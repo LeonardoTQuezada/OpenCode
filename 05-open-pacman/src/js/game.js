@@ -11,7 +11,17 @@ const DIRS = {
 const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
 
 const PACMAN_SPEED = 0.125; // 1/8 celda/frame -> alinea cada 8 frames
-const GHOST_SPEED = 0.1;    // 1/10 celda/frame
+
+// Agenda de fases scatter/chase (duraciones en frames). La ultima es chase
+// indefinida (Infinity nunca llega a 0 al decrementar).
+const MODE_SCHEDULE = [
+  { mode: 'scatter', frames: 420 },  // 7 s
+  { mode: 'chase',   frames: 1200 }, // 20 s
+  { mode: 'scatter', frames: 420 },  // 7 s
+  { mode: 'chase',   frames: 1200 }, // 20 s
+  { mode: 'scatter', frames: 300 },  // 5 s
+  { mode: 'chase',   frames: Infinity },
+];
 
 // Crea una partida nueva. Copia MAZE (pristino) a game.grid para poder comer
 // dots sin destruir el original, y reiniciar.
@@ -28,6 +38,9 @@ function createGame() {
     score: 0,
     lives: 3,
     dotsRemaining: dots,
+    frameCount: 0,   // para liberacion por tiempo
+    totalDots: dots, // para liberacion por dots
+    ghostMode: { index: 0, mode: 'scatter', timer: 420 },
     grid,
     pacman: {
       x: PACMAN_START.x,
@@ -40,8 +53,10 @@ function createGame() {
       x: g.x,
       y: g.y,
       dir: 'up',
-      speed: GHOST_SPEED,
+      speed: g.speed,
       kind: g.kind,
+      corner: g.corner,
+      released: g.release === 'immediate',
     } ) ),
   };
 }
@@ -110,38 +125,77 @@ function movePacman( game ) {
   wrapTunnel( p, width );
 }
 
-function decideGhost( game, g ) {
-  const grid = game.grid;
+// Celda redondeada de Pac-Man (objetivo base de la mayoria de fantasmas).
+function pacmanCell( game ) {
   const p = game.pacman;
+  return { x: Math.round( p.x ), y: Math.round( p.y ) };
+}
 
+// Celda a `tiles` posiciones delante de Pac-Man en su dir, recortada al grid.
+function aheadCell( pacman, tiles ) {
+  const d = DIRS[ pacman.dir ] || { x: 0, y: 0 };
+  return {
+    x: Math.max( 0, Math.min( MAZE[ 0 ].length - 1, Math.round( pacman.x ) + d.x * tiles ) ),
+    y: Math.max( 0, Math.min( MAZE.length - 1, Math.round( pacman.y ) + d.y * tiles ) ),
+  };
+}
+
+// Celda para el flanker: 2·P − B, con P dos celdas delante del pacman y B la
+// celda del chaser. Sin chaser devuelve P.
+function flankCell( game ) {
+  const P = aheadCell( game.pacman, 2 );
+  const chaser = game.ghosts.find( ( g ) => g.kind === 'chaser' );
+  if ( !chaser ) return P;
+  const B = { x: Math.round( chaser.x ), y: Math.round( chaser.y ) };
+  return {
+    x: Math.max( 0, Math.min( MAZE[ 0 ].length - 1, 2 * P.x - B.x ) ),
+    y: Math.max( 0, Math.min( MAZE.length - 1, 2 * P.y - B.y ) ),
+  };
+}
+
+// Objetivo de cada fantasma segun su kind. En scatter, todos a su esquina.
+function ghostTarget( game, g ) {
+  if ( game.ghostMode.mode === 'scatter' ) return g.corner;
+  if ( g.kind === 'chaser' ) return pacmanCell( game );
+  if ( g.kind === 'ambusher' ) return aheadCell( game.pacman, 4 );
+  if ( g.kind === 'flanker' ) return flankCell( game );
+  const pc = pacmanCell( game );
+  const dist = Math.abs( Math.round( g.x ) - pc.x ) + Math.abs( Math.round( g.y ) - pc.y );
+  return dist < 8 ? g.corner : pc;
+}
+
+// Greedy Manhattan: elige el dir (sin volver atras) que mas reduce la
+// distancia al objetivo. Es el criterio del hunter original, extraido.
+function chooseByTarget( game, g, target ) {
+  const grid = game.grid;
   const options = Object.keys( DIRS ).filter(
     ( dir ) => dir !== OPPOSITE[ g.dir ] && canMove( grid, g.x, g.y, dir, 'ghost' )
   );
   // Sin salida (callejon): permitir el giro de 180.
-  const choices = options.length ? options : [ '' + OPPOSITE[ g.dir ] ];
+  const choices = options.length ? options : [ OPPOSITE[ g.dir ] ];
 
-  if ( g.kind === 'hunter' ) {
-    const px = Math.round( p.x );
-    const py = Math.round( p.y );
-    let best = choices[ 0 ];
-    let bestDist = Infinity;
-    for ( const dir of choices ) {
-      const d = DIRS[ dir ];
-      const nx = g.x + d.x;
-      const ny = g.y + d.y;
-      const dist = Math.abs( nx - px ) + Math.abs( ny - py );
-      if ( dist < bestDist ) {
-        bestDist = dist;
-        best = dir;
-      }
+  let best = choices[ 0 ];
+  let bestDist = Infinity;
+  for ( const dir of choices ) {
+    const d = DIRS[ dir ];
+    const nx = g.x + d.x;
+    const ny = g.y + d.y;
+    const dist = Math.abs( nx - target.x ) + Math.abs( ny - target.y );
+    if ( dist < bestDist ) {
+      bestDist = dist;
+      best = dir;
     }
-    g.dir = best;
-  } else {
-    g.dir = choices[ Math.floor( Math.random() * choices.length ) ];
   }
+  return best;
+}
+
+function decideGhost( game, g ) {
+  g.dir = chooseByTarget( game, g, ghostTarget( game, g ) );
 }
 
 function moveGhost( game, g ) {
+  if ( !g.released ) return; // no liberado: espera quieto en la pen
+
   const grid = game.grid;
   const width = grid[ 0 ].length;
 
@@ -176,6 +230,29 @@ function collides( a, b ) {
 }
 
 function update( game ) {
+  game.frameCount++;
+
+  // Fases scatter/chase: decrementar el timer y pasar a la siguiente al llegar a 0.
+  const mode = game.ghostMode;
+  mode.timer--;
+  if ( mode.timer <= 0 ) {
+    const next = MODE_SCHEDULE[ mode.index + 1 ];
+    if ( next ) {
+      mode.index++;
+      mode.mode = next.mode;
+      mode.timer = next.frames;
+    }
+  }
+
+  // Liberar fantasmas que cumplen su condicion de salida (tiempo o dots).
+  game.ghosts.forEach( ( g, i ) => {
+    if ( g.released ) return;
+    const rule = GHOST_STARTS[ i ].release;
+    if ( rule === 'immediate' ) g.released = true;
+    else if ( rule.type === 'time' && game.frameCount >= rule.frames ) g.released = true;
+    else if ( rule.type === 'dots' && game.totalDots - game.dotsRemaining >= rule.count ) g.released = true;
+  } );
+
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
