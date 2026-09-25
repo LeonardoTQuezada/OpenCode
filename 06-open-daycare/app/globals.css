@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Fuentes */
+  --font-sans: var(--font-nunito);
+  --font-display: var(--font-fredoka);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* Fondos y superficies */
+  --color-cream: #f6ecdf;
+  --color-card: #fffdf9;
+  --color-card-border: #ece0d0;
+  --color-card-divider: #f0e6d8;
+  --color-divider: #e7dac8;
+  --color-fade: #f4ece1;
+  --color-photo-border: #dbcdba;
+  --color-photo-icon: #b0a290;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Tinta y texto */
+  --color-ink: #3f362e;
+  --color-body: #4a4038;
+  --color-muted: #a89a8b;
+  --color-faint: #94887b;
+  --color-nav: #6e6359;
+  --color-label: #8a7c6d;
+
+  /* Coral (acento) */
+  --color-coral: #e0654a;
+  --color-coral-strong: #d9583c;
+  --color-coral-deep: #c5503a;
+  --color-coral-soft: #fbe3d8;
+  --color-coral-start: #f4977e;
+  --color-coral-end: #ee8164;
+  --color-avatar: #f2937a;
+  --color-sun: #f8c3a8;
+
+  /* Badges */
+  --color-badge-logro-bg: #cfebd8;
+  --color-badge-logro: #3e9b6c;
+  --color-badge-actividad-bg: #c7e7f1;
+  --color-badge-actividad: #2e89a6;
+  --color-badge-anuncio-bg: #ccd8f4;
+  --color-badge-anuncio: #4e72c8;
+  --color-avatar-m-bg: #a9d9e8;
+  --color-avatar-m: #1f7a93;
+
+  /* Sombras */
+  --shadow-card: 0 4px 16px -12px rgb(120 90 60 / 0.5);
+  --shadow-composer: 0 4px 14px -10px rgb(120 90 60 / 0.4);
+  --shadow-button: 0 8px 18px -8px rgb(238 129 100 / 0.75);
 }

@@ -37,6 +37,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - /spec Usaremos esta habilidad para crear las especificaciones.
 - /spec-impl Usaremos esta skill para hacer las implementaciones.
 
+## Verificación de specs
+
+- Agente `spec-verifier` (`.opencode/agents/spec-verifier.md`): revisa una spec, contrasta cada criterio de `## Acceptance criteria` con el código y con capturas Playwright, corrige lo que haga falta y marca los checkboxes. Usa Context7 para buenas prácticas de Next.js y deja las capturas en `.playwright-mcp/`.
+- Comando `/verify-spec <spec>` (`.opencode/commands/verify-spec.md`): invoca ese agente. Ej.: `/verify-spec specs/01-feed-home.md` o `/verify-spec 01`.
+- Flujo: `/spec` → `/spec-impl` → implementar → `/verify-spec` → commit solo si los checks quedan en verde.
 
 ## Reglas de código
 
