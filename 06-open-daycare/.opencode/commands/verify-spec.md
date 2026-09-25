@@ -1,9 +1,10 @@
 ---
-description: Verifica, corrige y marca el Acceptance criteria de una spec
+description: Verifies the acceptance criteria of a spec — marks checkboxes, fixes code issues, and reports results.
 agent: spec-verifier
 ---
 
-Verifica la spec `specs/$1.md` (slug con formato `NN-slug`, p. ej. `01-feed-home`).
+
+Verify the acceptance criteria of the spec `$ARGUMENTS`.
 
 Aplica el flujo completo del agente spec-verifier:
 

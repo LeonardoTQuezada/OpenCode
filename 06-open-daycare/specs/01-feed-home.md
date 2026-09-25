@@ -69,15 +69,15 @@ type Post = {
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` sirve `/` con el feed completo sin errores en consola.
-- [ ] En desktop el layout coincide con `feed.png`: sidebar 248px fijo a la izquierda, columna central `max-width:760px`, fondo `#F6ECDF`.
-- [ ] El header muestra "GUARDERÍA · SALA SOLES", "Buenas, Caro" y "12 niños · martes 17 jun".
-- [ ] Se muestran las 3 tarjetas con texto, badge y conteos exactos: LOGRO (3 likes / 1 comentario), ACTIVIDAD (5/2 + placeholder "Foto · pintando con témperas" de 200px con borde dashed), ANUNCIO (8/0).
-- [ ] El sidebar muestra logo, botón "Nueva publicación" con gradiente coral, "Feed" activo con fondo `#FBE3D8` y texto `#D9583C`, y "Caro Giménez · Maestra · Soles".
-- [ ] Todos los enlaces de navegación son inertes (`href="#"`).
-- [ ] Fredoka y Nunito se sirven vía `next/font` (sin `<link>` externo a Google Fonts).
-- [ ] Por debajo de 768px el sidebar está oculto por defecto y una hamburguesa lo abre como drawer.
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
+- [x] `npm run dev` sirve `/` con el feed completo sin errores en consola.
+- [x] En desktop el layout coincide con `feed.png`: sidebar 248px fijo a la izquierda, columna central `max-width:760px`, fondo `#F6ECDF`.
+- [x] El header muestra "GUARDERÍA · SALA SOLES", "Buenas, Caro" y "12 niños · martes 17 jun".
+- [x] Se muestran las 3 tarjetas con texto, badge y conteos exactos: LOGRO (3 likes / 1 comentario), ACTIVIDAD (5/2 + placeholder "Foto · pintando con témperas" de 200px con borde dashed), ANUNCIO (8/0).
+- [x] El sidebar muestra logo, botón "Nueva publicación" con gradiente coral, "Feed" activo con fondo `#FBE3D8` y texto `#D9583C`, y "Caro Giménez · Maestra · Soles".
+- [x] Todos los enlaces de navegación son inertes (`href="#"`).
+- [x] Fredoka y Nunito se sirven vía `next/font` (sin `<link>` externo a Google Fonts).
+- [x] Por debajo de 768px el sidebar está oculto por defecto y una hamburguesa lo abre como drawer.
+- [x] `npm run lint` y `npm run build` terminan sin errores.
 
 ## Decisions
 
