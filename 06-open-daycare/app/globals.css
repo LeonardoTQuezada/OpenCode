@@ -43,8 +43,43 @@
   --color-avatar-m-bg: #a9d9e8;
   --color-avatar-m: #1f7a93;
 
+  /* Avatares de niños (SPEC 02) */
+  --color-kid-blue: #a9d9e8;
+  --color-kid-blue-ink: #1f7a93;
+  --color-kid-pink: #f4b8cc;
+  --color-kid-pink-ink: #c44a7a;
+  --color-kid-green: #b9dec4;
+  --color-kid-green-ink: #3e8b62;
+  --color-kid-yellow: #f4dc8e;
+  --color-kid-yellow-ink: #9a7b1e;
+  --color-kid-purple: #c9b6e8;
+  --color-kid-purple-ink: #7b5fc0;
+  --color-parent-blue: #a9c7e8;
+
+  /* Badges de la ficha de niños (SPEC 02) */
+  --color-tag-allergy-bg: #fbd8cc;
+  --color-tag-allergy: #d9684a;
+  --color-tag-link-bg: #f9d2de;
+  --color-tag-link: #c56486;
+  --color-status-active-bg: #cfebd8;
+  --color-status-active: #3e9b6c;
+  --color-status-pending-bg: #f7e7a6;
+  --color-status-pending: #9a7b1e;
+
+  /* Tarjeta de alergias del perfil (SPEC 02) */
+  --color-alert-bg: #fbdad6;
+  --color-alert-icon-bg: #f4a8a0;
+  --color-alert-title: #c5413a;
+  --color-alert-body: #b25249;
+
+  /* Detalles de la ficha de niños (SPEC 02) */
+  --color-chevron: #cbb89f;
+  --color-add-dashed: #d8cbba;
+  --color-placeholder: #b6a99b;
+
   /* Sombras */
   --shadow-card: 0 4px 16px -12px rgb(120 90 60 / 0.5);
   --shadow-composer: 0 4px 14px -10px rgb(120 90 60 / 0.4);
   --shadow-button: 0 8px 18px -8px rgb(238 129 100 / 0.75);
+  --shadow-kid: 0 4px 14px -12px rgb(120 90 60 / 0.5);
 }

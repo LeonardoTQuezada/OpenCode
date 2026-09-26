@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { MenuIcon } from "./icons";
-import { SidebarContents } from "./sidebar";
+import { SidebarContents, type NavKey } from "./sidebar";
+
+type MobileNavProps = {
+  active: NavKey | null;
+};
 
 /** Barra superior móvil con hamburguesa que abre el sidebar como drawer
  *  (reutiliza `SidebarContents`). Visible solo por debajo de 768px. */
-export function MobileNav() {
+export function MobileNav({ active }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   // Cerrar con la tecla Escape
@@ -68,7 +72,7 @@ export function MobileNav() {
             >
               ✕
             </button>
-            <SidebarContents />
+            <SidebarContents active={active} />
           </div>
         </div>
       )}
