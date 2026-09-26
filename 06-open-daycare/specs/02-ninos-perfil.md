@@ -1,6 +1,6 @@
 # SPEC 02 — Pantallas de Niños y perfil de niño
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-09-26
 > **Objetivo:** Replicar las pantallas `references/pantallas/ninos.dc.html` y `references/pantallas/perfil-nino.dc.html` como rutas `/kids` y `/kids/mateo`, solo interfaces y componentes, sin datos reales.
@@ -101,24 +101,24 @@ Convenios:
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` sirve `/kids` sin errores en consola.
-- [ ] `/kids` muestra exactamente 8 tarjetas en el orden del mockup, con nombre, edad, `parentLabel` y badge ("MANÍ", "VINCULAR", "LACTOSA") idénticos al template.
-- [ ] La grilla de `/kids` tiene 2 columnas en desktop y 1 columna por debajo de 768px.
-- [ ] Al escribir "sof" en el buscador solo queda visible la tarjeta de Sofía Méndez.
-- [ ] Al escribir "zzz" no queda ninguna tarjeta y se muestra el texto "Sin resultados".
-- [ ] Al pasar el cursor sobre una tarjeta su borde pasa a `#F2A78E` y se desplaza 2px hacia arriba en 150ms.
-- [ ] El botón "Agregar niño" de `/kids` apunta a `/add-child`.
-- [ ] `npm run dev` sirve `/kids/mateo` y el back link "Volver a Niños" apunta a `/kids`.
-- [ ] `/kids/mateo` muestra avatar de 84px, "Mateo Fernández", "3 años · Sala Soles" y botón "Editar" → `/add-child`.
-- [ ] La tarjeta de alergias muestra "Alergia al maní. Evitar frutos secos. Lleva inhalador en la mochila." sobre fondo `#FBDAD6`.
-- [ ] Las filas de datos muestran "Fecha de nacimiento → 12 mar 2022", "Sala → Soles", "Ingreso → feb 2025".
-- [ ] La columna derecha de `/kids/mateo` mide 300px en desktop y contiene: "Resumen del día" → `/day-summary`, Lucía Fernández con badge ACTIVA y Diego Fernández con badge PENDIENTE, y "Vincular otro padre" → `/link-parent`.
-- [ ] En `/kids` y `/kids/mateo` el ítem "Niños" del sidebar está activo (fondo `#FBE3D8`, texto `#D9583C`, peso 800) y en `/` lo está "Feed".
-- [ ] El nav del sidebar apunta a `/`, `/kids`, `/notices`, `/my-account`; el logo a `/`, logout a `/login` y "Nueva publicación" a `/create-post`.
-- [ ] `/add-child`, `/day-summary`, `/link-parent`, `/create-post`, `/notices`, `/my-account` y `/login` renderizan sidebar con `active` correcto y un `h1` con su título; todas devuelven 200.
-- [ ] Por debajo de 768px el sidebar está oculto y la hamburguesa abre el drawer en `/kids` y `/kids/mateo`.
-- [ ] `/` sigue renderizando el feed igual que antes (regresión de SPEC 01).
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
+- [x] `npm run dev` sirve `/kids` sin errores en consola.
+- [x] `/kids` muestra exactamente 8 tarjetas en el orden del mockup, con nombre, edad, `parentLabel` y badge ("MANÍ", "VINCULAR", "LACTOSA") idénticos al template.
+- [x] La grilla de `/kids` tiene 2 columnas en desktop y 1 columna por debajo de 768px.
+- [x] Al escribir "sof" en el buscador solo queda visible la tarjeta de Sofía Méndez.
+- [x] Al escribir "zzz" no queda ninguna tarjeta y se muestra el texto "Sin resultados".
+- [x] Al pasar el cursor sobre una tarjeta su borde pasa a `#F2A78E` y se desplaza 2px hacia arriba en 150ms.
+- [x] El botón "Agregar niño" de `/kids` apunta a `/add-child`.
+- [x] `npm run dev` sirve `/kids/mateo` y el back link "Volver a Niños" apunta a `/kids`.
+- [x] `/kids/mateo` muestra avatar de 84px, "Mateo Fernández", "3 años · Sala Soles" y botón "Editar" → `/add-child`.
+- [x] La tarjeta de alergias muestra "Alergia al maní. Evitar frutos secos. Lleva inhalador en la mochila." sobre fondo `#FBDAD6`.
+- [x] Las filas de datos muestran "Fecha de nacimiento → 12 mar 2022", "Sala → Soles", "Ingreso → feb 2025".
+- [x] La columna derecha de `/kids/mateo` mide 300px en desktop y contiene: "Resumen del día" → `/day-summary`, Lucía Fernández con badge ACTIVA y Diego Fernández con badge PENDIENTE, y "Vincular otro padre" → `/link-parent`.
+- [x] En `/kids` y `/kids/mateo` el ítem "Niños" del sidebar está activo (fondo `#FBE3D8`, texto `#D9583C`, peso 800) y en `/` lo está "Feed".
+- [x] El nav del sidebar apunta a `/`, `/kids`, `/notices`, `/my-account`; el logo a `/`, logout a `/login` y "Nueva publicación" a `/create-post`.
+- [x] `/add-child`, `/day-summary`, `/link-parent`, `/create-post`, `/notices`, `/my-account` y `/login` renderizan sidebar con `active` correcto y un `h1` con su título; todas devuelven 200.
+- [x] Por debajo de 768px el sidebar está oculto y la hamburguesa abre el drawer en `/kids` y `/kids/mateo`.
+- [x] `/` sigue renderizando el feed igual que antes (regresión de SPEC 01).
+- [x] `npm run lint` y `npm run build` terminan sin errores.
 
 ## Decisions
 

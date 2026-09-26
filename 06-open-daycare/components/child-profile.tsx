@@ -34,15 +34,16 @@ export function ChildProfileView({ profile }: { profile: ChildProfile }) {
       <div className="flex flex-wrap items-start gap-[26px]">
         {/* Columna principal */}
         <div className="flex min-w-[300px] flex-1 flex-col gap-[18px]">
-          {/* Cabecera */}
-          <div className="flex items-center gap-[18px]">
+          {/* Cabecera. En móvil (<640px) "Editar" pasa a su propia fila
+               porque con el avatar de 84px no queda ancho para el nombre. */}
+          <div className="flex flex-wrap items-center gap-[18px]">
             <Avatar
               label={profile.initial}
               size={84}
               bg="bg-kid-blue"
               ink="text-kid-blue-ink"
             />
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-[1_1_180px]">
               <h1 className="font-display text-[28px] font-semibold leading-[1.2] text-ink">
                 {profile.name}
               </h1>
@@ -50,7 +51,7 @@ export function ChildProfileView({ profile }: { profile: ChildProfile }) {
             </div>
             <Link
               href="/add-child"
-              className="shrink-0 rounded-[12px] border-[1.5px] border-card-border bg-card px-4 py-[9px] text-[14px] font-bold text-nav"
+              className="ml-auto shrink-0 rounded-[12px] border-[1.5px] border-card-border bg-card px-4 py-[9px] text-[14px] font-bold text-nav"
             >
               Editar
             </Link>
