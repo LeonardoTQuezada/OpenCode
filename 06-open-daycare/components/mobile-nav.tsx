@@ -5,7 +5,7 @@ import { MenuIcon } from "./icons";
 import { SidebarContents, type NavKey } from "./sidebar";
 
 type MobileNavProps = {
-  active: NavKey;
+  active: NavKey | null;
 };
 
 /** Barra superior móvil con hamburguesa que abre el sidebar como drawer

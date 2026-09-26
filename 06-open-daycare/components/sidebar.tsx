@@ -27,7 +27,8 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 type SidebarContentsProps = {
-  active: NavKey;
+  /** Ítem resaltado, o `null` cuando la pantalla no pertenece al nav (p. ej. /login). */
+  active: NavKey | null;
 };
 
 /** Contenido compartido del sidebar (logo, botón, nav y tarjeta de usuario).
@@ -106,7 +107,7 @@ export function SidebarContents({ active }: SidebarContentsProps) {
 }
 
 type SidebarProps = {
-  active: NavKey;
+  active: NavKey | null;
 };
 
 /** Sidebar de escritorio (oculto por debajo de 768px). */
