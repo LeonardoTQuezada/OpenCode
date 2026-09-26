@@ -75,6 +75,7 @@
   /* Detalles de la ficha de niños (SPEC 02) */
   --color-chevron: #cbb89f;
   --color-add-dashed: #d8cbba;
+  --color-placeholder: #b6a99b;
 
   /* Sombras */
   --shadow-card: 0 4px 16px -12px rgb(120 90 60 / 0.5);
