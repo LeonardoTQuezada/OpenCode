@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   BellIcon,
   HomeIcon,
@@ -35,7 +36,7 @@ export function SidebarContents({ active }: SidebarContentsProps) {
   return (
     <>
       {/* Logo */}
-      <a
+      <Link
         href="/"
         className="flex items-center gap-[11px] px-2 pb-[22px] pt-1"
       >
@@ -50,21 +51,21 @@ export function SidebarContents({ active }: SidebarContentsProps) {
             Sala Soles
           </span>
         </span>
-      </a>
+      </Link>
 
       {/* Nueva publicación */}
-      <a
+      <Link
         href="/create-post"
         className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold leading-[1.36] text-white shadow-button"
       >
         <PlusIcon width={17} height={17} />
         Nueva publicación
-      </a>
+      </Link>
 
       {/* Navegación */}
       <nav className="flex flex-1 flex-col gap-1">
         {NAV_ITEMS.map(({ key, label, href, icon: Icon }) => (
-          <a
+          <Link
             key={key}
             href={href}
             className={`flex items-center gap-3 rounded-xl px-3 py-[11px] text-[14.5px] leading-[1.36] ${
@@ -75,7 +76,7 @@ export function SidebarContents({ active }: SidebarContentsProps) {
           >
             <Icon width={19} height={19} />
             {label}
-          </a>
+          </Link>
         ))}
       </nav>
 
@@ -91,13 +92,13 @@ export function SidebarContents({ active }: SidebarContentsProps) {
             </span>
             <span className="block text-xs leading-[1.36] text-muted">Maestra · Soles</span>
           </span>
-          <a
+          <Link
             href="/login"
             title="Cerrar sesión"
             className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-cream text-faint"
           >
             <LogoutIcon width={16} height={16} />
-          </a>
+          </Link>
         </div>
       </div>
     </>
