@@ -8,27 +8,35 @@ import {
   UserIcon,
 } from "./icons";
 
+/** Ítem de navegación activo en el sidebar. */
+export type NavKey = "feed" | "kids" | "notices" | "account";
+
 type NavItem = {
+  key: NavKey;
   label: string;
+  href: string;
   icon: typeof HomeIcon;
-  active?: boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Feed", icon: HomeIcon, active: true },
-  { label: "Niños", icon: PeopleIcon },
-  { label: "Avisos", icon: BellIcon },
-  { label: "Mi cuenta", icon: UserIcon },
+  { key: "feed", label: "Feed", href: "/", icon: HomeIcon },
+  { key: "kids", label: "Niños", href: "/kids", icon: PeopleIcon },
+  { key: "notices", label: "Avisos", href: "/notices", icon: BellIcon },
+  { key: "account", label: "Mi cuenta", href: "/my-account", icon: UserIcon },
 ];
+
+type SidebarContentsProps = {
+  active: NavKey;
+};
 
 /** Contenido compartido del sidebar (logo, botón, nav y tarjeta de usuario).
  *  Lo usa el aside de escritorio y el drawer móvil. */
-export function SidebarContents() {
+export function SidebarContents({ active }: SidebarContentsProps) {
   return (
     <>
       {/* Logo */}
       <a
-        href="#"
+        href="/"
         className="flex items-center gap-[11px] px-2 pb-[22px] pt-1"
       >
         <span className="flex size-[38px] shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(155deg,#F8C3A8,#F2937A)]">
@@ -46,7 +54,7 @@ export function SidebarContents() {
 
       {/* Nueva publicación */}
       <a
-        href="#"
+        href="/create-post"
         className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold leading-[1.36] text-white shadow-button"
       >
         <PlusIcon width={17} height={17} />
@@ -55,12 +63,12 @@ export function SidebarContents() {
 
       {/* Navegación */}
       <nav className="flex flex-1 flex-col gap-1">
-        {NAV_ITEMS.map(({ label, icon: Icon, active }) => (
+        {NAV_ITEMS.map(({ key, label, href, icon: Icon }) => (
           <a
-            key={label}
-            href="#"
+            key={key}
+            href={href}
             className={`flex items-center gap-3 rounded-xl px-3 py-[11px] text-[14.5px] leading-[1.36] ${
-              active
+              key === active
                 ? "bg-coral-soft font-extrabold text-coral-strong"
                 : "font-semibold text-nav"
             }`}
@@ -84,7 +92,7 @@ export function SidebarContents() {
             <span className="block text-xs leading-[1.36] text-muted">Maestra · Soles</span>
           </span>
           <a
-            href="#"
+            href="/login"
             title="Cerrar sesión"
             className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-cream text-faint"
           >
@@ -96,11 +104,15 @@ export function SidebarContents() {
   );
 }
 
+type SidebarProps = {
+  active: NavKey;
+};
+
 /** Sidebar de escritorio (oculto por debajo de 768px). */
-export function Sidebar() {
+export function Sidebar({ active }: SidebarProps) {
   return (
     <aside className="sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col border-r border-card-border bg-card px-4 py-6 md:flex">
-      <SidebarContents />
+      <SidebarContents active={active} />
     </aside>
   );
 }

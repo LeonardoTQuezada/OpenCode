@@ -52,9 +52,9 @@ const POSTS: Post[] = [
 export default function Home() {
   return (
     <div className="flex min-h-screen bg-cream">
-      <Sidebar />
+      <Sidebar active="feed" />
       <div className="flex min-w-0 flex-1 flex-col md:h-screen md:overflow-y-auto">
-        <MobileNav />
+        <MobileNav active="feed" />
         <main className="w-full max-w-[760px] flex-1 px-10 pb-20 pt-[34px] mx-auto">
           {/* Header */}
           <div className="mb-6">
