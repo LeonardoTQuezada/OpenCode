@@ -49,12 +49,10 @@ export function ChildProfileView({ profile }: { profile: ChildProfile }) {
               </h1>
               <p className="mt-[3px] text-[15px] text-faint">{profile.ageRoom}</p>
             </div>
-            <Link
-              href="/add-child"
-              className="ml-auto shrink-0 rounded-[12px] border-[1.5px] border-card-border bg-card px-4 py-[9px] text-[14px] font-bold text-nav"
-            >
+            {/* Inerte hasta su propia spec: SPEC 04 eliminó `/add-child`. */}
+            <span className="ml-auto shrink-0 rounded-[12px] border-[1.5px] border-card-border bg-card px-4 py-[9px] text-[14px] font-bold text-nav">
               Editar
-            </Link>
+            </span>
           </div>
 
           {/* Alergias y notas */}
