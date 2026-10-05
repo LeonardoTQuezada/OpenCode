@@ -111,35 +111,35 @@ Convenios:
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` sirve `/kids` sin errores en consola.
-- [ ] El botón "Agregar niño" ya no navega: la URL sigue en `/kids` y el modal queda visible.
-- [ ] El modal muestra el header "Cancelar" · "Agregar niño" · "Guardar" y los labels "NOMBRE COMPLETO", "FECHA DE NACIMIENTO", "SALA", "ALERGIAS (ETIQUETAS)" y "NOTAS MÉDICAS".
-- [ ] Los tres campos obligatorios nacen vacíos, sin valor por defecto.
-- [ ] Escribir `12032022` en la fecha deja el campo en `12/03/2022` (solo dígitos, auto-barras, máximo 10 caracteres).
-- [ ] `31022022` muestra el mensaje "Usá una fecha válida en formato dd/mm/aaaa." en `#C5503A` bajo el campo.
-- [ ] Una fecha futura muestra "La fecha no puede ser futura." bajo el campo.
-- [ ] `01/01/2000` muestra "El niño debe tener máximo 6 años." bajo el campo.
-- [ ] El botón de calendario abre el date picker nativo del navegador y, al elegir una fecha, el campo queda en `dd/mm/aaaa`.
-- [ ] El select de sala muestra exactamente 6 opciones: Soles, Lunas, Estrellas, Nubes, Mariposas y Cielo, y arranca en "Elegí una sala".
-- [ ] Con el formulario vacío, "Guardar" no cierra el modal y muestra los 3 mensajes de error en `#C5503A`.
-- [ ] Con nombre, fecha y sala válidos, "Guardar" cierra el modal y agrega la tarjeta al final de la grilla.
-- [ ] El contador de "SALA SOLES" pasa de "8 niños" a "9 niños".
-- [ ] La tarjeta nueva muestra el nombre completo, la edad calculada ("3 años", "1 año" en singular o "5 meses" si tiene menos de un año) y "sin padres vinculados".
-- [ ] Si "ALERGIAS (ETIQUETAS)" se completó con "Maní, Lactosa", la tarjeta nueva muestra el badge rojo "MANÍ"; si se dejó vacía, muestra el chevron derecho.
-- [ ] Agregar dos niños con el mismo nombre muestra dos tarjetas (slugs distintos y sin error de `key` en consola).
-- [ ] El buscador filtra también a los niños nuevos: con su nombre queda solo su tarjeta y con "zzz" aparece "Sin resultados".
-- [ ] La tarjeta del niño nuevo navega a `/kids/mateo`.
-- [ ] "Cancelar" cierra el modal sin agregar nada.
-- [ ] La tecla Esc cierra el modal sin agregar nada.
-- [ ] Hacer clic en el fondo oscuro cierra el modal sin agregar nada.
-- [ ] Mientras el modal está abierto, la página de fondo no hace scroll.
-- [ ] Al enfocar cualquier campo del modal su borde pasa a `#F2A78E`.
-- [ ] En desktop el modal está centrado con ancho máximo 520px; por debajo de 768px ocupa casi todo el ancho.
-- [ ] `/kids/mateo` muestra "Editar" con el mismo texto y estilo pero sin enlace a `/add-child`.
-- [ ] `/add-child` responde 404 y ningún archivo del proyecto la referencia.
-- [ ] `/`, `/kids` y `/kids/mateo` se ven igual que antes (regresión SPEC 01 y 02), salvo el comportamiento del botón "Agregar niño".
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
-- [ ] Las capturas quedan guardadas en `.playwright-mcp/`.
+- [x] `npm run dev` sirve `/kids` sin errores en consola.
+- [x] El botón "Agregar niño" ya no navega: la URL sigue en `/kids` y el modal queda visible.
+- [x] El modal muestra el header "Cancelar" · "Agregar niño" · "Guardar" y los labels "NOMBRE COMPLETO", "FECHA DE NACIMIENTO", "SALA", "ALERGIAS (ETIQUETAS)" y "NOTAS MÉDICAS".
+- [x] Los tres campos obligatorios nacen vacíos, sin valor por defecto.
+- [x] Escribir `12032022` en la fecha deja el campo en `12/03/2022` (solo dígitos, auto-barras, máximo 10 caracteres).
+- [x] `31022022` muestra el mensaje "Usá una fecha válida en formato dd/mm/aaaa." en `#C5503A` bajo el campo.
+- [x] Una fecha futura muestra "La fecha no puede ser futura." bajo el campo.
+- [x] `01/01/2000` muestra "El niño debe tener máximo 6 años." bajo el campo.
+- [x] El botón de calendario abre el date picker nativo del navegador y, al elegir una fecha, el campo queda en `dd/mm/aaaa`.
+- [x] El select de sala muestra exactamente 6 opciones: Soles, Lunas, Estrellas, Nubes, Mariposas y Cielo, y arranca en "Elegí una sala".
+- [x] Con el formulario vacío, "Guardar" no cierra el modal y muestra los 3 mensajes de error en `#C5503A`.
+- [x] Con nombre, fecha y sala válidos, "Guardar" cierra el modal y agrega la tarjeta al final de la grilla.
+- [x] El contador de "SALA SOLES" pasa de "8 niños" a "9 niños".
+- [x] La tarjeta nueva muestra el nombre completo, la edad calculada ("3 años", "1 año" en singular o "5 meses" si tiene menos de un año) y "sin padres vinculados".
+- [x] Si "ALERGIAS (ETIQUETAS)" se completó con "Maní, Lactosa", la tarjeta nueva muestra el badge rojo "MANÍ"; si se dejó vacía, muestra el chevron derecho.
+- [x] Agregar dos niños con el mismo nombre muestra dos tarjetas (slugs distintos y sin error de `key` en consola).
+- [x] El buscador filtra también a los niños nuevos: con su nombre queda solo su tarjeta y con "zzz" aparece "Sin resultados".
+- [x] La tarjeta del niño nuevo navega a `/kids/mateo`.
+- [x] "Cancelar" cierra el modal sin agregar nada.
+- [x] La tecla Esc cierra el modal sin agregar nada.
+- [x] Hacer clic en el fondo oscuro cierra el modal sin agregar nada.
+- [x] Mientras el modal está abierto, la página de fondo no hace scroll.
+- [x] Al enfocar cualquier campo del modal su borde pasa a `#F2A78E`.
+- [x] En desktop el modal está centrado con ancho máximo 520px; por debajo de 768px ocupa casi todo el ancho.
+- [x] `/kids/mateo` muestra "Editar" con el mismo texto y estilo pero sin enlace a `/add-child`.
+- [x] `/add-child` responde 404 y ningún archivo del proyecto la referencia.
+- [x] `/`, `/kids` y `/kids/mateo` se ven igual que antes (regresión SPEC 01 y 02), salvo el comportamiento del botón "Agregar niño".
+- [x] `npm run lint` y `npm run build` terminan sin errores.
+- [x] Las capturas quedan guardadas en `.playwright-mcp/`.
 
 ## Decisions
 
@@ -164,6 +164,7 @@ Convenios:
 - **No:** `KidsList` importando `KIDS` directamente: pasa a recibir `kids` por prop para que la lista sea una función del estado.
 - **No:** focus trap ni accesibilidad completa; se queda `role="dialog"` y `aria-modal` como mínimo.
 - **No:** header del modal como `<Link>` a ninguna parte: "Cancelar" es un botón que cierra.
+- **Sí:** corrección aplicada en la verificación: `ageLabel` singulariza los meses (`1 mes`, no `1 meses`); el resto de los formatos de edad ya cumplían el criterio.
 
 ## Risks
 

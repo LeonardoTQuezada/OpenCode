@@ -206,7 +206,10 @@ export function ageLabel(birthDate: string): string {
     (today.getFullYear() - birth.getFullYear()) * 12 + (today.getMonth() - birth.getMonth());
   if (today.getDate() < birth.getDate()) months -= 1;
 
-  if (months < 12) return `${Math.max(months, 0)} meses`;
+  if (months < 12) {
+    const safeMonths = Math.max(months, 0);
+    return `${safeMonths} ${safeMonths === 1 ? "mes" : "meses"}`;
+  }
 
   const years = Math.floor(months / 12);
   return years === 1 ? "1 año" : `${years} años`;
