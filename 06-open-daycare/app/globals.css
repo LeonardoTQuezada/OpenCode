@@ -87,10 +87,14 @@
   --color-consent-ink: #8a7234;
   --color-consent: #5fb97e;
 
+  /* Modal "Agregar niño" (SPEC 04) */
+  --color-modal-overlay: rgb(63 54 46 / 0.45);
+
   /* Sombras */
   --shadow-card: 0 4px 16px -12px rgb(120 90 60 / 0.5);
   --shadow-composer: 0 4px 14px -10px rgb(120 90 60 / 0.4);
   --shadow-button: 0 8px 18px -8px rgb(238 129 100 / 0.75);
   --shadow-kid: 0 4px 14px -12px rgb(120 90 60 / 0.5);
   --shadow-login: 0 10px 22px -8px rgb(238 129 100 / 0.7);
+  --shadow-modal: 0 20px 50px -24px rgb(63 54 46 / 0.35);
 }
