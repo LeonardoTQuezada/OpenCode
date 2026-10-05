@@ -3,6 +3,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { Sidebar } from "@/components/sidebar";
 import { KidsList } from "@/components/kids-list";
 import { PlusIcon } from "@/components/icons";
+import { KIDS } from "@/lib/kids";
 
 /** Listado de niños de la sala — ruta `/kids`. */
 export default function KidsPage() {
@@ -32,7 +33,7 @@ export default function KidsPage() {
           </div>
 
           {/* Buscador + encabezado + grilla */}
-          <KidsList />
+          <KidsList kids={KIDS} />
         </main>
       </div>
     </div>

@@ -1,19 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { KIDS } from "@/lib/kids";
+import type { Kid } from "@/lib/kids";
 import { KidCard } from "./kid-card";
 import { SearchIcon } from "./icons";
 
 /** Buscador + encabezado de sala + grilla de niños.
- *  Es el único componente cliente de SPEC 02 (filtra con `useState`). */
-export function KidsList() {
+ *  Recibe la lista por prop para que refleje el estado del padre
+ *  (SPEC 04 agrega niños desde el modal). */
+export function KidsList({ kids }: { kids: Kid[] }) {
   const [query, setQuery] = useState("");
 
   const term = query.trim().toLowerCase();
   const visibleKids = term
-    ? KIDS.filter((kid) => kid.name.toLowerCase().includes(term))
-    : KIDS;
+    ? kids.filter((kid) => kid.name.toLowerCase().includes(term))
+    : kids;
 
   return (
     <>
@@ -35,7 +36,7 @@ export function KidsList() {
         <span className="text-[12.5px] font-extrabold leading-[1.36] tracking-[0.8px] text-ink">
           SALA SOLES
         </span>
-        <span className="text-[13px] leading-[1.36] text-muted">{KIDS.length} niños</span>
+        <span className="text-[13px] leading-[1.36] text-muted">{kids.length} niños</span>
         <span className="h-px flex-1 bg-divider" />
       </div>
 
