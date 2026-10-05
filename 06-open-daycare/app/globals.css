@@ -77,9 +77,20 @@
   --color-add-dashed: #d8cbba;
   --color-placeholder: #b6a99b;
 
+  /* Pantallas públicas: login y activación (SPEC 03) */
+  --color-page: #fbf4ec;
+  --color-input-border: #eadfd0;
+  --color-input-focus: #f2a78e;
+  --color-panel-start: #f6a98e;
+  --color-panel-end: #ec7e62;
+  --color-consent-bg: #fbf1d6;
+  --color-consent-ink: #8a7234;
+  --color-consent: #5fb97e;
+
   /* Sombras */
   --shadow-card: 0 4px 16px -12px rgb(120 90 60 / 0.5);
   --shadow-composer: 0 4px 14px -10px rgb(120 90 60 / 0.4);
   --shadow-button: 0 8px 18px -8px rgb(238 129 100 / 0.75);
   --shadow-kid: 0 4px 14px -12px rgb(120 90 60 / 0.5);
+  --shadow-login: 0 10px 22px -8px rgb(238 129 100 / 0.7);
 }

@@ -321,3 +321,21 @@ export function AlertTriangleIcon(props: IconProps) {
     </svg>
   );
 }
+
+/** Palomita — checkbox de consentimiento de fotos (icono blanco). */
+export function CheckIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#fff"
+      strokeWidth={3}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
