@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SunIcon } from "@/components/icons";
 
 /** Pantalla pública de login (SPEC 03). Réplica de
@@ -67,29 +68,29 @@ export default function LoginPage() {
           />
 
           <div className="mb-5 text-right">
-            <a
+            <Link
               href="/forgot-password"
               className="cursor-pointer text-[13.5px] font-bold text-coral-deep"
             >
               ¿Olvidaste tu contraseña?
-            </a>
+            </Link>
           </div>
 
-          <a
+          <Link
             href="/"
             className="block w-full cursor-pointer rounded-[15px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] p-[15px] text-center text-[16px] font-extrabold text-white shadow-login"
           >
             Iniciar sesión
-          </a>
+          </Link>
 
           <p className="mt-6 mb-0 text-center text-[14.5px] text-faint">
             ¿Te invitó la guardería?{" "}
-            <a
+            <Link
               href="/activate-account"
               className="font-extrabold text-coral-deep"
             >
               Activá tu cuenta
-            </a>
+            </Link>
           </p>
         </div>
       </div>

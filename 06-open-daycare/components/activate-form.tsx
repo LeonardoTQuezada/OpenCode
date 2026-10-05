@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { INVITATION } from "@/lib/invitation";
 import { CheckIcon } from "./icons";
@@ -134,9 +135,9 @@ export function ActivateForm() {
 
       <p className="mt-[22px] mb-0 text-center text-[14.5px] text-faint">
         ¿Ya tenés cuenta?{" "}
-        <a href="/login" className="font-extrabold text-coral-deep">
+        <Link href="/login" className="font-extrabold text-coral-deep">
           Iniciar sesión
-        </a>
+        </Link>
       </p>
     </form>
   );

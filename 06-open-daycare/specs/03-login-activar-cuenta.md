@@ -1,6 +1,6 @@
 # SPEC 03 — Pantallas de Login y Activación de cuenta
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 02
 > **Fecha:** 2026-10-01
 > **Objetivo:** Replicar las pantallas `references/pantallas/login.dc.html` y `references/pantallas/activar-cuenta.dc.html` como rutas `/login` y `/activate-account`, sin el selector de rol y sin autenticación real.
@@ -70,27 +70,27 @@ Convenios:
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` sirve `/login` sin errores en consola.
-- [ ] `/login` renderiza los dos paneles: fondo `#FBF4EC`, panel izquierdo con degradado `155deg, #F6A98E 0%, #F2937A 45%, #EC7E62 100%`, logo "OpenDayCare", titular "El día de cada niño, compartido con su familia." y pie "🌿 Guardería Sala Soles".
-- [ ] `/login` NO muestra el bloque "INGRESO COMO" ni los botones "Personal" / "Familia".
-- [ ] El email de `/login` tiene por defecto `caro@opendaycare.com` y la contraseña usa placeholder "••••••••".
-- [ ] "¿Olvidaste tu contraseña?" apunta a `/forgot-password` y "Activá tu cuenta" apunta a `/activate-account`.
-- [ ] El botón "Iniciar sesión" navega a `/` sin validar nada.
-- [ ] Por debajo de 768px el panel izquierdo de `/login` no se muestra y el formulario ocupa el ancho.
-- [ ] `npm run dev` sirve `/activate-account` con `h1` "Bienvenida a OpenDayCare" y la tarjeta "Te invitaron a seguir a / Mateo · Sala Soles" (datos de `lib/invitation.ts`).
-- [ ] `/activate-account` muestra precargados el código `7K4P9`, el email `lucia.fernandez@gmail.com` y la contraseña.
-- [ ] El checkbox de consentimiento ("Autorizo a la guardería a tomar y compartir fotos de mi hijo dentro de la app.") nace marcado y alterna al hacer clic.
-- [ ] Con el código vacío, el botón "Activar mi cuenta" no navega y muestra un mensaje de error en rojo `#C5503A` bajo ese campo.
-- [ ] Con la contraseña vacía o con menos de 6 caracteres, no navega y muestra mensaje bajo ese campo.
-- [ ] Con el email sin `@`, no navega y muestra mensaje bajo ese campo.
-- [ ] Con todos los campos válidos, "Activar mi cuenta" navega a `/family-feed`.
-- [ ] Al enfocar cualquier input de `/login` o `/activate-account` su borde pasa a `#F2A78E`.
-- [ ] "¿Ya tenés cuenta? Iniciar sesión" de `/activate-account` apunta a `/login`.
-- [ ] `/forgot-password` responde 200, está centrada sin sidebar y muestra `h1` "Recuperar contraseña".
-- [ ] `/family-feed` responde 200 con sidebar (ítem "Feed" activo) e `h1` "Feed familiar".
-- [ ] El logout del sidebar en `/` y `/kids` sigue apuntando a `/login` (regresión SPEC 02).
-- [ ] `/` (feed) y `/kids` se ven igual que antes (regresión SPEC 01 y 02).
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
+- [x] `npm run dev` sirve `/login` sin errores en consola.
+- [x] `/login` renderiza los dos paneles: fondo `#FBF4EC`, panel izquierdo con degradado `155deg, #F6A98E 0%, #F2937A 45%, #EC7E62 100%`, logo "OpenDayCare", titular "El día de cada niño, compartido con su familia." y pie "🌿 Guardería Sala Soles".
+- [x] `/login` NO muestra el bloque "INGRESO COMO" ni los botones "Personal" / "Familia".
+- [x] El email de `/login` tiene por defecto `caro@opendaycare.com` y la contraseña usa placeholder "••••••••".
+- [x] "¿Olvidaste tu contraseña?" apunta a `/forgot-password` y "Activá tu cuenta" apunta a `/activate-account`.
+- [x] El botón "Iniciar sesión" navega a `/` sin validar nada.
+- [x] Por debajo de 768px el panel izquierdo de `/login` no se muestra y el formulario ocupa el ancho.
+- [x] `npm run dev` sirve `/activate-account` con `h1` "Bienvenida a OpenDayCare" y la tarjeta "Te invitaron a seguir a / Mateo · Sala Soles" (datos de `lib/invitation.ts`).
+- [x] `/activate-account` muestra precargados el código `7K4P9`, el email `lucia.fernandez@gmail.com` y la contraseña.
+- [x] El checkbox de consentimiento ("Autorizo a la guardería a tomar y compartir fotos de mi hijo dentro de la app.") nace marcado y alterna al hacer clic.
+- [x] Con el código vacío, el botón "Activar mi cuenta" no navega y muestra un mensaje de error en rojo `#C5503A` bajo ese campo.
+- [x] Con la contraseña vacía o con menos de 6 caracteres, no navega y muestra mensaje bajo ese campo.
+- [x] Con el email sin `@`, no navega y muestra mensaje bajo ese campo.
+- [x] Con todos los campos válidos, "Activar mi cuenta" navega a `/family-feed`.
+- [x] Al enfocar cualquier input de `/login` o `/activate-account` su borde pasa a `#F2A78E`.
+- [x] "¿Ya tenés cuenta? Iniciar sesión" de `/activate-account` apunta a `/login`.
+- [x] `/forgot-password` responde 200, está centrada sin sidebar y muestra `h1` "Recuperar contraseña".
+- [x] `/family-feed` responde 200 con sidebar (ítem "Feed" activo) e `h1` "Feed familiar".
+- [x] El logout del sidebar en `/` y `/kids` sigue apuntando a `/login` (regresión SPEC 02).
+- [x] `/` (feed) y `/kids` se ven igual que antes (regresión SPEC 01 y 02).
+- [x] `npm run lint` y `npm run build` terminan sin errores.
 
 ## Decisions
 
