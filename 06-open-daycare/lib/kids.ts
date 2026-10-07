@@ -215,6 +215,34 @@ export function ageLabel(birthDate: string): string {
   return years === 1 ? "1 año" : `${years} años`;
 }
 
+// Edad máxima que acepta la guardería.
+export const MAX_AGE_YEARS = 6;
+
+// Valida la fecha de nacimiento y devuelve el mensaje de error o undefined.
+// Vive en lib/ para que la comparta el modal "Agregar niño" (SPEC 04) y la
+// Server Action addKidAction (SPEC 05).
+export function validateBirthDate(value: string): string | undefined {
+  if (!value.trim()) return "Ingresá la fecha de nacimiento.";
+
+  const birth = parseBirthDate(value);
+  if (!birth) return "Usá una fecha válida en formato dd/mm/aaaa.";
+
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (birth.getTime() > startOfToday.getTime()) return "La fecha no puede ser futura.";
+
+  const oldestAllowed = new Date(
+    today.getFullYear() - MAX_AGE_YEARS,
+    today.getMonth(),
+    today.getDate(),
+  );
+  if (birth.getTime() < oldestAllowed.getTime()) {
+    return `El niño debe tener máximo ${MAX_AGE_YEARS} años.`;
+  }
+
+  return undefined;
+}
+
 // "Martina López" → "martina-lopez"; si ya existe → "martina-lopez-2".
 export function slugify(name: string, taken: string[]): string {
   const base =
