@@ -3,13 +3,16 @@
 import { useState } from "react";
 import type { Kid } from "@/lib/kids";
 import { KidCard } from "./kid-card";
+import { useFamily } from "./family-provider";
 import { SearchIcon } from "./icons";
 
 /** Buscador + encabezado de sala + grilla de niños.
  *  Recibe la lista por prop para que refleje el estado del padre
- *  (SPEC 04 agrega niños desde el modal). */
+ *  (SPEC 04 agrega niños desde el modal); el contador de padres de cada
+ *  tarjeta sale del contexto, que refleja data/family.json (SPEC 05). */
 export function KidsList({ kids }: { kids: Kid[] }) {
   const [query, setQuery] = useState("");
+  const { parentsOf } = useFamily();
 
   const term = query.trim().toLowerCase();
   const visibleKids = term
@@ -44,7 +47,11 @@ export function KidsList({ kids }: { kids: Kid[] }) {
       {visibleKids.length > 0 ? (
         <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
           {visibleKids.map((kid) => (
-            <KidCard key={kid.slug} kid={kid} />
+            <KidCard
+              key={kid.slug}
+              kid={kid}
+              parentCount={parentsOf(kid.slug).length}
+            />
           ))}
         </div>
       ) : (

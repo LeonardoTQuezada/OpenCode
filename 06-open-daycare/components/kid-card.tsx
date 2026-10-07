@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { parentLabel } from "@/lib/family";
 import type { Kid } from "@/lib/kids";
 import { Avatar } from "./avatar";
 import { ChevronRightIcon } from "./icons";
@@ -9,8 +10,9 @@ const TAG_STYLES: Record<NonNullable<Kid["tag"]>["kind"], string> = {
   link: "bg-tag-link-bg text-tag-link",
 };
 
-/** Tarjeta de un niño en el listado `/kids`. Todo el card enlaza al perfil. */
-export function KidCard({ kid }: { kid: Kid }) {
+/** Tarjeta de un niño en el listado `/kids`. Todo el card enlaza al perfil.
+ *  El contador de padres llega por prop: se deriva de data/family.json. */
+export function KidCard({ kid, parentCount }: { kid: Kid; parentCount: number }) {
   return (
     <Link
       href="/kids/mateo"
@@ -23,7 +25,7 @@ export function KidCard({ kid }: { kid: Kid }) {
           {kid.name}
         </span>
         <span className="block text-[13px] leading-[1.36] text-muted">
-          {kid.age} · {kid.parentLabel}
+          {kid.age} · {parentLabel(parentCount)}
         </span>
       </span>
 
