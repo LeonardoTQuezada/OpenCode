@@ -26,9 +26,12 @@ export type Kid = {
   room: string; // nombre de la sala, ej. "Soles"
   allergies?: string; // texto libre del modal, ej. "Maní, Lactosa"
   medicalNotes?: string; // texto libre del modal
+  birthDate?: string; // "12 mar 2022" — solo en los perfiles con ficha propia
+  joinedAt?: string; // "feb 2025" — idem
   avatarBg: string;
   avatarInk: string;
-  parentLabel: string;
+  // Sin parentLabel: el texto de padres se deriva del conteo en
+  // data/family.json con parentLabel() de lib/family.ts (SPEC 05).
   tag?: { label: string; kind: KidTagKind };
 };
 
@@ -42,7 +45,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-blue",
     avatarInk: "text-kid-blue-ink",
-    parentLabel: "2 padres vinculados",
     tag: { label: "MANÍ", kind: "allergy" },
   },
   {
@@ -53,7 +55,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-pink",
     avatarInk: "text-kid-pink-ink",
-    parentLabel: "1 padre vinculado",
   },
   {
     slug: "benjamin-ruiz",
@@ -63,7 +64,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-green",
     avatarInk: "text-kid-green-ink",
-    parentLabel: "2 padres vinculados",
   },
   {
     slug: "valentina-soto",
@@ -73,7 +73,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-yellow",
     avatarInk: "text-kid-yellow-ink",
-    parentLabel: "sin padres vinculados",
     tag: { label: "VINCULAR", kind: "link" },
   },
   {
@@ -84,7 +83,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-purple",
     avatarInk: "text-kid-purple-ink",
-    parentLabel: "1 padre vinculado",
     tag: { label: "LACTOSA", kind: "allergy" },
   },
   {
@@ -95,7 +93,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-pink",
     avatarInk: "text-kid-pink-ink",
-    parentLabel: "1 padre vinculado",
   },
   {
     slug: "lucas-romero",
@@ -105,7 +102,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-blue",
     avatarInk: "text-kid-blue-ink",
-    parentLabel: "1 padre vinculado",
   },
   {
     slug: "olivia-vega",
@@ -115,7 +111,6 @@ export const KIDS: Kid[] = [
     room: "Soles",
     avatarBg: "bg-kid-green",
     avatarInk: "text-kid-green-ink",
-    parentLabel: "1 padre vinculado",
   },
 ];
 
@@ -288,7 +283,6 @@ export function createKid(
     room: ROOMS.find((room) => room.id === input.roomId)?.name ?? "",
     avatarBg: palette.bg,
     avatarInk: palette.ink,
-    parentLabel: "sin padres vinculados",
   };
 
   if (allergies) kid.allergies = allergies;
