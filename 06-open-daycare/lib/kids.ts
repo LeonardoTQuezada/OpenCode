@@ -1,5 +1,5 @@
-// Datos mock de los niños de la sala. Sin persistencia ni API:
-// son constantes de presentación para las pantallas de SPEC 02 y SPEC 04.
+// Tipos y helpers de los niños de la sala. Los datos no viven aquí: se leen
+// de data/kids.json y se escriben con las Server Actions (SPEC 05).
 
 export type KidTagKind = "allergy" | "link";
 
@@ -26,98 +26,14 @@ export type Kid = {
   room: string; // nombre de la sala, ej. "Soles"
   allergies?: string; // texto libre del modal, ej. "Maní, Lactosa"
   medicalNotes?: string; // texto libre del modal
+  birthDate?: string; // "12 mar 2022" — solo en los perfiles con ficha propia
+  joinedAt?: string; // "feb 2025" — idem
   avatarBg: string;
   avatarInk: string;
-  parentLabel: string;
+  // Sin parentLabel: el texto de padres se deriva del conteo en
+  // data/family.json con parentLabel() de lib/family.ts (SPEC 05).
   tag?: { label: string; kind: KidTagKind };
 };
-
-// Los 8 niños, en el mismo orden y con los mismos textos que el mockup.
-export const KIDS: Kid[] = [
-  {
-    slug: "mateo-fernandez",
-    name: "Mateo Fernández",
-    initial: "M",
-    age: "3 años",
-    room: "Soles",
-    avatarBg: "bg-kid-blue",
-    avatarInk: "text-kid-blue-ink",
-    parentLabel: "2 padres vinculados",
-    tag: { label: "MANÍ", kind: "allergy" },
-  },
-  {
-    slug: "sofia-mendez",
-    name: "Sofía Méndez",
-    initial: "S",
-    age: "2 años",
-    room: "Soles",
-    avatarBg: "bg-kid-pink",
-    avatarInk: "text-kid-pink-ink",
-    parentLabel: "1 padre vinculado",
-  },
-  {
-    slug: "benjamin-ruiz",
-    name: "Benjamín Ruiz",
-    initial: "B",
-    age: "3 años",
-    room: "Soles",
-    avatarBg: "bg-kid-green",
-    avatarInk: "text-kid-green-ink",
-    parentLabel: "2 padres vinculados",
-  },
-  {
-    slug: "valentina-soto",
-    name: "Valentina Soto",
-    initial: "V",
-    age: "2 años",
-    room: "Soles",
-    avatarBg: "bg-kid-yellow",
-    avatarInk: "text-kid-yellow-ink",
-    parentLabel: "sin padres vinculados",
-    tag: { label: "VINCULAR", kind: "link" },
-  },
-  {
-    slug: "tomas-diaz",
-    name: "Tomás Díaz",
-    initial: "T",
-    age: "3 años",
-    room: "Soles",
-    avatarBg: "bg-kid-purple",
-    avatarInk: "text-kid-purple-ink",
-    parentLabel: "1 padre vinculado",
-    tag: { label: "LACTOSA", kind: "allergy" },
-  },
-  {
-    slug: "emma-castro",
-    name: "Emma Castro",
-    initial: "E",
-    age: "2 años",
-    room: "Soles",
-    avatarBg: "bg-kid-pink",
-    avatarInk: "text-kid-pink-ink",
-    parentLabel: "1 padre vinculado",
-  },
-  {
-    slug: "lucas-romero",
-    name: "Lucas Romero",
-    initial: "L",
-    age: "3 años",
-    room: "Soles",
-    avatarBg: "bg-kid-blue",
-    avatarInk: "text-kid-blue-ink",
-    parentLabel: "1 padre vinculado",
-  },
-  {
-    slug: "olivia-vega",
-    name: "Olivia Vega",
-    initial: "O",
-    age: "2 años",
-    room: "Soles",
-    avatarBg: "bg-kid-green",
-    avatarInk: "text-kid-green-ink",
-    parentLabel: "1 padre vinculado",
-  },
-];
 
 export type ParentLink = {
   name: string;
@@ -125,44 +41,6 @@ export type ParentLink = {
   role: string;
   status: "ACTIVA" | "PENDIENTE";
   avatarBg: string;
-};
-
-export type ChildProfile = {
-  name: string;
-  initial: string;
-  ageRoom: string;
-  birthDate: string;
-  room: string;
-  joinedAt: string;
-  allergies: string;
-  parents: ParentLink[];
-};
-
-// Perfil de Mateo: es el único con pantalla propia (/kids/mateo) en esta spec.
-export const MATEO: ChildProfile = {
-  name: "Mateo Fernández",
-  initial: "M",
-  ageRoom: "3 años · Sala Soles",
-  birthDate: "12 mar 2022",
-  room: "Soles",
-  joinedAt: "feb 2025",
-  allergies: "Alergia al maní. Evitar frutos secos. Lleva inhalador en la mochila.",
-  parents: [
-    {
-      name: "Lucía Fernández",
-      initial: "L",
-      role: "Mamá · activa",
-      status: "ACTIVA",
-      avatarBg: "bg-kid-purple",
-    },
-    {
-      name: "Diego Fernández",
-      initial: "D",
-      role: "Papá · invitación enviada",
-      status: "PENDIENTE",
-      avatarBg: "bg-parent-blue",
-    },
-  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -215,6 +93,34 @@ export function ageLabel(birthDate: string): string {
   return years === 1 ? "1 año" : `${years} años`;
 }
 
+// Edad máxima que acepta la guardería.
+export const MAX_AGE_YEARS = 6;
+
+// Valida la fecha de nacimiento y devuelve el mensaje de error o undefined.
+// Vive en lib/ para que la comparta el modal "Agregar niño" (SPEC 04) y la
+// Server Action addKidAction (SPEC 05).
+export function validateBirthDate(value: string): string | undefined {
+  if (!value.trim()) return "Ingresá la fecha de nacimiento.";
+
+  const birth = parseBirthDate(value);
+  if (!birth) return "Usá una fecha válida en formato dd/mm/aaaa.";
+
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (birth.getTime() > startOfToday.getTime()) return "La fecha no puede ser futura.";
+
+  const oldestAllowed = new Date(
+    today.getFullYear() - MAX_AGE_YEARS,
+    today.getMonth(),
+    today.getDate(),
+  );
+  if (birth.getTime() < oldestAllowed.getTime()) {
+    return `El niño debe tener máximo ${MAX_AGE_YEARS} años.`;
+  }
+
+  return undefined;
+}
+
 // "Martina López" → "martina-lopez"; si ya existe → "martina-lopez-2".
 export function slugify(name: string, taken: string[]): string {
   const base =
@@ -260,7 +166,6 @@ export function createKid(
     room: ROOMS.find((room) => room.id === input.roomId)?.name ?? "",
     avatarBg: palette.bg,
     avatarInk: palette.ink,
-    parentLabel: "sin padres vinculados",
   };
 
   if (allergies) kid.allergies = allergies;
