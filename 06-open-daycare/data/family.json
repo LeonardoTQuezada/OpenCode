@@ -1,0 +1,20 @@
+{
+  "mateo-fernandez": [
+    {
+      "name": "Lucía Fernández",
+      "email": "lucia.fernandez@gmail.com",
+      "relation": "Mamá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    },
+    {
+      "name": "Diego Fernández",
+      "email": "diego.fernandez@gmail.com",
+      "relation": "Papá",
+      "status": "PENDIENTE",
+      "code": null,
+      "sentAt": null
+    }
+  ]
+}
