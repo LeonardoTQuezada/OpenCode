@@ -1,21 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { KIDS, createKid, type Kid } from "@/lib/kids";
 import { AddChildModal, type NewChildInput } from "./add-child-modal";
+import { useFamily } from "./family-provider";
 import { KidsList } from "./kids-list";
 import { PlusIcon } from "./icons";
 
 /** Pantalla de niños con su modal "Agregar niño" (SPEC 04).
- *  Aquí vive el estado: la lista y la apertura del modal. La página server
- *  solo renderiza este componente. */
+ *  Los niños ya no son un useState local: salen del provider, que los lee de
+ *  data/kids.json y los persiste con addKidAction (SPEC 05). */
 export function KidsScreen() {
-  const [kids, setKids] = useState<Kid[]>(KIDS);
+  const { kids, addKid } = useFamily();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /** Agrega el niño nuevo al final de la grilla (en memoria, sin persistencia). */
+  /** Persiste el niño nuevo; el modal ya validó en cliente y la acción
+   *  revalida en servidor antes de escribir el JSON. */
   const handleCreate = (input: NewChildInput) => {
-    setKids((prev) => [...prev, createKid(input, prev)]);
+    void addKid(input).then((result) => {
+      if (!result.ok) console.error(result.message);
+    });
   };
 
   return (
