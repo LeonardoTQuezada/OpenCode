@@ -90,6 +90,20 @@
   /* Modal "Agregar niño" (SPEC 04) */
   --color-modal-overlay: rgb(63 54 46 / 0.45);
 
+  /* Modal "Vincular padre" (SPEC 05). La caja del código reutiliza
+     --color-consent-bg / --color-consent-ink de SPEC 03: son los mismos hex. */
+  --color-link-info-bg: #e3ecfb;
+  --color-link-info-ink: #3f5694;
+  --color-link-info-icon: #4e72c8;
+  --color-link-pill-bg: #fffdf9;
+  --color-link-pill-border: #ece0d0;
+  --color-link-pill-ink: #6e6359;
+  --color-link-pill-active-bg: #ccd8f4;
+  --color-link-pill-active-border: #9fb8ec;
+  --color-link-pill-active-ink: #4e72c8;
+  --color-link-code-border: #e6d08a;
+  --color-link-code-label: #a88526;
+
   /* Sombras */
   --shadow-card: 0 4px 16px -12px rgb(120 90 60 / 0.5);
   --shadow-composer: 0 4px 14px -10px rgb(120 90 60 / 0.4);
