@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useCallback, useState } from "react";
+
 import type { ChildProfile } from "@/lib/kids";
 import { AlertTriangleIcon, ArrowLeftIcon, PlusIcon, SunIcon } from "./icons";
 import { Avatar } from "./avatar";
+import { LinkParentModal } from "./link-parent-modal";
 
 /** Badge de estado del padre (ACTIVA / PENDIENTE). */
 const STATUS_STYLES: Record<ChildProfile["parents"][number]["status"], string> = {
@@ -19,7 +24,18 @@ const DETAIL_ROWS: { label: string; value: DetailKey }[] = [
 ];
 
 /** Ficha completa de un niño: columna principal + columna de 300px. */
-export function ChildProfileView({ profile }: { profile: ChildProfile }) {
+export function ChildProfileView({
+  profile,
+  kidSlug,
+}: {
+  profile: ChildProfile;
+  kidSlug: string;
+}) {
+  // El modal se monta solo mientras está abierto: así cada apertura empieza
+  // con el formulario limpio y con un código de invitación nuevo.
+  const [linkOpen, setLinkOpen] = useState(false);
+  const closeLink = useCallback(() => setLinkOpen(false), []);
+
   return (
     <>
       {/* Volver al listado */}
@@ -119,9 +135,11 @@ export function ChildProfileView({ profile }: { profile: ChildProfile }) {
                 </div>
               ))}
 
-              <Link
-                href="/link-parent"
-                className="flex items-center gap-3 pt-2"
+              {/* Deja de navegar a /link-parent: abre el modal (SPEC 05) */}
+              <button
+                type="button"
+                onClick={() => setLinkOpen(true)}
+                className="flex w-full cursor-pointer items-center gap-3 pt-2 text-left"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full border-[1.5px] border-dashed border-add-dashed text-photo-icon">
                   <PlusIcon width={18} height={18} stroke="currentColor" />
@@ -129,11 +147,20 @@ export function ChildProfileView({ profile }: { profile: ChildProfile }) {
                 <span className="text-[14.5px] font-extrabold text-coral-deep">
                   Vincular otro padre
                 </span>
-              </Link>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {linkOpen && (
+        <LinkParentModal
+          open
+          onClose={closeLink}
+          kidSlug={kidSlug}
+          kidName={profile.name}
+        />
+      )}
     </>
   );
 }
