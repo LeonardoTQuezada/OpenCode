@@ -1,5 +1,5 @@
-// Datos mock de los niños de la sala. Sin persistencia ni API:
-// son constantes de presentación para las pantallas de SPEC 02 y SPEC 04.
+// Tipos y helpers de los niños de la sala. Los datos no viven aquí: se leen
+// de data/kids.json y se escriben con las Server Actions (SPEC 05).
 
 export type KidTagKind = "allergy" | "link";
 
@@ -41,44 +41,6 @@ export type ParentLink = {
   role: string;
   status: "ACTIVA" | "PENDIENTE";
   avatarBg: string;
-};
-
-export type ChildProfile = {
-  name: string;
-  initial: string;
-  ageRoom: string;
-  birthDate: string;
-  room: string;
-  joinedAt: string;
-  allergies: string;
-  parents: ParentLink[];
-};
-
-// Perfil de Mateo: es el único con pantalla propia (/kids/mateo) en esta spec.
-export const MATEO: ChildProfile = {
-  name: "Mateo Fernández",
-  initial: "M",
-  ageRoom: "3 años · Sala Soles",
-  birthDate: "12 mar 2022",
-  room: "Soles",
-  joinedAt: "feb 2025",
-  allergies: "Alergia al maní. Evitar frutos secos. Lleva inhalador en la mochila.",
-  parents: [
-    {
-      name: "Lucía Fernández",
-      initial: "L",
-      role: "Mamá · activa",
-      status: "ACTIVA",
-      avatarBg: "bg-kid-purple",
-    },
-    {
-      name: "Diego Fernández",
-      initial: "D",
-      role: "Papá · invitación enviada",
-      status: "PENDIENTE",
-      avatarBg: "bg-parent-blue",
-    },
-  ],
 };
 
 // ---------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 import { ChildProfileView } from "@/components/child-profile";
 import { MobileNav } from "@/components/mobile-nav";
 import { Sidebar } from "@/components/sidebar";
-import { MATEO } from "@/lib/kids";
 
-/** Perfil de Mateo — ruta `/kids/mateo`. */
+/** Perfil de Mateo — ruta `/kids/mateo`.
+ *  El contenido sale del provider (data/kids.json + data/family.json). */
 export default function ChildProfilePage() {
   return (
     <div className="flex min-h-screen bg-cream">
@@ -11,7 +11,7 @@ export default function ChildProfilePage() {
       <div className="flex min-w-0 flex-1 flex-col md:h-screen md:overflow-y-auto">
         <MobileNav active="kids" />
         <main className="mx-auto w-full max-w-[820px] px-10 pb-20 pt-[34px]">
-          <ChildProfileView profile={MATEO} kidSlug="mateo-fernandez" />
+          <ChildProfileView kidSlug="mateo-fernandez" />
         </main>
       </div>
     </div>

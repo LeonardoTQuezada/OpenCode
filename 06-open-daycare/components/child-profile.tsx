@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { useCallback, useState } from "react";
 
-import type { ChildProfile } from "@/lib/kids";
+import { toParentLinks } from "@/lib/family";
+import type { ParentLink } from "@/lib/kids";
 import { AlertTriangleIcon, ArrowLeftIcon, PlusIcon, SunIcon } from "./icons";
 import { Avatar } from "./avatar";
+import { useFamily } from "./family-provider";
 import { LinkParentModal } from "./link-parent-modal";
 
 /** Badge de estado del padre (ACTIVA / PENDIENTE). */
-const STATUS_STYLES: Record<ChildProfile["parents"][number]["status"], string> = {
+const STATUS_STYLES: Record<ParentLink["status"], string> = {
   ACTIVA: "bg-status-active-bg text-status-active",
   PENDIENTE: "bg-status-pending-bg text-status-pending",
 };
@@ -23,18 +25,29 @@ const DETAIL_ROWS: { label: string; value: DetailKey }[] = [
   { label: "Ingreso", value: "joinedAt" },
 ];
 
-/** Ficha completa de un niño: columna principal + columna de 300px. */
-export function ChildProfileView({
-  profile,
-  kidSlug,
-}: {
-  profile: ChildProfile;
-  kidSlug: string;
-}) {
+/** Ficha completa de un niño: columna principal + columna de 300px.
+ *  Se compone desde el provider (SPEC 05): el kid sale de data/kids.json y
+ *  los padres de data/family.json con toParentLinks. */
+export function ChildProfileView({ kidSlug }: { kidSlug: string }) {
+  const { kids, parentsOf } = useFamily();
+  const kid = kids.find((entry) => entry.slug === kidSlug);
+  const parents = toParentLinks(parentsOf(kidSlug));
+
   // El modal se monta solo mientras está abierto: así cada apertura empieza
   // con el formulario limpio y con un código de invitación nuevo.
   const [linkOpen, setLinkOpen] = useState(false);
-  const closeLink = useCallback(() => setLinkOpen(false), []);
+  const closeLink = useCallback(() => setLinkOpen(false), [setLinkOpen]);
+
+  if (!kid) {
+    return <p className="text-[15px] text-muted">No encontramos ese niño.</p>;
+  }
+
+  /** Valores de las filas "Datos", derivados del registro del niño. */
+  const details: Record<DetailKey, string> = {
+    birthDate: kid.birthDate ?? "",
+    room: kid.room,
+    joinedAt: kid.joinedAt ?? "",
+  };
 
   return (
     <>
@@ -54,16 +67,18 @@ export function ChildProfileView({
                porque con el avatar de 84px no queda ancho para el nombre. */}
           <div className="flex flex-wrap items-center gap-[18px]">
             <Avatar
-              label={profile.initial}
+              label={kid.initial}
               size={84}
-              bg="bg-kid-blue"
-              ink="text-kid-blue-ink"
+              bg={kid.avatarBg}
+              ink={kid.avatarInk}
             />
             <div className="min-w-0 flex-[1_1_180px]">
               <h1 className="font-display text-[28px] font-semibold leading-[1.2] text-ink">
-                {profile.name}
+                {kid.name}
               </h1>
-              <p className="mt-[3px] text-[15px] text-faint">{profile.ageRoom}</p>
+              <p className="mt-[3px] text-[15px] text-faint">
+                {`${kid.age} · Sala ${kid.room}`}
+              </p>
             </div>
             {/* Inerte hasta su propia spec: SPEC 04 eliminó `/add-child`. */}
             <span className="ml-auto shrink-0 rounded-[12px] border-[1.5px] border-card-border bg-card px-4 py-[9px] text-[14px] font-bold text-nav">
@@ -81,7 +96,7 @@ export function ChildProfileView({
                 Alergias y notas
               </div>
               <div className="text-[14.5px] leading-[1.5] text-alert-body">
-                {profile.allergies}
+                {kid.allergies}
               </div>
             </div>
           </div>
@@ -97,7 +112,7 @@ export function ChildProfileView({
               >
                 <span className="text-[14.5px] text-faint">{label}</span>
                 <span className="text-[14.5px] font-extrabold text-ink">
-                  {profile[value]}
+                  {details[value]}
                 </span>
               </div>
             ))}
@@ -120,7 +135,7 @@ export function ChildProfileView({
             </div>
 
             <div className="flex flex-col gap-[14px]">
-              {profile.parents.map((parent) => (
+              {parents.map((parent) => (
                 <div key={parent.name} className="flex items-center gap-3">
                   <Avatar label={parent.initial} size={40} bg={parent.avatarBg} ink="text-white" />
                   <div className="min-w-0 flex-1">
@@ -158,7 +173,7 @@ export function ChildProfileView({
           open
           onClose={closeLink}
           kidSlug={kidSlug}
-          kidName={profile.name}
+          kidName={kid.name}
         />
       )}
     </>
