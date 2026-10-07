@@ -150,7 +150,7 @@ export function ChildProfileView({ kidSlug }: { kidSlug: string }) {
                 </div>
               ))}
 
-              {/* Deja de navegar a /link-parent: abre el modal (SPEC 05) */}
+              {/* El botón ya no navega: abre el modal (SPEC 05) */}
               <button
                 type="button"
                 onClick={() => setLinkOpen(true)}
