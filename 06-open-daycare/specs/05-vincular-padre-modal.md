@@ -159,36 +159,36 @@ Convenios:
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` sirve `/kids/mateo` sin errores en consola.
-- [ ] "Vincular otro padre" ya no navega: la URL sigue en `/kids/mateo` y el modal queda visible.
-- [ ] El modal muestra el header "Vincular padre" con subtítulo "a Mateo Fernández" y el banner azul con el texto "Le enviaremos un correo con un código para que active su cuenta. Solo verá el feed de Mateo."
-- [ ] El modal muestra los labels "NOMBRE DEL PADRE/MADRE", "EMAIL", "PARENTESCO" y "CÓDIGO DE INVITACIÓN".
-- [ ] Nombre y email nacen vacíos y ninguna pastilla de parentesco nace seleccionada.
-- [ ] El código generado tiene exactamente 5 caracteres de A-Z y 0-9, sin `O`, `0`, `I` ni `1`, y debajo dice "Vence en 7 días".
-- [ ] Cerrar y reabrir el modal genera un código distinto al anterior.
-- [ ] Con el formulario vacío, "Enviar invitación" no envía y muestra 3 mensajes en `#C5503A` bajo los campos.
-- [ ] Con un email sin `@`, no envía y muestra "Ingresá un email válido." bajo EMAIL.
-- [ ] Con un email ya vinculado a Mateo, no envía y muestra "Ese email ya está vinculado a este niño." bajo EMAIL.
-- [ ] Con datos válidos, el botón queda deshabilitado con texto "Enviando…" mientras se escribe el JSON.
-- [ ] Tras enviar, el modal muestra la pantalla "Invitación enviada" con la línea "Le enviamos un código a {email} para que active su cuenta." y el botón "Listo".
-- [ ] "Listo" cierra el modal y la tarjeta "Padres vinculados" muestra la fila nueva con el nombre, `"<Parentesco> · invitación enviada"` y el badge `PENDIENTE`.
-- [ ] El botón X del header cierra el modal sin enviar.
-- [ ] La tecla Esc cierra el modal sin enviar.
-- [ ] Hacer clic en el fondo oscuro cierra el modal sin enviar.
-- [ ] Mientras el modal está abierto, la página de fondo no hace scroll.
-- [ ] Al enfocar cualquier campo del modal su borde pasa a `#F2A78E`.
-- [ ] En desktop el modal está centrado con ancho máximo 480px; por debajo de 768px ocupa casi todo el ancho.
-- [ ] `data/family.json` contiene la entrada nueva con `status: "PENDIENTE"`, el `code` generado y el `sentAt` de hoy.
-- [ ] Recargar `/kids/mateo` mantiene al padre recién agregado en la tarjeta.
-- [ ] Tras recargar, la tarjeta de Mateo en `/kids` muestra "3 padres vinculados"; con un cuarto padre, "4 padres vinculados"; Sofía sigue mostrando "1 padre vinculado" y Valentina "sin padres vinculados".
-- [ ] Un niño agregado desde el modal de SPEC 04 sobrevive a recargar `/kids` (queda en `data/kids.json`).
-- [ ] `/kids` sigue mostrando los mismos 8 niños iniciales, en el mismo orden y con los mismos badges.
-- [ ] `/link-parent` responde 404 y ningún archivo del proyecto la referencia.
-- [ ] `Kid` ya no tiene la propiedad `parentLabel` y ningún archivo la referencia.
-- [ ] El perfil de `/kids/mateo` se ve idéntico al de antes: avatar, filas de datos, "Resumen del día", Lucía ACTIVA y Diego PENDIENTE.
-- [ ] `/`, `/kids` y `/login` se ven igual que antes (regresión SPEC 01, 02, 03 y 04).
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
-- [ ] Las capturas quedan guardadas en `.playwright-mcp/`.
+- [x] `npm run dev` sirve `/kids/mateo` sin errores en consola.
+- [x] "Vincular otro padre" ya no navega: la URL sigue en `/kids/mateo` y el modal queda visible.
+- [x] El modal muestra el header "Vincular padre" con subtítulo "a Mateo Fernández" y el banner azul con el texto "Le enviaremos un correo con un código para que active su cuenta. Solo verá el feed de Mateo."
+- [x] El modal muestra los labels "NOMBRE DEL PADRE/MADRE", "EMAIL", "PARENTESCO" y "CÓDIGO DE INVITACIÓN".
+- [x] Nombre y email nacen vacíos y ninguna pastilla de parentesco nace seleccionada.
+- [x] El código generado tiene exactamente 5 caracteres de A-Z y 0-9, sin `O`, `0`, `I` ni `1`, y debajo dice "Vence en 7 días".
+- [x] Cerrar y reabrir el modal genera un código distinto al anterior.
+- [x] Con el formulario vacío, "Enviar invitación" no envía y muestra 3 mensajes en `#C5503A` bajo los campos.
+- [x] Con un email sin `@`, no envía y muestra "Ingresá un email válido." bajo EMAIL.
+- [x] Con un email ya vinculado a Mateo, no envía y muestra "Ese email ya está vinculado a este niño." bajo EMAIL.
+- [x] Con datos válidos, el botón queda deshabilitado con texto "Enviando…" mientras se escribe el JSON.
+- [x] Tras enviar, el modal muestra la pantalla "Invitación enviada" con la línea "Le enviamos un código a {email} para que active su cuenta." y el botón "Listo".
+- [x] "Listo" cierra el modal y la tarjeta "Padres vinculados" muestra la fila nueva con el nombre, `"<Parentesco> · invitación enviada"` y el badge `PENDIENTE`.
+- [x] El botón X del header cierra el modal sin enviar.
+- [x] La tecla Esc cierra el modal sin enviar.
+- [x] Hacer clic en el fondo oscuro cierra el modal sin enviar.
+- [x] Mientras el modal está abierto, la página de fondo no hace scroll.
+- [x] Al enfocar cualquier campo del modal su borde pasa a `#F2A78E`.
+- [x] En desktop el modal está centrado con ancho máximo 480px; por debajo de 768px ocupa casi todo el ancho.
+- [x] `data/family.json` contiene la entrada nueva con `status: "PENDIENTE"`, el `code` generado y el `sentAt` de hoy.
+- [x] Recargar `/kids/mateo` mantiene al padre recién agregado en la tarjeta.
+- [x] Tras recargar, la tarjeta de Mateo en `/kids` muestra "3 padres vinculados"; con un cuarto padre, "4 padres vinculados"; Sofía sigue mostrando "1 padre vinculado" y Valentina "sin padres vinculados".
+- [x] Un niño agregado desde el modal de SPEC 04 sobrevive a recargar `/kids` (queda en `data/kids.json`).
+- [x] `/kids` sigue mostrando los mismos 8 niños iniciales, en el mismo orden y con los mismos badges.
+- [x] `/link-parent` responde 404 y ningún archivo del proyecto la referencia.
+- [x] `Kid` ya no tiene la propiedad `parentLabel` y ningún archivo la referencia.
+- [x] El perfil de `/kids/mateo` se ve idéntico al de antes: avatar, filas de datos, "Resumen del día", Lucía ACTIVA y Diego PENDIENTE.
+- [x] `/`, `/kids` y `/login` se ven igual que antes (regresión SPEC 01, 02, 03 y 04).
+- [x] `npm run lint` y `npm run build` terminan sin errores.
+- [x] Las capturas quedan guardadas en `.playwright-mcp/`.
 
 ## Decisions
 

@@ -90,6 +90,7 @@ export function LinkParentModal({
       name: values.name,
       email: values.email,
       relation: values.relation as Relation,
+      code,
     });
     setPending(false);
 
