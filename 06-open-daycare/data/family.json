@@ -1,0 +1,88 @@
+{
+  "mateo-fernandez": [
+    {
+      "name": "Lucía Fernández",
+      "email": "lucia.fernandez@gmail.com",
+      "relation": "Mamá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    },
+    {
+      "name": "Diego Fernández",
+      "email": "diego.fernandez@gmail.com",
+      "relation": "Papá",
+      "status": "PENDIENTE",
+      "code": null,
+      "sentAt": null
+    }
+  ],
+  "sofia-mendez": [
+    {
+      "name": "Paula Méndez",
+      "email": "paula.mendez@gmail.com",
+      "relation": "Mamá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    }
+  ],
+  "benjamin-ruiz": [
+    {
+      "name": "Carolina Ruiz",
+      "email": "carolina.ruiz@gmail.com",
+      "relation": "Mamá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    },
+    {
+      "name": "Iván Ruiz",
+      "email": "ivan.ruiz@gmail.com",
+      "relation": "Papá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    }
+  ],
+  "tomas-diaz": [
+    {
+      "name": "Mariana Díaz",
+      "email": "mariana.diaz@gmail.com",
+      "relation": "Mamá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    }
+  ],
+  "emma-castro": [
+    {
+      "name": "Verónica Castro",
+      "email": "veronica.castro@gmail.com",
+      "relation": "Mamá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    }
+  ],
+  "lucas-romero": [
+    {
+      "name": "Andrés Romero",
+      "email": "andres.romero@gmail.com",
+      "relation": "Papá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    }
+  ],
+  "olivia-vega": [
+    {
+      "name": "Natalia Vega",
+      "email": "natalia.vega@gmail.com",
+      "relation": "Mamá",
+      "status": "ACTIVA",
+      "code": null,
+      "sentAt": null
+    }
+  ]
+}

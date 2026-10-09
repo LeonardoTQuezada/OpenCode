@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { ROOMS, parseBirthDate } from "@/lib/kids";
+import { ROOMS, validateBirthDate } from "@/lib/kids";
 import { CalendarIcon, ChevronDownIcon } from "./icons";
 
 /** Datos que el modal entrega al padre para construir el niño (SPEC 04). */
@@ -27,9 +27,6 @@ type FormValues = typeof EMPTY_VALUES;
 /** Errores de validación por campo del modal. */
 type FieldErrors = Partial<Record<keyof FormValues, string>>;
 
-/** Edad máxima que acepta la guardería. */
-const MAX_AGE_YEARS = 6;
-
 const labelClass = "mb-2 block text-[12px] font-extrabold tracking-[.7px] text-faint";
 
 const inputClass =
@@ -43,29 +40,6 @@ function maskDate(value: string): string {
   const month = digits.slice(2, 4);
   if (digits.length <= 4) return `${day}/${month}`;
   return `${day}/${month}/${digits.slice(4, 8)}`;
-}
-
-/** Valida la fecha de nacimiento y devuelve el mensaje de error o undefined. */
-function validateBirthDate(value: string): string | undefined {
-  if (!value.trim()) return "Ingresá la fecha de nacimiento.";
-
-  const birth = parseBirthDate(value);
-  if (!birth) return "Usá una fecha válida en formato dd/mm/aaaa.";
-
-  const today = new Date();
-  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  if (birth.getTime() > startOfToday.getTime()) return "La fecha no puede ser futura.";
-
-  const oldestAllowed = new Date(
-    today.getFullYear() - MAX_AGE_YEARS,
-    today.getMonth(),
-    today.getDate(),
-  );
-  if (birth.getTime() < oldestAllowed.getTime()) {
-    return `El niño debe tener máximo ${MAX_AGE_YEARS} años.`;
-  }
-
-  return undefined;
 }
 
 /** Modal "Agregar niño": réplica de `references/pantallas/agregar-nino.dc.html`
