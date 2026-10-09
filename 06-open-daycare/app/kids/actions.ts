@@ -31,6 +31,8 @@ export type LinkParentInput = {
   name: string;
   email: string;
   relation: Relation;
+  /** Código generado al abrir el modal: es el que se muestra y el que se guarda. */
+  code: string;
 };
 
 /**
@@ -62,7 +64,9 @@ export async function linkParentAction(
     email,
     relation: input.relation,
     status: "PENDIENTE",
-    code: generateInviteCode(),
+    // Se guarda el código que vio el usuario en el modal; si llega malformado
+    // (invocación directa de la acción) se genera uno nuevo.
+    code: /^[A-Z2-9]{5}$/.test(input.code.trim()) ? input.code.trim() : generateInviteCode(),
     sentAt: new Date().toISOString().slice(0, 10),
   };
 
