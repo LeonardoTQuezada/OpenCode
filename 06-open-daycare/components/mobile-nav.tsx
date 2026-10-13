@@ -72,7 +72,7 @@ export function MobileNav({ active }: MobileNavProps) {
             >
               ✕
             </button>
-            <SidebarContents active={active} />
+            <SidebarContents active={active} onNewPost={() => setOpen(false)} />
           </div>
         </div>
       )}

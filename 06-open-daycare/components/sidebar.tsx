@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+
 import {
   BellIcon,
   HomeIcon,
@@ -8,6 +11,7 @@ import {
   SunIcon,
   UserIcon,
 } from "./icons";
+import { usePosts } from "./posts-provider";
 
 /** Ítem de navegación activo en el sidebar. */
 export type NavKey = "feed" | "kids" | "notices" | "account";
@@ -29,11 +33,15 @@ const NAV_ITEMS: NavItem[] = [
 type SidebarContentsProps = {
   /** Ítem resaltado, o `null` cuando la pantalla no pertenece al nav (p. ej. /login). */
   active: NavKey | null;
+  /** Se ejecuta además de abrir el modal (el drawer móvil se cierra). */
+  onNewPost?: () => void;
 };
 
 /** Contenido compartido del sidebar (logo, botón, nav y tarjeta de usuario).
  *  Lo usa el aside de escritorio y el drawer móvil. */
-export function SidebarContents({ active }: SidebarContentsProps) {
+export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
+  const { openComposer } = usePosts();
+
   return (
     <>
       {/* Logo */}
@@ -54,14 +62,18 @@ export function SidebarContents({ active }: SidebarContentsProps) {
         </span>
       </Link>
 
-      {/* Nueva publicación */}
-      <Link
-        href="/create-post"
-        className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold leading-[1.36] text-white shadow-button"
+      {/* Nueva publicación: abre el modal en lugar de navegar (SPEC 06) */}
+      <button
+        type="button"
+        onClick={() => {
+          openComposer();
+          onNewPost?.();
+        }}
+        className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold leading-[1.36] text-white shadow-button"
       >
         <PlusIcon width={17} height={17} />
         Nueva publicación
-      </Link>
+      </button>
 
       {/* Navegación */}
       <nav className="flex flex-1 flex-col gap-1">

@@ -66,26 +66,35 @@ export const POST_TYPE_OPTIONS: { type: PostType; label: string }[] = [
   { type: "ANUNCIO", label: "Anuncio" },
 ];
 
-/** Sufijo de los tokens @theme del badge por tipo (globals.css). */
-const BADGE_KEY: Record<PostType, string> = {
-  COMIDA: "comida",
-  SIESTA: "siesta",
-  ACTIVIDAD: "actividad",
-  LOGRO: "logro",
-  ÁNIMO: "animo",
-  FOTO: "foto",
-  ANUNCIO: "anuncio",
+/** Clases Tailwind del badge por tipo. Literales, no se pueden armar con
+ *  template: Tailwind no detectaría las clases construidas en runtime. */
+const BADGE_CLASSES: Record<PostType, { bg: string; text: string }> = {
+  COMIDA: { bg: "bg-badge-comida-bg", text: "text-badge-comida" },
+  SIESTA: { bg: "bg-badge-siesta-bg", text: "text-badge-siesta" },
+  ACTIVIDAD: { bg: "bg-badge-actividad-bg", text: "text-badge-actividad" },
+  LOGRO: { bg: "bg-badge-logro-bg", text: "text-badge-logro" },
+  ÁNIMO: { bg: "bg-badge-animo-bg", text: "text-badge-animo" },
+  FOTO: { bg: "bg-badge-foto-bg", text: "text-badge-foto" },
+  ANUNCIO: { bg: "bg-badge-anuncio-bg", text: "text-badge-anuncio" },
+};
+
+/** Clases de la pastilla de TIPO del modal (colores sólidos del mockup). */
+const TIPO_CLASSES: Record<PostType, { bg: string; text: string }> = {
+  COMIDA: { bg: "bg-tipo-comida-bg", text: "text-tipo-comida-ink" },
+  SIESTA: { bg: "bg-tipo-siesta-bg", text: "text-tipo-siesta-ink" },
+  ACTIVIDAD: { bg: "bg-tipo-actividad-bg", text: "text-tipo-actividad-ink" },
+  LOGRO: { bg: "bg-tipo-logro-bg", text: "text-tipo-logro-ink" },
+  ÁNIMO: { bg: "bg-tipo-animo-bg", text: "text-tipo-animo-ink" },
+  FOTO: { bg: "bg-tipo-foto-bg", text: "text-tipo-foto-ink" },
+  ANUNCIO: { bg: "bg-tipo-anuncio-bg", text: "text-tipo-anuncio-ink" },
 };
 
 export function badgeClasses(type: PostType): { bg: string; text: string } {
-  const key = BADGE_KEY[type];
-  return { bg: `bg-badge-${key}-bg`, text: `text-badge-${key}` };
+  return BADGE_CLASSES[type];
 }
 
-/** Clases de la pastilla de TIPO del modal (colores sólidos del mockup). */
 export function tipoClasses(type: PostType): { bg: string; text: string } {
-  const key = BADGE_KEY[type];
-  return { bg: `bg-tipo-${key}-bg`, text: `text-tipo-${key}-ink` };
+  return TIPO_CLASSES[type];
 }
 
 function kidBySlug(kids: Kid[], slug: string): Kid | undefined {
