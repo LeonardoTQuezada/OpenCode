@@ -1,53 +1,8 @@
 import { CameraIcon } from "@/components/icons";
 import { MobileNav } from "@/components/mobile-nav";
-import { PostCard, type Post } from "@/components/post-card";
+import { PostCard } from "@/components/post-card";
 import { Sidebar } from "@/components/sidebar";
-
-const POSTS: Post[] = [
-  {
-    id: "logro-orinal-mateo",
-    badge: "LOGRO",
-    badgeBg: "bg-badge-logro-bg",
-    badgeText: "text-badge-logro",
-    avatarBg: "bg-avatar-m-bg",
-    avatarLabel: "M",
-    title: "Mateo",
-    time: "14:20 · publicado por vos",
-    audience: "Para: familia de Mateo",
-    body: "¡Usó el orinal solito por primera vez! Estaba feliz de contárselo a todos. Un gran paso.",
-    likes: 3,
-    comments: 1,
-  },
-  {
-    id: "actividad-temperas",
-    badge: "ACTIVIDAD",
-    badgeBg: "bg-badge-actividad-bg",
-    badgeText: "text-badge-actividad",
-    avatarBg: "bg-avatar-m-bg",
-    avatarLabel: "M",
-    title: "Mateo",
-    time: "09:40 · publicado por vos",
-    audience: "Para: familia de Mateo",
-    body: "Pintamos con témperas esta mañana. Mateo eligió el azul para todo y se concentró un montón mezclando colores.",
-    photo: { label: "Foto · pintando con témperas", height: 200 },
-    likes: 5,
-    comments: 2,
-  },
-  {
-    id: "anuncio-parque",
-    badge: "ANUNCIO",
-    badgeBg: "bg-badge-anuncio-bg",
-    badgeText: "text-badge-anuncio",
-    avatarBg: "bg-badge-anuncio-bg",
-    avatarLabel: "",
-    title: "Anuncio general",
-    time: "07:50 · publicado por vos",
-    audience: "Para: toda la sala",
-    body: "El viernes salimos al parque por la mañana. Recuerden mandar gorra y una botellita de agua.",
-    likes: 8,
-    comments: 0,
-  },
-];
+import { SEED_POSTS } from "@/lib/posts";
 
 export default function Home() {
   return (
@@ -95,7 +50,7 @@ export default function Home() {
 
           {/* Posts */}
           <div className="flex flex-col gap-4">
-            {POSTS.map((post) => (
+            {SEED_POSTS.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
           </div>
