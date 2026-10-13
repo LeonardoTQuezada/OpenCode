@@ -1,6 +1,6 @@
 # SPEC 06 — Modal "Nueva publicación" en el feed
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 02, SPEC 04, SPEC 05
 > **Fecha:** 2026-10-13
 > **Objetivo:** Abrir un modal "Nueva publicación" desde el sidebar y el composer para crear un post con destinatarios múltiples (niños o toda la sala, mutuamente excluyentes), tipo, descripción y fotos, que se agrega en memoria arriba del feed.
@@ -163,41 +163,41 @@ Convenios:
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` sirve `/` sin errores en consola.
-- [ ] El botón "Nueva publicación" del sidebar ya no navega: la URL no cambia y el modal queda visible, en `/` y en `/kids`.
-- [ ] El composer "Compartí un momento…" abre el mismo modal.
-- [ ] El botón del drawer móvil (hamburguesa) también abre el modal.
-- [ ] El modal muestra el header "Cancelar" · "Nueva publicación" · "Publicar" y los labels "PARA", "TIPO", "DESCRIPCIÓN" y "FOTOS".
-- [ ] PARA lista los 8 niños de `data/kids.json` con sus colores y el chip "Toda la sala"; ninguno nace seleccionado.
-- [ ] Con un niño marcado se pueden marcar otros a la vez (selección múltiple).
-- [ ] Con "Toda la sala" marcada, los chips de niños quedan atenuados (`opacity-50`) y deseleccionados.
-- [ ] Con "Toda la sala" marcada, hacer clic en un niño la deselecciona y queda solo ese niño.
-- [ ] Con niños marcados, hacer clic en "Toda la sala" los limpia y deja solo "Toda la sala".
-- [ ] Hacer clic en "Toda la sala" estando marcada la desmarca (queda nada seleccionado).
-- [ ] TIPO lista exactamente 7 pastillas (Comida, Siesta, Actividad, Logro, Ánimo, Foto, Anuncio), ninguna nace marcada y solo admite una a la vez.
-- [ ] DESCRIPCIÓN nace vacía con placeholder "Contá cómo le fue hoy…".
-- [ ] Con los tres bloques vacíos, "Publicar" no publica y muestra los 3 mensajes en `#C5503A`.
-- [ ] Con TIPO marcado y el resto vacío, muestra solo los 2 mensajes restantes.
-- [ ] Con PARA, TIPO y DESCRIPCIÓN válidos, "Publicar" cierra el modal y agrega la tarjeta como primera debajo de "PUBLICADO HOY".
-- [ ] La tarjeta nueva muestra el badge del tipo elegido en estilo claro (fondo + texto + punto) con las 7 variantes.
-- [ ] La tarjeta nueva muestra "HH:MM · publicado por vos" con la hora actual, 0 likes y 0 comentarios.
-- [ ] La audiencia queda como "Para: familia de Mateo" con 1 niño, "Para: familia de Mateo, Sofía y Benjamín" con 3 y "Para: toda la sala" con el chip exclusivo.
-- [ ] El título/avatar queda "Mateo" con su avatar para 1 niño, "Varios niños" con el avatar del primero para varios, y "Toda la sala" con el avatar de megáfono para el chip exclusivo.
-- [ ] "Agregar" abre el selector de archivos y la foto elegida aparece como miniatura con una X.
-- [ ] Agregando 3 fotos y quitando la segunda quedan 2 fotos en el orden original.
-- [ ] Con 1 foto la tarjeta la muestra en caja de 200px a ancho completo; con 2 o más, en grilla de 2 columnas.
-- [ ] Publicar sin fotos es válido, y marcar TIPO "Foto" sin fotos también (sin validación cruzada).
-- [ ] "Cancelar" cierra sin publicar; la tecla Esc también; el clic en el fondo también, y en los tres casos sin confirmación.
-- [ ] Reabrir tras cerrar o tras publicar arranca vacío: nada en PARA, ningún TIPO, descripción vacía y sin fotos.
-- [ ] Mientras el modal está abierto, la página de fondo no hace scroll.
-- [ ] Al enfocar el textarea su borde pasa a `#F2A78E`.
-- [ ] En desktop el modal está centrado con ancho máximo 580px; por debajo de 768px ocupa casi todo el ancho.
-- [ ] Publicar desde `/kids` cierra el modal sin navegar; al volver a `/` el post nuevo está arriba del feed.
-- [ ] Recargar `/` descarta los posts publicados (la lista vuelve a los 3 semilla).
-- [ ] `/create-post` responde 404 y ningún archivo del proyecto la referencia.
-- [ ] `/`, `/kids`, `/kids/mateo` y `/login` se ven igual que antes (regresión SPEC 01–05).
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
-- [ ] Las capturas quedan guardadas en `.playwright-mcp/`.
+- [x] `npm run dev` sirve `/` sin errores en consola.
+- [x] El botón "Nueva publicación" del sidebar ya no navega: la URL no cambia y el modal queda visible, en `/` y en `/kids`.
+- [x] El composer "Compartí un momento…" abre el mismo modal.
+- [x] El botón del drawer móvil (hamburguesa) también abre el modal.
+- [x] El modal muestra el header "Cancelar" · "Nueva publicación" · "Publicar" y los labels "PARA", "TIPO", "DESCRIPCIÓN" y "FOTOS".
+- [x] PARA lista los 8 niños de `data/kids.json` con sus colores y el chip "Toda la sala"; ninguno nace seleccionado.
+- [x] Con un niño marcado se pueden marcar otros a la vez (selección múltiple).
+- [x] Con "Toda la sala" marcada, los chips de niños quedan atenuados (`opacity-50`) y deseleccionados.
+- [x] Con "Toda la sala" marcada, hacer clic en un niño la deselecciona y queda solo ese niño.
+- [x] Con niños marcados, hacer clic en "Toda la sala" los limpia y deja solo "Toda la sala".
+- [x] Hacer clic en "Toda la sala" estando marcada la desmarca (queda nada seleccionado).
+- [x] TIPO lista exactamente 7 pastillas (Comida, Siesta, Actividad, Logro, Ánimo, Foto, Anuncio), ninguna nace marcada y solo admite una a la vez.
+- [x] DESCRIPCIÓN nace vacía con placeholder "Contá cómo le fue hoy…".
+- [x] Con los tres bloques vacíos, "Publicar" no publica y muestra los 3 mensajes en `#C5503A`.
+- [x] Con TIPO marcado y el resto vacío, muestra solo los 2 mensajes restantes.
+- [x] Con PARA, TIPO y DESCRIPCIÓN válidos, "Publicar" cierra el modal y agrega la tarjeta como primera debajo de "PUBLICADO HOY".
+- [x] La tarjeta nueva muestra el badge del tipo elegido en estilo claro (fondo + texto + punto) con las 7 variantes.
+- [x] La tarjeta nueva muestra "HH:MM · publicado por vos" con la hora actual, 0 likes y 0 comentarios.
+- [x] La audiencia queda como "Para: familia de Mateo" con 1 niño, "Para: familia de Mateo, Sofía y Benjamín" con 3 y "Para: toda la sala" con el chip exclusivo.
+- [x] El título/avatar queda "Mateo" con su avatar para 1 niño, "Varios niños" con el avatar del primero para varios, y "Toda la sala" con el avatar de megáfono para el chip exclusivo.
+- [x] "Agregar" abre el selector de archivos y la foto elegida aparece como miniatura con una X.
+- [x] Agregando 3 fotos y quitando la segunda quedan 2 fotos en el orden original.
+- [x] Con 1 foto la tarjeta la muestra en caja de 200px a ancho completo; con 2 o más, en grilla de 2 columnas.
+- [x] Publicar sin fotos es válido, y marcar TIPO "Foto" sin fotos también (sin validación cruzada).
+- [x] "Cancelar" cierra sin publicar; la tecla Esc también; el clic en el fondo también, y en los tres casos sin confirmación.
+- [x] Reabrir tras cerrar o tras publicar arranca vacío: nada en PARA, ningún TIPO, descripción vacía y sin fotos.
+- [x] Mientras el modal está abierto, la página de fondo no hace scroll.
+- [x] Al enfocar el textarea su borde pasa a `#F2A78E`.
+- [x] En desktop el modal está centrado con ancho máximo 580px; por debajo de 768px ocupa casi todo el ancho.
+- [x] Publicar desde `/kids` cierra el modal sin navegar; al volver a `/` el post nuevo está arriba del feed.
+- [x] Recargar `/` descarta los posts publicados (la lista vuelve a los 3 semilla).
+- [x] `/create-post` responde 404 y ningún archivo del proyecto la referencia.
+- [x] `/`, `/kids`, `/kids/mateo` y `/login` se ven igual que antes (regresión SPEC 01–05).
+- [x] `npm run lint` y `npm run build` terminan sin errores.
+- [x] Las capturas quedan guardadas en `.playwright-mcp/`.
 
 ## Decisions
 
