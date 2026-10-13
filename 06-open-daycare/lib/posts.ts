@@ -82,6 +82,12 @@ export function badgeClasses(type: PostType): { bg: string; text: string } {
   return { bg: `bg-badge-${key}-bg`, text: `text-badge-${key}` };
 }
 
+/** Clases de la pastilla de TIPO del modal (colores sólidos del mockup). */
+export function tipoClasses(type: PostType): { bg: string; text: string } {
+  const key = BADGE_KEY[type];
+  return { bg: `bg-tipo-${key}-bg`, text: `text-tipo-${key}-ink` };
+}
+
 function kidBySlug(kids: Kid[], slug: string): Kid | undefined {
   return kids.find((kid) => kid.slug === slug);
 }
