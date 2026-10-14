@@ -1,30 +1,33 @@
+import type { Post, PostPhoto } from "@/lib/posts";
+
 import { CommentIcon, HeartIcon, ImageIcon, MegaphoneIcon } from "./icons";
 
-export type Badge = "LOGRO" | "ACTIVIDAD" | "ANUNCIO";
+// Foto de la tarjeta: con src se muestra la imagen elegida; sin src, el
+// placeholder dashed del mockup (posts semilla).
+function PhotoBox({ photo }: { photo: PostPhoto }) {
+  if (photo.src) {
+    return (
+      // Object URL de la foto elegida: no pasa por next/image (SPEC 06)
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={photo.src}
+        alt={photo.label || "Foto de la publicación"}
+        className="w-full rounded-2xl object-cover"
+        style={{ height: photo.height }}
+      />
+    );
+  }
 
-export type Post = {
-  id: string;
-  badge: Badge;
-  /** Clases Tailwind del pill: `bg-*` derivada del token @theme. */
-  badgeBg: string;
-  /** Clase Tailwind `text-*` derivada del token @theme. */
-  badgeText: string;
-  /** Clase Tailwind `bg-*` del avatar. */
-  avatarBg: string;
-  /** Letra para el avatar del niño, o vacío para el ícono de anuncio. */
-  avatarLabel: string;
-  title: string; // "Mateo" / "Anuncio general"
-  time: string; // "14:20 · publicado por vos"
-  audience: string; // "Para: familia de Mateo"
-  body: string;
-  photo?: { label: string; height: number };
-  likes: number;
-  comments: number;
-};
-
-/** Color del texto del avatar según el tipo de post (mockup). */
-function avatarTextClass(badge: Badge) {
-  return badge === "ANUNCIO" ? "text-badge-anuncio" : "text-avatar-m";
+  return (
+    <a
+      href="#"
+      className="flex flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed border-photo-border bg-fade text-photo-icon"
+      style={{ height: photo.height }}
+    >
+      <ImageIcon width={30} height={30} />
+      <span className="text-[13.5px] leading-[1.36]">{photo.label}</span>
+    </a>
+  );
 }
 
 export function PostCard({ post }: { post: Post }) {
@@ -33,7 +36,7 @@ export function PostCard({ post }: { post: Post }) {
       {/* Cabecera: avatar, título, hora y badge */}
       <div className="mb-[14px] flex items-center gap-3">
         <span
-          className={`flex size-11 shrink-0 items-center justify-center rounded-full font-display text-[17px] font-semibold ${post.avatarBg} ${avatarTextClass(post.badge)}`}
+          className={`flex size-11 shrink-0 items-center justify-center rounded-full font-display text-[17px] font-semibold ${post.avatarBg} ${post.avatarInk}`}
         >
           {post.avatarLabel ? (
             post.avatarLabel
@@ -54,7 +57,7 @@ export function PostCard({ post }: { post: Post }) {
           <span
             className={`text-xs font-extrabold leading-[1.36] tracking-[0.5px] ${post.badgeText}`}
           >
-            {post.badge}
+            {post.type}
           </span>
         </span>
       </div>
@@ -65,16 +68,15 @@ export function PostCard({ post }: { post: Post }) {
       {/* Cuerpo */}
       <p className="text-[15.5px] leading-[1.55] text-body">{post.body}</p>
 
-      {/* Foto opcional (placeholder) */}
-      {post.photo && (
-        <a
-          href="#"
-          className="mt-[14px] flex flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed border-photo-border bg-fade text-photo-icon"
-          style={{ height: post.photo.height }}
+      {/* Fotos: 1 a ancho completo, 2 o más en grilla de 2 columnas */}
+      {post.photos.length > 0 && (
+        <div
+          className={`mt-[14px] grid gap-3 ${post.photos.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}
         >
-          <ImageIcon width={30} height={30} />
-          <span className="text-[13.5px] leading-[1.36]">{post.photo.label}</span>
-        </a>
+          {post.photos.map((photo, index) => (
+            <PhotoBox key={`${post.id}-${index}`} photo={photo} />
+          ))}
+        </div>
       )}
 
       {/* Pie: likes, comentarios y Editar */}

@@ -40,6 +40,14 @@
   --color-badge-actividad: #2e89a6;
   --color-badge-anuncio-bg: #ccd8f4;
   --color-badge-anuncio: #4e72c8;
+  --color-badge-comida-bg: #f3e9d0;
+  --color-badge-comida: #9a7b1e;
+  --color-badge-siesta-bg: #e7dcf6;
+  --color-badge-siesta: #7b5fc0;
+  --color-badge-animo-bg: #f9d2de;
+  --color-badge-animo: #c56486;
+  --color-badge-foto-bg: #fbd8cc;
+  --color-badge-foto: #d9684a;
   --color-avatar-m-bg: #a9d9e8;
   --color-avatar-m: #1f7a93;
 
@@ -103,6 +111,28 @@
   --color-link-pill-active-ink: #4e72c8;
   --color-link-code-border: #e6d08a;
   --color-link-code-label: #a88526;
+
+  /* Chips del bloque PARA y pastillas del bloque TIPO (SPEC 06) */
+  --color-chip-bg: #fffdf9;
+  --color-chip-border: #ece0d0;
+  --color-chip-ink: #6e6359;
+  --color-chip-active-bg: #3f362e;
+  --color-chip-active-ink: #ffffff;
+
+  --color-tipo-comida-bg: #9a7b1e;
+  --color-tipo-comida-ink: #ffffff;
+  --color-tipo-siesta-bg: #e7dcf6;
+  --color-tipo-siesta-ink: #7b5fc0;
+  --color-tipo-actividad-bg: #2e89a6;
+  --color-tipo-actividad-ink: #ffffff;
+  --color-tipo-logro-bg: #cfebd8;
+  --color-tipo-logro-ink: #3e9b6c;
+  --color-tipo-animo-bg: #f9d2de;
+  --color-tipo-animo-ink: #c56486;
+  --color-tipo-foto-bg: #fbd8cc;
+  --color-tipo-foto-ink: #d9684a;
+  --color-tipo-anuncio-bg: #ccd8f4;
+  --color-tipo-anuncio-ink: #4e72c8;
 
   /* Sombras */
   --shadow-card: 0 4px 16px -12px rgb(120 90 60 / 0.5);
