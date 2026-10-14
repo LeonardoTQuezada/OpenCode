@@ -1,6 +1,6 @@
 # SPEC 07 — Daycares table with RLS and seed data
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** None (primera tabla del esquema)
 > **Date:** 2026-10-14
 > **Objective:** Crear la tabla `daycares` con RLS, campo de dirección, y datos semilla incluyendo "Guardería Sala Soles".
@@ -76,11 +76,11 @@ INSERT INTO daycares (name, address) VALUES
 
 ## Acceptance criteria
 
-- [] La tabla `daycares` existe en la base de datos con columnas `id`, `name`, `address`, `created_at`, `updated_at`.
-- [] RLS está habilitado en la tabla `daycares`.
-- [] Existen al menos 4 filas en `daycares`, incluyendo "Guardería Sala Soles".
-- [] La migración se aplicó sin errores vía `apply_migration`.
-- [] Las políticas RLS permiten SELECT y bloquean INSERT/UPDATE/DELETE.
+- [x] La tabla `daycares` existe en la base de datos con columnas `id`, `name`, `address`, `created_at`, `updated_at`.
+- [x] RLS está habilitado en la tabla `daycares`.
+- [x] Existen al menos 4 filas en `daycares`, incluyendo "Guardería Sala Soles".
+- [x] La migración se aplicó sin errores vía `apply_migration`.
+- [x] Las políticas RLS permiten SELECT y bloquean INSERT/UPDATE/DELETE.
 
 ## Decisions
 
