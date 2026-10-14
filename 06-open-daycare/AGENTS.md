@@ -12,6 +12,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Playwright, screenshot y cualquier cosa relacionada con Playwright tiene que estar en la carpeta .playwright-mcp
 - Context7 Utilizaremos este MCP para traer la documentación actualizada del framework.
+- Supabase MCP configurado a nivel de usuario (`~/.config/opencode/opencode.json`) apuntando al proyecto `dvwhstwigfgppudkairu` (proyecto remoto en Supabase). Sirve para consultar docs, ejecutar SQL, gestionar migraciones, edge functions, branching, etc. Preferir sus tools (`search_docs`, `execute_sql`, `apply_migration`, `get_advisors`, `list_migrations`, ...) para cualquier tarea de base de datos.
 
 ## Proyecto
 
@@ -36,6 +37,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - /spec Usaremos esta habilidad para crear las especificaciones.
 - /spec-impl Usaremos esta skill para hacer las implementaciones.
+
+## Supabase
+
+- Skills instaladas desde `supabase/agent-skills` (registradas en `skills-lock.json`):
+  - `supabase` (.agents/skills/supabase/): guía general de Supabase — auth, RLS, Edge Functions, Realtime, Storage, CLI, MCP, debugging. Cargar antes de cualquier tarea que toque Supabase.
+  - `supabase-postgres-best-practices` (.agents/skills/supabase-postgres-best-practices/): mejores prácticas de Postgres — schema, índices, RLS, migraciones, rendimiento. Cargar antes de escribir o modificar cualquier SQL/esquema.
+- El proyecto aún NO tiene carpeta `supabase/` (no inicializado con la CLI); el esquema de referencia está en `../07-DB-Schema` (solo referencia, no está implementado en la BD).
+- `.env` contiene `SUPBASE_DB_PASSWORD` (ojo: está escrito sin la "A": SUPBASE) para conectarse a la BD; no commitear secrets.
+- Flujo de cambios de esquema: iterar con `execute_sql` (MCP) → correr `get_advisors` → generar la migración con `supabase db pull` → verificar con `supabase migration list`. No usar `apply_migration` para iterar (escribe historial en cada llamada).
 
 ## Verificación de specs
 
