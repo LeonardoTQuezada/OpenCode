@@ -161,7 +161,7 @@ CREATE TRIGGER on_auth_user_created
 
 - **Yes:** Crear solo los enums `user_role` y `user_status` en esta migración. Los demás enums se crearán cuando se necesiten para sus tablas.
 - **Yes:** Trigger `AFTER INSERT ON auth.users` para crear automáticamente la fila en `users`. Sigue la convención del schema.
-- **Yes:** Usuario staff seed con credenciales `fernando@google.com` / `Abc123456@`. Para pruebas de desarrollo.
+- **Yes:** Usuario staff seed con credenciales `edwinTinitana@gmail.com` / `Abc123456@`. Para pruebas de desarrollo.
 - **No:** Incluir flujo de invitaciones para padres. Se hará en spec separada.
 - **No:** Crear usuario parent de prueba. Solo staff por ahora.
 
