@@ -37,6 +37,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - /spec Usaremos esta habilidad para crear las especificaciones.
 - /spec-impl Usaremos esta skill para hacer las implementaciones.
+- **Regla de carpetas de specs:** toda spec que tenga que ver con base de datos (tablas, enums, migraciones, RLS, seeds, triggers, esquema) se guarda en `specs/database/`; las demás van en `specs/`. Ej.: `specs/database/08-users-table.md`.
+- La numeración es compartida entre `specs/` y `specs/database/`: al crear una spec nueva, tomar el mayor número de ambas carpetas y sumar 1.
+- Para implementar/verificar una spec de BD hay que pasar la ruta completa: `/spec-impl database/08-users-table` y `/verify-spec specs/database/08-users-table.md`.
 
 ## Supabase
 
