@@ -43,9 +43,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Skills instaladas desde `supabase/agent-skills` (registradas en `skills-lock.json`):
   - `supabase` (.agents/skills/supabase/): guía general de Supabase — auth, RLS, Edge Functions, Realtime, Storage, CLI, MCP, debugging. Cargar antes de cualquier tarea que toque Supabase.
   - `supabase-postgres-best-practices` (.agents/skills/supabase-postgres-best-practices/): mejores prácticas de Postgres — schema, índices, RLS, migraciones, rendimiento. Cargar antes de escribir o modificar cualquier SQL/esquema.
-- El proyecto aún NO tiene carpeta `supabase/` (no inicializado con la CLI); el esquema de referencia está en `../07-DB-Schema` (solo referencia, no está implementado en la BD).
+- El esquema de referencia completo está en `../07-DB-Schema` (solo referencia, parte ya implementada en la BD).
 - `.env` contiene `SUPBASE_DB_PASSWORD` (ojo: está escrito sin la "A": SUPBASE) para conectarse a la BD; no commitear secrets.
-- Flujo de cambios de esquema: iterar con `execute_sql` (MCP) → correr `get_advisors` → generar la migración con `supabase db pull` → verificar con `supabase migration list`. No usar `apply_migration` para iterar (escribe historial en cada llamada).
+- **Regla de oro: TODA manipulación de la base de datos pasa por migraciones.** Cualquier cambio de esquema (crear/modificar tablas, columnas, índices, RLS, seeds, etc.) se escribe primero como archivo de migración en `supabase/migrations/NNN_descripcion.sql` y se aplica desde ahí. Nunca ejecutar DDL suelto contra la BD sin dejar su migración correspondiente.
+- Flujo de cambios de esquema:
+  1. Escribir el SQL de la migración en `supabase/migrations/NNN_descripcion.sql`.
+  2. Aplicar la migración con `apply_migration` (MCP) una sola vez al final.
+  3. Verificar con `execute_sql` (MCP) que los cambios quedaron aplicados.
+- Para experimentar/iterar usar `execute_sql` sin DDL destructivo; NO usar `apply_migration` para iterar (cada llamada escribe historial). Cuando el experimento funcione, volcar el SQL final en el archivo de migración y aplicarlo con `apply_migration`.
 
 ## Verificación de specs
 
