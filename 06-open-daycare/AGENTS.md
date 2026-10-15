@@ -55,6 +55,28 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   3. Verificar con `execute_sql` (MCP) que los cambios quedaron aplicados.
 - Para experimentar/iterar usar `execute_sql` sin DDL destructivo; NO usar `apply_migration` para iterar (cada llamada escribe historial). Cuando el experimento funcione, volcar el SQL final en el archivo de migración y aplicarlo con `apply_migration`.
 
+### Clientes de la app (`@supabase/ssr`) — ya configurado
+
+- **Para interactuar con la base de datos desde la aplicación usamos los paquetes oficiales de Supabase para Next.js: `@supabase/supabase-js` + `@supabase/ssr`** (instalados en `package.json`). No usar fetch/axios contra la API REST ni crear clientes a mano: siempre estos helpers.
+- Helpers en `utils/supabase/`:
+  - `server.ts` → `createClient(cookieStore)` para Server Components, Server Actions y Route Handlers.
+  - `client.ts` → `createClient()` para Client Components (browser).
+  - `proxy.ts` → `createClient(request)` devuelve `{ supabase, supabaseResponse }`; solo lo usa el proxy raíz.
+- `proxy.ts` en la raíz refresca la sesión con `await supabase.auth.getClaims()` y devuelve `supabaseResponse` intacto. **Next.js 16 renombró la convención `middleware.ts` → `proxy.ts`** (la vieja está deprecada); ver `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md`.
+- Env vars en `.env.local` (gitignored): `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Se leen dentro de los helpers; nunca commitear secrets ni hardcodearlas.
+- Uso típico en un Server Component:
+
+```tsx
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
+
+const cookieStore = await cookies();
+const supabase = createClient(cookieStore);
+const { data, error } = await supabase.from("users").select();
+```
+
+- Estos clientes respetan las políticas RLS activas de la BD. Para DDL/migraciones/inspección de esquema sigue usando el MCP de Supabase (`apply_migration`, `execute_sql`); los clientes de la app son solo para lectura/escritura de datos desde Next.js.
+
 ## Verificación de specs
 
 - Agente `spec-verifier` (`.opencode/agents/spec-verifier.md`): revisa una spec, contrasta cada criterio de `## Acceptance criteria` con el código y con capturas Playwright, corrige lo que haga falta y marca los checkboxes. Usa Context7 para buenas prácticas de Next.js y deja las capturas en `.playwright-mcp/`.
