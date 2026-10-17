@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { logoutAction } from "@/app/login/actions";
 import {
   BellIcon,
   HomeIcon,
@@ -105,13 +106,16 @@ export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
             </span>
             <span className="block text-xs leading-[1.36] text-muted">Maestra · Soles</span>
           </span>
-          <Link
-            href="/login"
-            title="Cerrar sesión"
-            className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-cream text-faint"
-          >
-            <LogoutIcon width={16} height={16} />
-          </Link>
+          {/* Logout real (SPEC 09): cierra la sesión en Supabase Auth */}
+          <form action={logoutAction} className="shrink-0">
+            <button
+              type="submit"
+              title="Cerrar sesión"
+              className="flex size-8 cursor-pointer items-center justify-center rounded-[10px] bg-cream text-faint"
+            >
+              <LogoutIcon width={16} height={16} />
+            </button>
+          </form>
         </div>
       </div>
     </>
