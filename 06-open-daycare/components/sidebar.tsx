@@ -114,7 +114,7 @@ export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
             <span className="block truncate text-sm font-extrabold leading-[1.36] text-ink">
               {displayName}
             </span>
-            <span className="block truncate text-xs leading-[1.36] text-muted">
+            <span className="block text-xs leading-[1.36] text-muted">
               {roleLine}
             </span>
           </span>
