@@ -30,6 +30,8 @@ export type CreateInvitationInput = {
   fullName: string;
   email: string;
   relationship: "father" | "mother" | "guardian";
+  /** Código preview mostrado en el modal; si está tomado se genera otro. */
+  code?: string;
 };
 
 export type CreateInvitationResult = {
@@ -46,6 +48,21 @@ const INVITATION_TTL_DAYS = 7;
 async function getClient() {
   const cookieStore = await cookies();
   return createClient(cookieStore);
+}
+
+/** Genera un código aleatorio para mostrar en el modal antes de enviar
+ *  (preview). No escribe en la BD; createInvitation lo confirma al insertar. */
+export async function getInvitationCodePreview(): Promise<string> {
+  const supabase = await getClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Debes iniciar sesión para generar un código.");
+  }
+
+  return generateUniqueCode(supabase);
 }
 
 /** Crea una invitación para vincular un padre a un niño:
@@ -93,7 +110,20 @@ export async function createInvitation(
     throw new Error("No se encontró el niño indicado.");
   }
 
-  const code = await generateUniqueCode(supabase);
+  // Usa el código preview del modal si sigue libre; si no, genera uno nuevo.
+  let code = input.code?.trim().toUpperCase() ?? "";
+  if (code) {
+    const { data: taken } = await supabase
+      .from("invitations")
+      .select("id")
+      .eq("code", code)
+      .maybeSingle();
+    if (taken) code = "";
+  }
+  if (!code) {
+    code = await generateUniqueCode(supabase);
+  }
+
   const expiresAt = new Date(
     Date.now() + INVITATION_TTL_DAYS * 24 * 60 * 60 * 1000,
   ).toISOString();
@@ -342,4 +372,41 @@ export async function activateInvitation(
 
   // Refresca la raíz para que la sesión nueva vea su feed.
   revalidatePath("/");
+}
+
+/** Datos públicos de una invitación válida, para prellenar /activate-account. */
+export type ValidatedInvitationInfo = {
+  email: string;
+  fullName: string;
+  childId: string;
+  childName: string;
+  roomName: string;
+  invitedByName: string;
+};
+
+/** Valida un código de invitación sin sesión (RPC pre-auth).
+ *  Devuelve null si el código no existe, ya se usó o venció. */
+export async function validateInvitationCode(
+  code: string,
+): Promise<ValidatedInvitationInfo | null> {
+  const supabase = await getClient();
+
+  const { data, error } = await supabase.rpc("validate_invitation", {
+    p_code: code,
+  });
+  if (error) {
+    throw new Error(`No se pudo validar el código: ${error.message}`);
+  }
+
+  const invitation = data as ValidatedInvitation | null;
+  if (!invitation) return null;
+
+  return {
+    email: invitation.email,
+    fullName: invitation.full_name,
+    childId: invitation.child_id,
+    childName: invitation.child_name,
+    roomName: invitation.room_name,
+    invitedByName: invitation.invited_by_name,
+  };
 }

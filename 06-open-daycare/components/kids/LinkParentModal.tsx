@@ -3,7 +3,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-import { createInvitation } from "@/app/_actions/invitations";
+import {
+  createInvitation,
+  getInvitationCodePreview,
+} from "@/app/_actions/invitations";
 import { CloseIcon, InfoIcon, SendIcon } from "../icons";
 
 type Relationship = "father" | "mother" | "guardian";
@@ -51,6 +54,7 @@ export function LinkParentModal({
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewCode, setPreviewCode] = useState<string | null>(null);
   const [result, setResult] = useState<{
     code: string;
     emailSent: boolean;
@@ -65,9 +69,28 @@ export function LinkParentModal({
       setValues(EMPTY_VALUES);
       setFieldError(null);
       setError(null);
+      setPreviewCode(null);
       setResult(null);
     }
   }
+
+  // Pide un código preview al servidor al abrir (se confirma al enviar).
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+
+    getInvitationCodePreview()
+      .then((code) => {
+        if (!cancelled) setPreviewCode(code);
+      })
+      .catch(() => {
+        if (!cancelled) setPreviewCode(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   /** Esc cierra el modal y bloquea el scroll de la página de fondo. */
   useEffect(() => {
@@ -118,6 +141,7 @@ export function LinkParentModal({
         fullName,
         email,
         relationship: values.relationship as Relationship,
+        code: previewCode ?? undefined,
       });
       setResult({ code: created.code, emailSent: created.emailSent });
     } catch (err) {
@@ -272,6 +296,23 @@ export function LinkParentModal({
                     </button>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Código preview generado en el servidor (se confirma al enviar) */}
+            <div className="mb-5 rounded-[16px] border-[1.5px] border-dashed border-link-code-border bg-consent-bg px-[18px] py-[18px] text-center">
+              <div className="mb-2 text-[12px] font-extrabold tracking-[.7px] text-link-code-label">
+                CÓDIGO DE INVITACIÓN
+              </div>
+              <div
+                className={`font-display text-[34px] font-semibold tracking-[7px] text-consent-ink ${
+                  previewCode ? "" : "opacity-50"
+                }`}
+              >
+                {previewCode ?? "·····"}
+              </div>
+              <div className="mt-1.5 text-[13px] text-link-code-label">
+                Vence en 7 días
               </div>
             </div>
 
