@@ -11,8 +11,9 @@ export type RoomGroup = {
 };
 
 /** Buscador + encabezados de sala + grilla de niños (SPEC 10).
- *  Recibe los grupos por prop desde el server component; el buscador
- *  filtra por nombre en el cliente sobre todas las salas. */
+ *  Recibe los grupos por prop desde el server component; solo se muestran
+ *  las salas con al menos un niño, y el buscador filtra por nombre en el
+ *  cliente sobre todas las salas. */
 export function KidsList({ groups }: { groups: RoomGroup[] }) {
   const [query, setQuery] = useState("");
 
@@ -25,9 +26,8 @@ export function KidsList({ groups }: { groups: RoomGroup[] }) {
         ? group.children.filter((child) => child.full_name.toLowerCase().includes(term))
         : group.children,
     }))
-    .filter((group) => !term || group.children.length > 0);
-
-  const totalVisible = filteredGroups.reduce((acc, group) => acc + group.children.length, 0);
+    // Salas vacías no se muestran (decisión del usuario, SPEC 10).
+    .filter((group) => group.children.length > 0);
 
   return (
     <>
@@ -44,10 +44,10 @@ export function KidsList({ groups }: { groups: RoomGroup[] }) {
         />
       </div>
 
-      {groups.length === 0 ? (
-        <p className="py-10 text-center text-[15px] text-muted">Todavía no hay salas cargadas.</p>
-      ) : totalVisible === 0 ? (
-        <p className="py-10 text-center text-[15px] text-muted">Sin resultados</p>
+      {filteredGroups.length === 0 ? (
+        <p className="py-10 text-center text-[15px] text-muted">
+          {term ? "Sin resultados" : "Todavía no hay niños cargados."}
+        </p>
       ) : (
         filteredGroups.map((group) => (
           <section key={group.room.id} className="mb-[26px]">
@@ -63,15 +63,11 @@ export function KidsList({ groups }: { groups: RoomGroup[] }) {
             </div>
 
             {/* Grilla */}
-            {group.children.length > 0 ? (
-              <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
-                {group.children.map((child) => (
-                  <KidCard key={child.id} child={child} />
-                ))}
-              </div>
-            ) : (
-              <p className="py-4 text-[14px] text-muted">Sin niños en esta sala.</p>
-            )}
+            <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
+              {group.children.map((child) => (
+                <KidCard key={child.id} child={child} />
+              ))}
+            </div>
           </section>
         ))
       )}
