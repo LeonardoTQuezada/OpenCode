@@ -13,6 +13,7 @@ import {
   UserIcon,
 } from "./icons";
 import { usePosts } from "./posts-provider";
+import { useUserProfile } from "./user-profile-provider";
 
 /** Ítem de navegación activo en el sidebar. */
 export type NavKey = "feed" | "kids" | "notices" | "account";
@@ -42,6 +43,15 @@ type SidebarContentsProps = {
  *  Lo usa el aside de escritorio y el drawer móvil. */
 export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
   const { openComposer } = usePosts();
+  const profile = useUserProfile();
+
+  // Datos reales del usuario de la sesión (layout raíz). Fallback neutro
+  // si por algún motivo no hay perfil cargado.
+  const displayName = profile?.fullName ?? "—";
+  const displayInitial = profile?.initials ?? "?";
+  const roleLine = profile
+    ? [profile.roleLabel, profile.daycareShort].filter(Boolean).join(" · ")
+    : "";
 
   return (
     <>
@@ -98,13 +108,15 @@ export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
       <div className="mt-2.5 border-t border-card-border pt-[14px]">
         <div className="flex items-center gap-[11px] px-2 py-1.5">
           <span className="flex size-[38px] shrink-0 items-center justify-center rounded-full bg-avatar font-display text-base font-semibold text-white">
-            C
+            {displayInitial}
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-sm font-extrabold leading-[1.36] text-ink">
-              Caro Giménez
+            <span className="block truncate text-sm font-extrabold leading-[1.36] text-ink">
+              {displayName}
             </span>
-            <span className="block text-xs leading-[1.36] text-muted">Maestra · Soles</span>
+            <span className="block text-xs leading-[1.36] text-muted">
+              {roleLine}
+            </span>
           </span>
           {/* Logout real (SPEC 09): cierra la sesión en Supabase Auth */}
           <form action={logoutAction} className="shrink-0">
