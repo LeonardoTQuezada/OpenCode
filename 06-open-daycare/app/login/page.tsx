@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { SunIcon } from "@/components/icons";
+import { LoginForm } from "@/components/login-form";
 
-/** Pantalla pública de login (SPEC 03). Réplica de
+/** Pantalla pública de login (SPEC 03 + SPEC 09). Réplica de
  *  `references/pantallas/login.dc.html` sin el selector de rol
- *  (decisión de spec: no existe Personal/Familia) y sin autenticación:
- *  el botón "Iniciar sesión" navega al feed con un simple enlace. */
+ *  (decisión de spec: no existe Personal/Familia); el formulario
+ *  autentica de verdad contra Supabase Auth. */
 export default function LoginPage() {
   return (
     <div className="grid min-h-screen grid-cols-1 bg-page md:grid-cols-[1.05fr_1fr]">
@@ -49,49 +49,7 @@ export default function LoginPage() {
             Ingresá para ver el día de hoy.
           </p>
 
-          <div className="mb-2 text-[12px] font-bold tracking-[.7px] text-faint">
-            EMAIL
-          </div>
-          <input
-            type="email"
-            defaultValue="caro@opendaycare.com"
-            className="mb-[18px] w-full rounded-[14px] border-[1.5px] border-input-border bg-white px-4 py-[14px] text-[15px] text-ink outline-none focus:border-input-focus"
-          />
-
-          <div className="mb-2 text-[12px] font-bold tracking-[.7px] text-faint">
-            CONTRASEÑA
-          </div>
-          <input
-            type="password"
-            placeholder="••••••••"
-            className="mb-2.5 w-full rounded-[14px] border-[1.5px] border-input-border bg-white px-4 py-[14px] text-[15px] text-ink outline-none placeholder:text-placeholder focus:border-input-focus"
-          />
-
-          <div className="mb-5 text-right">
-            <Link
-              href="/forgot-password"
-              className="cursor-pointer text-[13.5px] font-bold text-coral-deep"
-            >
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </div>
-
-          <Link
-            href="/"
-            className="block w-full cursor-pointer rounded-[15px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] p-[15px] text-center text-[16px] font-extrabold text-white shadow-login"
-          >
-            Iniciar sesión
-          </Link>
-
-          <p className="mt-6 mb-0 text-center text-[14.5px] text-faint">
-            ¿Te invitó la guardería?{" "}
-            <Link
-              href="/activate-account"
-              className="font-extrabold text-coral-deep"
-            >
-              Activá tu cuenta
-            </Link>
-          </p>
+          <LoginForm />
         </div>
       </div>
     </div>
