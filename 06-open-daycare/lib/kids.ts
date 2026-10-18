@@ -56,6 +56,33 @@ const AVATAR_PALETTES: { bg: string; ink: string }[] = [
   { bg: "bg-kid-purple", ink: "text-kid-purple-ink" },
 ];
 
+/** Paleta estable por id: el mismo id siempre eligiendo la misma (SPEC 10). */
+export function avatarPaletteFor(id: string): { bg: string; ink: string } {
+  const hash = [...id].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length];
+}
+
+const ES_MONTHS = [
+  "ene", "feb", "mar", "abr", "may", "jun",
+  "jul", "ago", "sep", "oct", "nov", "dic",
+];
+
+/** "2022-03-12" → "12 mar 2022"; vacío o inválido → "". */
+export function formatDateIso(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
+  if (!match) return "";
+  const [, year, month, day] = match;
+  return `${Number(day)} ${ES_MONTHS[Number(month) - 1]} ${year}`;
+}
+
+/** "2025-02-01" → "feb 2025"; vacío o inválido → "". */
+export function formatMonthYearIso(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
+  if (!match) return "";
+  const [, year, month] = match;
+  return `${ES_MONTHS[Number(month) - 1]} ${year}`;
+}
+
 // Convierte "12/03/2022" en Date. Devuelve null si el formato no coincide
 // o si la fecha no existe (31/02, 45/13, etc.).
 export function parseBirthDate(value: string): Date | null {
