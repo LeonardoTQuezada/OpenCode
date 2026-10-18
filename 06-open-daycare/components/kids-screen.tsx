@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import type { RoomGroup } from "./kids-list";
 import { AddChildModal, type NewChildInput } from "./add-child-modal";
 import { useFamily } from "./family-provider";
 import { KidsList } from "./kids-list";
 import { PlusIcon } from "./icons";
 
 /** Pantalla de niños con su modal "Agregar niño" (SPEC 04).
- *  Los niños ya no son un useState local: salen del provider, que los lee de
- *  data/kids.json y los persiste con addKidAction (SPEC 05). */
-export function KidsScreen() {
-  const { kids, addKid } = useFamily();
+ *  La lista sale de datos reales por prop (SPEC 10); el modal todavía
+ *  persiste vía addKid del provider hasta que el Paso 5 lo conecte a
+ *  createChild de Supabase. */
+export function KidsScreen({ groups }: { groups: RoomGroup[] }) {
+  const { addKid } = useFamily();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   /** Persiste el niño nuevo; el modal ya validó en cliente y la acción
@@ -44,8 +46,8 @@ export function KidsScreen() {
         </button>
       </div>
 
-      {/* Buscador + encabezado + grilla */}
-      <KidsList kids={kids} />
+      {/* Buscador + encabezados + grilla */}
+      <KidsList groups={groups} />
 
       {/* Modal de alta de niño */}
       <AddChildModal

@@ -121,6 +121,14 @@ export function validateBirthDate(value: string): string | undefined {
   return undefined;
 }
 
+// Edad a partir de una fecha ISO ("2022-03-12" → "3 años"). Parsea a mano
+// para no depender del timezone de Date (SPEC 10).
+export function ageLabelFromIso(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
+  if (!match) return "";
+  return ageLabel(`${match[3]}/${match[2]}/${match[1]}`);
+}
+
 // "Martina López" → "martina-lopez"; si ya existe → "martina-lopez-2".
 export function slugify(name: string, taken: string[]): string {
   const base =
