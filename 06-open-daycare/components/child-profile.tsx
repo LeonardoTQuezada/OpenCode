@@ -9,6 +9,7 @@ import {
 } from "@/lib/kids";
 import { AlertTriangleIcon, ArrowLeftIcon, SunIcon } from "./icons";
 import { Avatar } from "./avatar";
+import { ParentsSection } from "./kids/ParentsSection";
 
 const DETAIL_ROWS: { label: string; value: string }[] = [
   { label: "Fecha de nacimiento", value: "birthDate" },
@@ -18,7 +19,7 @@ const DETAIL_ROWS: { label: string; value: string }[] = [
 
 /** Ficha completa de un niño: columna principal + columna de 300px.
  *  Recibe el child real de Supabase y el nombre de su sala (SPEC 10).
- *  Los padres vinculados son placeholder hasta la tabla parent_children. */
+ *  Los padres vinculados salen de ParentsSection (SPEC 11). */
 export function ChildProfileView({ child, roomName }: { child: Child; roomName: string }) {
   const palette = avatarPaletteFor(child.id);
   const age = ageLabelFromIso(child.birth_date);
@@ -113,15 +114,7 @@ export function ChildProfileView({ child, roomName }: { child: Child; roomName: 
             Resumen del día
           </Link>
 
-          <div className="rounded-2xl border border-card-border bg-card px-[18px] py-4">
-            <div className="mb-[14px] text-[12.5px] font-extrabold tracking-[0.8px] text-label">
-              PADRES VINCULADOS
-            </div>
-            {/* Placeholder hasta la tabla parent_children (fuera de esta spec). */}
-            <p className="text-[14px] leading-[1.5] text-muted">
-              La vinculación de padres estará disponible próximamente.
-            </p>
-          </div>
+          <ParentsSection childId={child.id} childName={child.full_name} />
         </div>
       </div>
     </>
