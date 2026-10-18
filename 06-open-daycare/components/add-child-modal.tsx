@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { ROOMS, validateBirthDate } from "@/lib/kids";
+import type { Room } from "@/app/_actions/children";
+import { validateBirthDate } from "@/lib/kids";
 import { CalendarIcon, ChevronDownIcon } from "./icons";
 
 /** Datos que el modal entrega al padre para construir el niño (SPEC 04). */
@@ -48,14 +49,29 @@ export function AddChildModal({
   open,
   onClose,
   onSubmit,
+  rooms,
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (input: NewChildInput) => void;
+  /** Salas reales de la guardería (SPEC 10). */
+  rooms: Room[];
 }) {
   const [values, setValues] = useState(EMPTY_VALUES);
   const [errors, setErrors] = useState<FieldErrors>({});
   const dateInputRef = useRef<HTMLInputElement>(null);
+
+  // Al abrir (false → true), arranca con el formulario limpio.
+  // Patrón "adjust state when a prop changes" de React: se ajusta en render,
+  // no en un effect (evita el lint react-hooks/set-state-in-effect).
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) {
+      setValues(EMPTY_VALUES);
+      setErrors({});
+    }
+  }
 
   /** Esc cierra el modal y bloquea el scroll de la página de fondo. */
   useEffect(() => {
@@ -118,9 +134,7 @@ export function AddChildModal({
       allergies: values.allergies.trim() || undefined,
       medicalNotes: values.medicalNotes.trim() || undefined,
     });
-    setValues(EMPTY_VALUES);
-    setErrors({});
-    onClose();
+    // El cierre y el reset los decide el padre: solo si el alta fue exitosa.
   };
 
   if (!open) return null;
@@ -241,7 +255,7 @@ export function AddChildModal({
                   className={`${inputClass} cursor-pointer appearance-none pr-10 font-bold`}
                 >
                   <option value="">Elegí una sala</option>
-                  {ROOMS.map((room) => (
+                  {rooms.map((room) => (
                     <option key={room.id} value={room.id}>
                       {room.name}
                     </option>

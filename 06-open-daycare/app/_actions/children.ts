@@ -3,6 +3,7 @@
 
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 import { createClient } from "@/utils/supabase/server";
@@ -159,6 +160,9 @@ export async function createChild(input: CreateChildInput): Promise<Child> {
     .single();
 
   if (error) throw new Error(`No se pudo crear el niño: ${error.message}`);
+
+  // Refresca el listado server-side para que /kids muestre el niño nuevo.
+  revalidatePath("/kids");
 
   return data as Child;
 }
