@@ -78,27 +78,27 @@ const PUBLIC_ROUTES = ["/login", "/activate-account", "/forgot-password"];
 
 ## Acceptance criteria
 
-- [ ] Con sesión activa (staff seed), `/` renderiza el feed sin redirección.
-- [ ] Sin sesión, visitar `/` redirige a `/login` y el formulario queda visible.
-- [ ] Sin sesión, `/kids`, `/kids/mateo`, `/my-account`, `/notices`, `/day-summary` y `/family-feed` redirigen a `/login`.
-- [ ] Sin sesión, `/login`, `/activate-account` y `/forgot-password` cargan sin redirección.
-- [ ] Con sesión activa, entrar a `/login` redirige a `/`.
-- [ ] Con sesión activa, entrar a `/activate-account` o `/forgot-password` redirige a `/`.
-- [ ] `/login` ya no precarga `caro@opendaycare.com`: el email nace vacío.
-- [ ] Con email vacío, "Iniciar sesión" muestra "Ingresá tu email." en `#C5503A` bajo el botón y no navega.
-- [ ] Con password vacía (y email con texto), muestra "Ingresá tu contraseña." y no navega.
-- [ ] Con credenciales válidas (`edwinTinitana@gmail.com` / `Abc123456@`), el botón muestra "Ingresando…" mientras valida y termina en `/` con la sesión creada (cookies de Supabase presentes).
-- [ ] Con password incorrecta, muestra "Email o contraseña incorrectos." bajo el botón y permanece en `/login`.
-- [ ] Mientras el submit está en curso, el botón está deshabilitado y su texto es "Ingresando…".
-- [ ] Cerrar sesión desde el sidebar de escritorio borra la sesión y navega a `/login`.
-- [ ] Cerrar sesión desde el drawer móvil también borra la sesión y navega a `/login`.
-- [ ] Tras cerrar sesión, escribir `/` a mano redirige a `/login` (la sesión quedó limpia, no solo la navegación).
-- [ ] "¿Olvidaste tu contraseña?" y "Activá tu cuenta" siguen apuntando a `/forgot-password` y `/activate-account`.
-- [ ] El panel de marca de `/login` se ve igual que antes (regresión SPEC 03).
-- [ ] `/activate-account` y `/forgot-password` se ven y responden igual que antes para un usuario sin sesión (regresión SPEC 03).
-- [ ] `/` con sesión se ve igual que antes: feed, sidebar y composer intactos (regresión SPEC 01/06).
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
-- [ ] Las capturas quedan guardadas en `.playwright-mcp/`.
+- [x] Con sesión activa (staff seed), `/` renderiza el feed sin redirección.
+- [x] Sin sesión, visitar `/` redirige a `/login` y el formulario queda visible.
+- [x] Sin sesión, `/kids`, `/kids/mateo`, `/my-account`, `/notices`, `/day-summary` y `/family-feed` redirigen a `/login`.
+- [x] Sin sesión, `/login`, `/activate-account` y `/forgot-password` cargan sin redirección.
+- [x] Con sesión activa, entrar a `/login` redirige a `/`.
+- [x] Con sesión activa, entrar a `/activate-account` o `/forgot-password` redirige a `/`.
+- [x] `/login` ya no precarga `caro@opendaycare.com`: el email nace vacío.
+- [x] Con email vacío, "Iniciar sesión" muestra "Ingresá tu email." en `#C5503A` bajo el botón y no navega.
+- [x] Con password vacía (y email con texto), muestra "Ingresá tu contraseña." y no navega.
+- [x] Con credenciales válidas (`edwinTinitana@gmail.com` / `Abc123456@`), el botón muestra "Ingresando…" mientras valida y termina en `/` con la sesión creada (cookies de Supabase presentes).
+- [x] Con password incorrecta, muestra "Email o contraseña incorrectos." bajo el botón y permanece en `/login`.
+- [x] Mientras el submit está en curso, el botón está deshabilitado y su texto es "Ingresando…".
+- [x] Cerrar sesión desde el sidebar de escritorio borra la sesión y navega a `/login`.
+- [x] Cerrar sesión desde el drawer móvil también borra la sesión y navega a `/login`.
+- [x] Tras cerrar sesión, escribir `/` a mano redirige a `/login` (la sesión quedó limpia, no solo la navegación).
+- [x] "¿Olvidaste tu contraseña?" y "Activá tu cuenta" siguen apuntando a `/forgot-password` y `/activate-account`.
+- [x] El panel de marca de `/login` se ve igual que antes (regresión SPEC 03).
+- [x] `/activate-account` y `/forgot-password` se ven y responden igual que antes para un usuario sin sesión (regresión SPEC 03).
+- [x] `/` con sesión se ve igual que antes: feed, sidebar y composer intactos (regresión SPEC 01/06).
+- [x] `npm run lint` y `npm run build` terminan sin errores.
+- [x] Las capturas quedan guardadas en `.playwright-mcp/`.
 
 ## Decisions
 
