@@ -207,24 +207,25 @@ export interface Child {
 
 ## Acceptance criteria
 
-- [] Los enums `child_status` y `relationship_type` existen en la base de datos.
-- [] La tabla `rooms` existe con RLS habilitado.
-- [] La tabla `children` existe con RLS habilitado.
-- [] Las políticas RLS permiten SELECT para usuarios de la misma guardería.
-- [] Las políticas RLS permiten escritura solo para staff/admin.
-- [] Existen 3 rooms (Soles, Estrellas, Arcoíris) vinculadas al daycare existente.
-- [] La tabla `children` está vacía (sin seed data).
-- [] `/kids` muestra las rooms reales con sus children desde la base de datos.
-- [] `/kids` agrupa niños por sala con contador real.
-- [] El buscador filtra niños por nombre (frontend).
-- [] Click en una tarjeta de niño navega a `/kids/[id]`.
-- [] `/kids/[id]` muestra el perfil real del niño desde la base de datos.
-- [] `/kids/[id]` calcula la edad desde `birth_date`.
-- [] El botón "Agregar niño" abre el modal funcional.
-- [] Crear un niño nuevo lo inserta en la base de datos y refresca la lista.
-- [] `npm run lint` pasa sin errores.
-- [] `npx tsc --noEmit` pasa sin errores.
-- [] No hay errores en la consola del navegador.
+- [x] Los enums `child_status` y `relationship_type` existen en la base de datos.
+- [x] La tabla `rooms` existe con RLS habilitado.
+- [x] La tabla `children` existe con RLS habilitado.
+- [x] Las políticas RLS permiten SELECT para usuarios de la misma guardería.
+- [x] Las políticas RLS permiten escritura solo para staff/admin.
+- [x] Existen 3 rooms (Soles, Estrellas, Arcoíris) vinculadas al daycare existente.
+- [x] La tabla `children` está vacía (sin seed data).
+  - La migración `006` no inserta ningún niño (el seed es solo de rooms). La tabla contiene 1 fila, `Jessica Tinitana`, creada por el usuario desde el CRUD de la app (dato real, no seed); el niño de prueba de la verificación fue eliminado.
+- [x] `/kids` muestra las rooms reales con sus children desde la base de datos.
+- [x] `/kids` agrupa niños por sala con contador real.
+- [x] El buscador filtra niños por nombre (frontend).
+- [x] Click en una tarjeta de niño navega a `/kids/[id]`.
+- [x] `/kids/[id]` muestra el perfil real del niño desde la base de datos.
+- [x] `/kids/[id]` calcula la edad desde `birth_date`.
+- [x] El botón "Agregar niño" abre el modal funcional.
+- [x] Crear un niño nuevo lo inserta en la base de datos y refresca la lista.
+- [x] `npm run lint` pasa sin errores.
+- [x] `npx tsc --noEmit` pasa sin errores.
+- [x] No hay errores en la consola del navegador.
 
 ## Decisions
 
@@ -236,6 +237,8 @@ export interface Child {
 - **No:** UI para gestionar rooms. Solo existen como seed data; no se editan ni eliminan desde la UI.
 - **No:** Tabla `parent_children` ni vinculación de padres. Va en spec separada.
 - **No:** Editar/eliminar niños. Solo crear por ahora.
+- **Nota (verificación 18/10/2026):** las políticas RLS se implementaron con los helpers `private.current_user_daycare_id()` / `private.current_user_role()` (patrón de SPEC 08, migración `004`) en lugar de la subquery directa a `users` del Data model; misma semántica y evita recursión RLS. La migración agrega además `UNIQUE (daycare_id, name)` en `rooms` para soportar el `ON CONFLICT` del seed.
+- **Nota (verificación 18/10/2026):** `/kids` solo lista las salas con al menos un niño (las salas vacías, p. ej. Arcoíris, no muestran encabezado), igual que el mockup `ninos.dc.html`. El resto de la pantalla sí sale 100 % de datos reales.
 
 ## Risks
 
