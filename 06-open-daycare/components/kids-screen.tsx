@@ -1,24 +1,37 @@
 "use client";
 
 import { useState } from "react";
+import { createChild } from "@/app/_actions/children";
+import type { RoomGroup } from "./kids-list";
 import { AddChildModal, type NewChildInput } from "./add-child-modal";
-import { useFamily } from "./family-provider";
 import { KidsList } from "./kids-list";
 import { PlusIcon } from "./icons";
 
-/** Pantalla de niños con su modal "Agregar niño" (SPEC 04).
- *  Los niños ya no son un useState local: salen del provider, que los lee de
- *  data/kids.json y los persiste con addKidAction (SPEC 05). */
-export function KidsScreen() {
-  const { kids, addKid } = useFamily();
+/** "12/03/2022" → "2022-03-12" (el modal maneja dd/mm/aaaa, la BD ISO). */
+function toIsoDate(value: string): string {
+  const [day, month, year] = value.split("/");
+  return `${year}-${month}-${day}`;
+}
+
+/** Pantalla de niños con su modal "Agregar niño" (SPEC 04 + SPEC 10).
+ *  La lista y las salas salen de datos reales por prop; el modal da de alta
+ *  el niño con createChild y revalidatePath refresca el listado. */
+export function KidsScreen({ groups }: { groups: RoomGroup[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /** Persiste el niño nuevo; el modal ya validó en cliente y la acción
-   *  revalida en servidor antes de escribir el JSON. */
+  /** Alta real: el modal ya validó en cliente; createChild revalida /kids. */
   const handleCreate = (input: NewChildInput) => {
-    void addKid(input).then((result) => {
-      if (!result.ok) console.error(result.message);
-    });
+    void createChild({
+      roomId: input.roomId,
+      fullName: input.fullName,
+      birthDate: toIsoDate(input.birthDate),
+      medicalNotes: input.medicalNotes ?? null,
+      allergyTags: input.allergies
+        ? input.allergies.split(",").map((tag) => tag.trim()).filter(Boolean)
+        : [],
+    })
+      .then(() => setIsModalOpen(false))
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -44,14 +57,15 @@ export function KidsScreen() {
         </button>
       </div>
 
-      {/* Buscador + encabezado + grilla */}
-      <KidsList kids={kids} />
+      {/* Buscador + encabezados + grilla */}
+      <KidsList groups={groups} />
 
-      {/* Modal de alta de niño */}
+      {/* Modal de alta de niño (salas reales de la guardería) */}
       <AddChildModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreate}
+        rooms={groups.map((group) => group.room)}
       />
     </>
   );

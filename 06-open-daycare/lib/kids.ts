@@ -1,46 +1,16 @@
-// Tipos y helpers de los niños de la sala. Los datos no viven aquí: se leen
-// de data/kids.json y se escriben con las Server Actions (SPEC 05).
-
-export type KidTagKind = "allergy" | "link";
-
-export type Room = {
-  id: string; // "soles"
-  name: string; // "Soles"
-};
-
-// Las 6 salas mock que ofrece el select del modal "Agregar niño" (SPEC 04).
-export const ROOMS: Room[] = [
-  { id: "soles", name: "Soles" },
-  { id: "lunas", name: "Lunas" },
-  { id: "estrellas", name: "Estrellas" },
-  { id: "nubes", name: "Nubes" },
-  { id: "mariposas", name: "Mariposas" },
-  { id: "cielo", name: "Cielo" },
-];
+// Tipos y helpers de los niños. Los datos reales viven en Supabase
+// (tabla `children`, SPEC 10); `Kid` es el shape adaptado que consumen
+// los chips y el composer del feed (SPEC 06) hasta que el feed migre.
 
 export type Kid = {
+  /** Id real del child (usado como slug/chip key). */
   slug: string;
   name: string;
   initial: string;
   age: string;
   room: string; // nombre de la sala, ej. "Soles"
-  allergies?: string; // texto libre del modal, ej. "Maní, Lactosa"
-  medicalNotes?: string; // texto libre del modal
-  birthDate?: string; // "12 mar 2022" — solo en los perfiles con ficha propia
-  joinedAt?: string; // "feb 2025" — idem
   avatarBg: string;
   avatarInk: string;
-  // Sin parentLabel: el texto de padres se deriva del conteo en
-  // data/family.json con parentLabel() de lib/family.ts (SPEC 05).
-  tag?: { label: string; kind: KidTagKind };
-};
-
-export type ParentLink = {
-  name: string;
-  initial: string;
-  role: string;
-  status: "ACTIVA" | "PENDIENTE";
-  avatarBg: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -55,6 +25,33 @@ const AVATAR_PALETTES: { bg: string; ink: string }[] = [
   { bg: "bg-kid-yellow", ink: "text-kid-yellow-ink" },
   { bg: "bg-kid-purple", ink: "text-kid-purple-ink" },
 ];
+
+/** Paleta estable por id: el mismo id siempre eligiendo la misma (SPEC 10). */
+export function avatarPaletteFor(id: string): { bg: string; ink: string } {
+  const hash = [...id].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length];
+}
+
+const ES_MONTHS = [
+  "ene", "feb", "mar", "abr", "may", "jun",
+  "jul", "ago", "sep", "oct", "nov", "dic",
+];
+
+/** "2022-03-12" → "12 mar 2022"; vacío o inválido → "". */
+export function formatDateIso(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
+  if (!match) return "";
+  const [, year, month, day] = match;
+  return `${Number(day)} ${ES_MONTHS[Number(month) - 1]} ${year}`;
+}
+
+/** "2025-02-01" → "feb 2025"; vacío o inválido → "". */
+export function formatMonthYearIso(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
+  if (!match) return "";
+  const [, year, month] = match;
+  return `${ES_MONTHS[Number(month) - 1]} ${year}`;
+}
 
 // Convierte "12/03/2022" en Date. Devuelve null si el formato no coincide
 // o si la fecha no existe (31/02, 45/13, etc.).
@@ -97,8 +94,7 @@ export function ageLabel(birthDate: string): string {
 export const MAX_AGE_YEARS = 6;
 
 // Valida la fecha de nacimiento y devuelve el mensaje de error o undefined.
-// Vive en lib/ para que la comparta el modal "Agregar niño" (SPEC 04) y la
-// Server Action addKidAction (SPEC 05).
+// La comparte el modal "Agregar niño" (SPEC 04) con su validación de servidor.
 export function validateBirthDate(value: string): string | undefined {
   if (!value.trim()) return "Ingresá la fecha de nacimiento.";
 
@@ -121,56 +117,10 @@ export function validateBirthDate(value: string): string | undefined {
   return undefined;
 }
 
-// "Martina López" → "martina-lopez"; si ya existe → "martina-lopez-2".
-export function slugify(name: string, taken: string[]): string {
-  const base =
-    name
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "nino";
-
-  let slug = base;
-  let counter = 2;
-  while (taken.includes(slug)) {
-    slug = `${base}-${counter}`;
-    counter += 1;
-  }
-
-  return slug;
-}
-
-// Construye el Kid nuevo a partir del formulario validado (SPEC 04).
-export function createKid(
-  input: {
-    fullName: string;
-    birthDate: string; // "dd/mm/aaaa"
-    roomId: string;
-    allergies?: string;
-    medicalNotes?: string;
-  },
-  existing: Kid[],
-): Kid {
-  const name = input.fullName.trim().replace(/\s+/g, " ");
-  const palette = AVATAR_PALETTES[existing.length % AVATAR_PALETTES.length];
-  const allergies = input.allergies?.trim() ?? "";
-  const medicalNotes = input.medicalNotes?.trim() ?? "";
-  const firstAllergy = allergies.split(",")[0]?.trim() ?? "";
-
-  const kid: Kid = {
-    slug: slugify(name, existing.map((entry) => entry.slug)),
-    name,
-    initial: name.charAt(0).toUpperCase(),
-    age: ageLabel(input.birthDate),
-    room: ROOMS.find((room) => room.id === input.roomId)?.name ?? "",
-    avatarBg: palette.bg,
-    avatarInk: palette.ink,
-  };
-
-  if (allergies) kid.allergies = allergies;
-  if (medicalNotes) kid.medicalNotes = medicalNotes;
-  if (firstAllergy) kid.tag = { label: firstAllergy.toUpperCase(), kind: "allergy" };
-
-  return kid;
+// Edad a partir de una fecha ISO ("2022-03-12" → "3 años"). Parsea a mano
+// para no depender del timezone de Date (SPEC 10).
+export function ageLabelFromIso(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
+  if (!match) return "";
+  return ageLabel(`${match[3]}/${match[2]}/${match[1]}`);
 }

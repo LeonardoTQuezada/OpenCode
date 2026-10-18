@@ -1,52 +1,36 @@
-"use client";
-
 import Link from "next/link";
-import { useCallback, useState } from "react";
 
-import { toParentLinks } from "@/lib/family";
-import type { ParentLink } from "@/lib/kids";
-import { AlertTriangleIcon, ArrowLeftIcon, PlusIcon, SunIcon } from "./icons";
+import type { Child } from "@/app/_actions/children";
+import {
+  ageLabelFromIso,
+  avatarPaletteFor,
+  formatDateIso,
+  formatMonthYearIso,
+} from "@/lib/kids";
+import { AlertTriangleIcon, ArrowLeftIcon, SunIcon } from "./icons";
 import { Avatar } from "./avatar";
-import { useFamily } from "./family-provider";
-import { LinkParentModal } from "./link-parent-modal";
 
-/** Badge de estado del padre (ACTIVA / PENDIENTE). */
-const STATUS_STYLES: Record<ParentLink["status"], string> = {
-  ACTIVA: "bg-status-active-bg text-status-active",
-  PENDIENTE: "bg-status-pending-bg text-status-pending",
-};
-
-/** Claves del perfil que se muestran como fila etiqueta/valor. */
-type DetailKey = "birthDate" | "room" | "joinedAt";
-
-const DETAIL_ROWS: { label: string; value: DetailKey }[] = [
+const DETAIL_ROWS: { label: string; value: string }[] = [
   { label: "Fecha de nacimiento", value: "birthDate" },
   { label: "Sala", value: "room" },
   { label: "Ingreso", value: "joinedAt" },
 ];
 
 /** Ficha completa de un niño: columna principal + columna de 300px.
- *  Se compone desde el provider (SPEC 05): el kid sale de data/kids.json y
- *  los padres de data/family.json con toParentLinks. */
-export function ChildProfileView({ kidSlug }: { kidSlug: string }) {
-  const { kids, parentsOf } = useFamily();
-  const kid = kids.find((entry) => entry.slug === kidSlug);
-  const parents = toParentLinks(parentsOf(kidSlug));
+ *  Recibe el child real de Supabase y el nombre de su sala (SPEC 10).
+ *  Los padres vinculados son placeholder hasta la tabla parent_children. */
+export function ChildProfileView({ child, roomName }: { child: Child; roomName: string }) {
+  const palette = avatarPaletteFor(child.id);
+  const age = ageLabelFromIso(child.birth_date);
 
-  // El modal se monta solo mientras está abierto: así cada apertura empieza
-  // con el formulario limpio y con un código de invitación nuevo.
-  const [linkOpen, setLinkOpen] = useState(false);
-  const closeLink = useCallback(() => setLinkOpen(false), [setLinkOpen]);
+  const allergiesText = child.allergy_tags.filter(Boolean).join(", ");
+  const notesText = child.medical_notes?.trim() ?? "";
+  const alertText = [allergiesText, notesText].filter(Boolean).join(" — ");
 
-  if (!kid) {
-    return <p className="text-[15px] text-muted">No encontramos ese niño.</p>;
-  }
-
-  /** Valores de las filas "Datos", derivados del registro del niño. */
-  const details: Record<DetailKey, string> = {
-    birthDate: kid.birthDate ?? "",
-    room: kid.room,
-    joinedAt: kid.joinedAt ?? "",
+  const details: Record<string, string> = {
+    birthDate: formatDateIso(child.birth_date),
+    room: roomName,
+    joinedAt: formatMonthYearIso(child.enrolled_at),
   };
 
   return (
@@ -67,20 +51,20 @@ export function ChildProfileView({ kidSlug }: { kidSlug: string }) {
                porque con el avatar de 84px no queda ancho para el nombre. */}
           <div className="flex flex-wrap items-center gap-[18px]">
             <Avatar
-              label={kid.initial}
+              label={child.full_name.charAt(0).toUpperCase()}
               size={84}
-              bg={kid.avatarBg}
-              ink={kid.avatarInk}
+              bg={palette.bg}
+              ink={palette.ink}
             />
             <div className="min-w-0 flex-[1_1_180px]">
               <h1 className="font-display text-[28px] font-semibold leading-[1.2] text-ink">
-                {kid.name}
+                {child.full_name}
               </h1>
               <p className="mt-[3px] text-[15px] text-faint">
-                {`${kid.age} · Sala ${kid.room}`}
+                {`${age} · Sala ${roomName}`}
               </p>
             </div>
-            {/* Inerte hasta su propia spec: SPEC 04 eliminó `/add-child`. */}
+            {/* Inerte hasta su propia spec (editar/eliminar niños). */}
             <span className="ml-auto shrink-0 rounded-[12px] border-[1.5px] border-card-border bg-card px-4 py-[9px] text-[14px] font-bold text-nav">
               Editar
             </span>
@@ -96,7 +80,7 @@ export function ChildProfileView({ kidSlug }: { kidSlug: string }) {
                 Alergias y notas
               </div>
               <div className="text-[14.5px] leading-[1.5] text-alert-body">
-                {kid.allergies}
+                {alertText || "Sin alergias ni notas médicas registradas."}
               </div>
             </div>
           </div>
@@ -133,49 +117,13 @@ export function ChildProfileView({ kidSlug }: { kidSlug: string }) {
             <div className="mb-[14px] text-[12.5px] font-extrabold tracking-[0.8px] text-label">
               PADRES VINCULADOS
             </div>
-
-            <div className="flex flex-col gap-[14px]">
-              {parents.map((parent) => (
-                <div key={parent.name} className="flex items-center gap-3">
-                  <Avatar label={parent.initial} size={40} bg={parent.avatarBg} ink="text-white" />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[14.5px] font-extrabold text-ink">{parent.name}</div>
-                    <div className="text-[12.5px] text-muted">{parent.role}</div>
-                  </div>
-                  <span
-                    className={`shrink-0 rounded-full px-[9px] py-1 text-[10.5px] font-extrabold leading-[1.36] ${STATUS_STYLES[parent.status]}`}
-                  >
-                    {parent.status}
-                  </span>
-                </div>
-              ))}
-
-              {/* El botón ya no navega: abre el modal (SPEC 05) */}
-              <button
-                type="button"
-                onClick={() => setLinkOpen(true)}
-                className="flex w-full cursor-pointer items-center gap-3 pt-2 text-left"
-              >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full border-[1.5px] border-dashed border-add-dashed text-photo-icon">
-                  <PlusIcon width={18} height={18} stroke="currentColor" />
-                </span>
-                <span className="text-[14.5px] font-extrabold text-coral-deep">
-                  Vincular otro padre
-                </span>
-              </button>
-            </div>
+            {/* Placeholder hasta la tabla parent_children (fuera de esta spec). */}
+            <p className="text-[14px] leading-[1.5] text-muted">
+              La vinculación de padres estará disponible próximamente.
+            </p>
           </div>
         </div>
       </div>
-
-      {linkOpen && (
-        <LinkParentModal
-          open
-          onClose={closeLink}
-          kidSlug={kidSlug}
-          kidName={kid.name}
-        />
-      )}
     </>
   );
 }

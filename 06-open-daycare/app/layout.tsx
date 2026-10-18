@@ -3,7 +3,7 @@ import { Fredoka, Nunito } from "next/font/google";
 
 import { PostsProvider } from "@/components/posts-provider";
 import { UserProfileProvider } from "@/components/user-profile-provider";
-import { readKids } from "@/lib/data";
+import { childToKidChip, getSessionChildren } from "@/lib/feed-kids";
 import { getSessionProfile } from "@/utils/supabase/profile";
 
 import "./globals.css";
@@ -23,13 +23,15 @@ export const metadata: Metadata = {
   description: "OpenDayCare — la app de tu guardería",
 };
 
-// Sin esto, next build prerenderiza data/kids.json una sola vez y los chips del
+// Sin esto, next build prerenderiza los children una sola vez y los chips del
 // modal quedarían congelados con los datos del build (next.config.ts no
-// habilita cacheComponents). Mismo criterio que app/kids/layout.tsx (SPEC 05).
+// habilita cacheComponents). Mismo criterio que las páginas de /kids (SPEC 10).
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const kids = await readKids();
+  // Chips reales del modal "Nueva publicación" (SPEC 10): children activos
+  // de la guardería, adaptados al shape Kid que consume el feed.
+  const kids = (await getSessionChildren()).map(childToKidChip);
   // Perfil del usuario autenticado (null en /login): alimenta el sidebar
   // y los avatares. Con force-dynamic se resuelve en cada request.
   const profile = await getSessionProfile();

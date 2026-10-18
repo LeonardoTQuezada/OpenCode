@@ -59,3 +59,25 @@ export async function getSessionProfile(): Promise<UserProfile | null> {
     daycareShort: daycareName.replace(/^(?:(?:Guardería|Sala)\s+)+/i, ""),
   };
 }
+
+/**
+ * Guardería del usuario autenticado, o `null` sin sesión o sin guardería.
+ * La RLS `users_read_own_daycare` permite leer la propia fila.
+ */
+export async function getSessionDaycareId(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from("users")
+    .select("daycare_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return data?.daycare_id ?? null;
+}

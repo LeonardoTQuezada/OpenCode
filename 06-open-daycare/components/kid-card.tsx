@@ -1,39 +1,37 @@
 import Link from "next/link";
-import { parentLabel } from "@/lib/family";
-import type { Kid } from "@/lib/kids";
+import type { Child } from "@/app/_actions/children";
+import { ageLabelFromIso, avatarPaletteFor } from "@/lib/kids";
 import { Avatar } from "./avatar";
 import { ChevronRightIcon } from "./icons";
 
-/** Estilo del badge según su tipo (alergia vs. "VINCULAR"). */
-const TAG_STYLES: Record<NonNullable<Kid["tag"]>["kind"], string> = {
-  allergy: "bg-tag-allergy-bg text-tag-allergy",
-  link: "bg-tag-link-bg text-tag-link",
-};
+/** Tarjeta de un niño en el listado `/kids`. Todo el card enlaza al perfil. */
+export function KidCard({ child }: { child: Child }) {
+  const palette = avatarPaletteFor(child.id);
+  const age = ageLabelFromIso(child.birth_date);
+  const firstAllergy = child.allergy_tags[0]?.trim();
 
-/** Tarjeta de un niño en el listado `/kids`. Todo el card enlaza al perfil.
- *  El contador de padres llega por prop: se deriva de data/family.json. */
-export function KidCard({ kid, parentCount }: { kid: Kid; parentCount: number }) {
   return (
     <Link
-      href="/kids/mateo"
+      href={`/kids/${child.id}`}
       className="flex min-w-0 items-center gap-[14px] rounded-[18px] border border-card-border bg-card p-4 shadow-kid transition duration-150 hover:-translate-y-0.5 hover:border-[#F2A78E]"
     >
-      <Avatar label={kid.initial} size={48} bg={kid.avatarBg} ink={kid.avatarInk} />
+      <Avatar
+        label={child.full_name.charAt(0).toUpperCase()}
+        size={48}
+        bg={palette.bg}
+        ink={palette.ink}
+      />
 
       <span className="min-w-0 flex-1">
         <span className="block font-display text-[16px] font-semibold leading-[1.3] text-ink">
-          {kid.name}
+          {child.full_name}
         </span>
-        <span className="block text-[13px] leading-[1.36] text-muted">
-          {kid.age} · {parentLabel(parentCount)}
-        </span>
+        {age && <span className="block text-[13px] leading-[1.36] text-muted">{age}</span>}
       </span>
 
-      {kid.tag ? (
-        <span
-          className={`shrink-0 rounded-full px-[9px] py-[5px] text-[11px] font-extrabold leading-[1.36] ${TAG_STYLES[kid.tag.kind]}`}
-        >
-          {kid.tag.label}
+      {firstAllergy ? (
+        <span className="shrink-0 rounded-full bg-tag-allergy-bg px-[9px] py-[5px] text-[11px] font-extrabold leading-[1.36] text-tag-allergy">
+          {firstAllergy.toUpperCase()}
         </span>
       ) : (
         <ChevronRightIcon width={18} height={18} className="shrink-0 text-chevron" />
