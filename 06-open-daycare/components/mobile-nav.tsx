@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { MenuIcon } from "./icons";
 import { SidebarContents, type NavKey } from "./sidebar";
+import { useUserProfile } from "./user-profile-provider";
 
 type MobileNavProps = {
   active: NavKey | null;
@@ -12,6 +13,7 @@ type MobileNavProps = {
  *  (reutiliza `SidebarContents`). Visible solo por debajo de 768px. */
 export function MobileNav({ active }: MobileNavProps) {
   const [open, setOpen] = useState(false);
+  const profile = useUserProfile();
 
   // Cerrar con la tecla Escape
   useEffect(() => {
@@ -47,7 +49,7 @@ export function MobileNav({ active }: MobileNavProps) {
           </span>
         </div>
         <span className="flex size-9 items-center justify-center rounded-full bg-avatar font-display text-sm font-semibold text-white">
-          C
+          {profile?.initials ?? "?"}
         </span>
       </header>
 

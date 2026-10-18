@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 
 import { PostsProvider } from "@/components/posts-provider";
+import { UserProfileProvider } from "@/components/user-profile-provider";
 import { readKids } from "@/lib/data";
+import { getSessionProfile } from "@/utils/supabase/profile";
 
 import "./globals.css";
 
@@ -28,6 +30,9 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const kids = await readKids();
+  // Perfil del usuario autenticado (null en /login): alimenta el sidebar
+  // y los avatares. Con force-dynamic se resuelve en cada request.
+  const profile = await getSessionProfile();
 
   return (
     <html
@@ -35,7 +40,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <PostsProvider initialKids={kids}>{children}</PostsProvider>
+        <UserProfileProvider profile={profile}>
+          <PostsProvider initialKids={kids}>{children}</PostsProvider>
+        </UserProfileProvider>
       </body>
     </html>
   );
