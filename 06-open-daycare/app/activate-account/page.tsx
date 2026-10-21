@@ -1,11 +1,11 @@
-import { ActivateForm } from "@/components/activate-form";
-import { Avatar } from "@/components/avatar";
-import { SunIcon } from "@/components/icons";
-import { INVITATION } from "@/lib/invitation";
+import { Suspense } from "react";
 
-/** Pantalla de activación de cuenta (SPEC 03). Réplica de
- *  `references/pantallas/activar-cuenta.dc.html`; la validación vive en
- *  `ActivateForm`. */
+import { ActivateForm } from "@/components/activate-form";
+import { SunIcon } from "@/components/icons";
+
+/** Pantalla de activación de cuenta (SPEC 11 → flujo real). La tarjeta de
+ *  invitación y el formulario viven en ActivateForm, que lee el código del
+ *  query string (useSearchParams requiere Suspense en el server component). */
 export default function ActivateAccountPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-page p-10">
@@ -22,25 +22,15 @@ export default function ActivateAccountPage() {
           activar la cuenta.
         </p>
 
-        {/* Tarjeta de invitación */}
-        <div className="mb-[22px] flex items-center gap-[14px] rounded-[16px] border-[1.5px] border-input-border bg-white px-4 py-[14px]">
-          <Avatar
-            size={44}
-            label={INVITATION.kidInitial}
-            bg={INVITATION.avatarBg}
-            ink={INVITATION.avatarInk}
-          />
-          <div>
-            <div className="text-[13px] text-faint">
-              Te invitaron a seguir a
-            </div>
-            <div className="font-display text-[17px] font-semibold text-ink">
-              {INVITATION.roomLabel}
-            </div>
-          </div>
-        </div>
-
-        <ActivateForm />
+        <Suspense
+          fallback={
+            <p className="rounded-[16px] border-[1.5px] border-input-border bg-white px-4 py-[18px] text-center text-[15px] text-faint">
+              Cargando…
+            </p>
+          }
+        >
+          <ActivateForm />
+        </Suspense>
       </div>
     </div>
   );
