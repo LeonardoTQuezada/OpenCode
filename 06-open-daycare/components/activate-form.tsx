@@ -37,14 +37,12 @@ export function ActivateForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Valida el código al montar (la RPC funciona sin sesión).
+  // Valida el código al montar (la RPC funciona sin sesión). Sin código no
+  // hay nada que pedir: el estado "invalid" se deriva en el render de abajo
+  // (evita setState síncrono en el effect, regla react-hooks/set-state-in-effect).
   useEffect(() => {
+    if (!code) return;
     let cancelled = false;
-
-    if (!code) {
-      setState({ status: "invalid" });
-      return;
-    }
 
     validateInvitationCode(code)
       .then((invitation) => {
@@ -54,7 +52,8 @@ export function ActivateForm() {
         );
       })
       .catch(() => {
-        if (!cancelled) setState({ status: "invalid" });
+        if (cancelled) return;
+        setState({ status: "invalid" });
       });
 
     return () => {
@@ -62,16 +61,20 @@ export function ActivateForm() {
     };
   }, [code]);
 
+  // Sin código en la query string la pantalla es "inválida" aunque el state
+  // siga en su valor inicial de loading.
+  const viewState: LoadState = code ? state : { status: "invalid" };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (state.status !== "ready" || isSubmitting) return;
+    if (viewState.status !== "ready" || isSubmitting) return;
 
     if (password.length < 6) {
       setPasswordError("Usá al menos 6 caracteres.");
       return;
     }
 
-    const { invitation } = state;
+    const { invitation } = viewState;
     setIsSubmitting(true);
     setPasswordError(null);
     setSubmitError(null);
@@ -82,7 +85,10 @@ export function ActivateForm() {
         password,
         fullName: invitation.fullName,
       });
-      // Hard refresh: la sesión nueva debe verse en el server render de /.
+      // Hard refresh (decisión de SPEC 11): la sesión nueva creada por
+      // signUp debe verse en el server render de /. Un router.push haría
+      // una navegación suave con riesgo de RSC cacheada sin la sesión.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign("/");
     } catch (err) {
       setSubmitError(
@@ -94,7 +100,7 @@ export function ActivateForm() {
     }
   };
 
-  if (state.status === "loading") {
+  if (viewState.status === "loading") {
     return (
       <p className="rounded-[16px] border-[1.5px] border-input-border bg-white px-4 py-[18px] text-center text-[15px] text-faint">
         Validando tu invitación…
@@ -102,7 +108,7 @@ export function ActivateForm() {
     );
   }
 
-  if (state.status === "invalid") {
+  if (viewState.status === "invalid") {
     return (
       <div className="rounded-[16px] border-[1.5px] border-input-border bg-white px-4 py-[18px] text-center">
         <p role="alert" className="text-[15px] font-bold leading-[1.5] text-coral-deep">
@@ -119,7 +125,7 @@ export function ActivateForm() {
     );
   }
 
-  const { invitation } = state;
+  const { invitation } = viewState;
   const palette = avatarPaletteFor(invitation.childId);
 
   return (

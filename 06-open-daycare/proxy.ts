@@ -21,8 +21,19 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
   const hasSession = claims !== null;
 
+  // Link de invitación (email): /activate-account?code=... se abre siempre,
+  // también con sesión activa. Sin él, el padre puede tener ya una sesión o el
+  // staff lo prueba logueado y SPEC 11 exige llegar al formulario de activación.
+  const isInvitationLink =
+    pathname === "/activate-account" &&
+    Boolean(request.nextUrl.searchParams.get("code"));
+
+  // Con sesión, las pantallas públicas redirigen a / (SPEC 09), excepto el
+  // link de invitación con código.
+  const redirectAuthenticated = isPublicRoute && !isInvitationLink;
+
   // Sin sesión en ruta protegida → /login; con sesión en pública → /.
-  if ((!hasSession && !isPublicRoute) || (hasSession && isPublicRoute)) {
+  if ((!hasSession && !isPublicRoute) || (hasSession && redirectAuthenticated)) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = hasSession ? "/" : "/login";
     redirectUrl.search = "";

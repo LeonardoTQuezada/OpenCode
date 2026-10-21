@@ -3,7 +3,7 @@
 > **Estado:** Aprobado
 > **Depende de:** SPEC 05 (link parent modal visual), SPEC 08 (users table + enums), SPEC 09 (real auth), SPEC 10 (rooms and children)
 > **Fecha:** 2026-10-18
-> **Objetivo:** Crear tablas `invitations` y `parent_children`, convertir el modal de vincular padre en funcional (generar código + enviar email con Resend), y hacer la página `/activate` un flujo real de registro con código de invitación.
+> **Objetivo:** Crear tablas `invitations` y `parent_children`, convertir el modal de vincular padre en funcional (generar código + enviar email con Resend), y hacer la página `/activate-account` un flujo real de registro con código de invitación.
 
 ## Scope
 
@@ -14,12 +14,12 @@
 - Habilitar RLS en ambas tablas con políticas de lectura/escritura.
 - Server action `createInvitation` que: genera código aleatorio de 5 caracteres alfanuméricos, inserta en `invitations`, y envía email vía Resend con link de activación.
 - Función utilitaria `generateInvitationCode()` que produce códigos únicos de 5 caracteres.
-- Función `sendInvitationEmail` que envía el email usando `resend` (Node package), con template HTML en español incluyendo: nombre del niño, nombre del staff que invita, código de invitación, y link de activación (`${NEXT_PUBLIC_APP_URL}/activate?code=...`).
+- Función `sendInvitationEmail` que envía el email usando `resend` (Node package), con template HTML en español incluyendo: nombre del niño, nombre del staff que invita, código de invitación, y link de activación (`${NEXT_PUBLIC_APP_URL}/activate-account?code=...`).
 - Variable de entorno `NEXT_PUBLIC_APP_URL` para construir el link de activación (localhost en dev, dominio real en prod).
 - Convertir `LinkParentModal` de mock a funcional: al enviar, llama a `createInvitation`, muestra loading state, y maneja errores.
 - Convertir `ParentsSection` para listar padres vinculados reales desde `parent_children` (con status `pending`/`active`).
-- Convertir `/activate` de placeholder visual a funcional: lee `code` del query string, valida contra `invitations`, pre-llena email y nombre, permite crear contraseña, crea usuario en Supabase Auth, y vincula en `parent_children`.
-- Actualizar `proxy.ts` para permitir acceso público a `/activate` con query params.
+- Convertir `/activate-account` de placeholder visual a funcional: lee `code` del query string, valida contra `invitations`, pre-llena email y nombre, permite crear contraseña, crea usuario en Supabase Auth, y vincula en `parent_children`.
+- Actualizar `proxy.ts` para permitir acceso público a `/activate-account` con query params (y que el link funcione también con sesión activa).
 
 **Out of scope (para futuras specs):**
 
@@ -173,11 +173,11 @@ export interface ParentChild {
 
 2. **Instalar Resend.** `npm install resend`. Agregar `RESEND_API_KEY` y `NEXT_PUBLIC_APP_URL` al `.env.local` (el template ya tiene `RESEND_API_KEY`).
 
-3. **Utilidad `generateInvitationCode`.** Crear `app/_lib/invitation-code.ts`:
+3. **Utilidad `generateInvitationCode`.** Crear `lib/invitation-code.ts`:
    - Función que genera 5 caracteres alfanuméricos uppercase (excluye caracteres confusos como 0/O, 1/I).
    - Función async `generateUniqueCode(supabase)` que verifica unicidad contra la tabla `invitations` y reintenta si hay colisión.
 
-4. **Función `sendInvitationEmail`.** Crear `app/_lib/email.ts`:
+4. **Función `sendInvitationEmail`.** Crear `lib/email.ts`:
    - Usa `resend` para enviar email HTML.
    - Template en español con: saludo personalizado, nombre del niño, nombre del staff que invita, código de invitación destacado, botón/link de activación.
    - From: `OpenDayCare <onboarding@resend.dev>` (dominio por defecto de Resend).
@@ -212,7 +212,7 @@ export interface ParentChild {
    - Para padres pendientes: mostrar badge "PENDIENTE".
    - El botón "Vincular otro padre" sigue abriendo el modal.
 
-9. **Convertir `/activate` a funcional.** Actualizar `app/(auth)/activate/page.tsx`:
+9. **Convertir `/activate-account` a funcional.** Actualizar `app/activate-account/page.tsx`:
    - `'use client'` para manejar formulario.
    - Leer `code` del query string (`useSearchParams`).
    - Al cargar: validar código contra server action `validateInvitationCode(code)`.
@@ -223,37 +223,39 @@ export interface ParentChild {
    - Al éxito: redirigir a `/` (hard refresh).
    - Mantener diseño visual del template.
 
-10. **Actualizar `proxy.ts`.** Agregar `/activate` a rutas públicas (ya está). Asegurar que query params no interfieran.
+10. **Actualizar `proxy.ts`.** `/activate-account` ya está en rutas públicas (SPEC 09). Agregar la excepción: el link `?code=...` se abre también con sesión activa.
 
 11. **Verificar.** `npm run dev`, probar flujo completo: staff crea invitación → email se envía → padre abre link → activa cuenta → padre aparece en lista. `npm run lint` y `npx tsc --noEmit`.
 
 ## Acceptance criteria
 
-- [ ] El enum `invitation_status` existe en la base de datos con valores `pending`, `accepted`, `expired`, `cancelled`.
-- [ ] La tabla `invitations` existe con RLS habilitado.
-- [ ] La tabla `parent_children` existe con RLS habilitado y constraint UNIQUE en (`parent_id`, `child_id`).
-- [ ] Las políticas RLS permiten SELECT para usuarios de la misma guardería.
-- [ ] Las políticas RLS permiten INSERT en `invitations` solo para staff/admin.
-- [ ] `generateInvitationCode()` produce códigos de 5 caracteres alfanuméricos uppercase.
-- [ ] `createInvitation` genera código único, inserta en BD, y envía email con Resend.
-- [ ] El email enviado contiene: nombre del niño, nombre del staff, código de invitación, y link de activación.
-- [ ] El link de activación usa `NEXT_PUBLIC_APP_URL` como base.
-- [ ] `LinkParentModal` muestra loading state al enviar.
-- [ ] `LinkParentModal` muestra error si la invitación falla.
-- [ ] Tras enviar exitosamente, el modal muestra el código generado y cierra.
-- [ ] `ParentsSection` lista padres vinculados reales desde la base de datos.
-- [ ] Padres pendientes muestran badge "PENDIENTE".
-- [ ] `/activate` lee el código del query string y valida contra la BD.
-- [ ] `/activate` pre-llena email y nombre del padre desde la invitación.
-- [ ] `/activate` muestra nombre del niño y sala.
-- [ ] Código inválido o expirado muestra error en `/activate`.
+- [x] El enum `invitation_status` existe en la base de datos con valores `pending`, `accepted`, `expired`, `cancelled`.
+- [x] La tabla `invitations` existe con RLS habilitado.
+- [x] La tabla `parent_children` existe con RLS habilitado y constraint UNIQUE en (`parent_id`, `child_id`).
+- [x] Las políticas RLS permiten SELECT para usuarios de la misma guardería.
+- [x] Las políticas RLS permiten INSERT en `invitations` solo para staff/admin.
+- [x] `generateInvitationCode()` produce códigos de 5 caracteres alfanuméricos uppercase.
+- [x] `createInvitation` genera código único, inserta en BD, y envía email con Resend.
+- [x] El email enviado contiene: nombre del niño, nombre del staff, código de invitación, y link de activación.
+- [x] El link de activación usa `NEXT_PUBLIC_APP_URL` como base.
+- [x] `LinkParentModal` muestra loading state al enviar.
+- [x] `LinkParentModal` muestra error si la invitación falla.
+- [x] Tras enviar exitosamente, el modal muestra el código generado y cierra.
+- [x] `ParentsSection` lista padres vinculados reales desde la base de datos.
+- [x] Padres pendientes muestran badge "PENDIENTE".
+- [x] `/activate-account` lee el código del query string y valida contra la BD.
+- [x] `/activate-account` pre-llena email y nombre del padre desde la invitación.
+- [x] `/activate-account` muestra nombre del niño y sala.
+- [x] Código inválido o expirado muestra error en `/activate-account`.
 - [ ] Al activar exitosamente, se crea usuario en Supabase Auth con rol `parent`.
 - [ ] Al activar exitosamente, se crea vínculo en `parent_children`.
 - [ ] La invitación cambia a status `accepted` tras activación.
 - [ ] Post-activación, redirige a `/` con sesión activa.
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `npx tsc --noEmit` pasa sin errores.
-- [ ] No hay errores en la consola del navegador.
+- [x] El link del email (`/activate-account?code=...`) abre el formulario aunque haya sesión activa.
+- [x] `npm run lint` pasa sin errores.
+- [x] `npx tsc --noEmit` pasa sin errores.
+- [x] `npm run build` pasa sin errores.
+- [x] No hay errores en la consola del navegador.
 
 ## Decisions
 
@@ -265,6 +267,8 @@ export interface ParentChild {
 - **Yes:** El padre se crea con rol `parent` y status `active` directamente en la activación. No pasa por `pending` en la tabla `users`.
 - **Yes:** Reutilizar el trigger `handle_new_user` de SPEC 08 para crear la fila en `users`. Pasar `role: 'parent'` en `raw_user_meta_data`.
 - **Yes:** Checkbox de autorización de fotos pre-marcado por defecto. Mejora la UX y coincide con el diseño.
+- **Yes (verificación 2026-10-18):** la ruta es `/activate-account` (SPEC 03/09), no `/activate` como decía el texto original de esta spec. Se corrigieron scope, plan y acceptance criteria.
+- **Yes (verificación 2026-10-18):** el link del email `/activate-account?code=...` se abre **también con sesión activa**. `proxy.ts` hace una excepción al redirect "pública + sesión → /" de SPEC 09 solo cuando hay `?code=`; sin código se mantiene el redirect a `/`.
 - **No:** UI para gestionar/revocar invitaciones. Va en spec futura.
 - **No:** Reenvío de invitaciones expiradas. Va en spec futura.
 - **No:** Dominio personalizado de Resend. Se usa `onboarding@resend.dev` por ahora.
@@ -291,4 +295,4 @@ export interface ParentChild {
 - Dominio personalizado de Resend.
 - Roles avanzados (múltiples tutores con permisos diferenciados).
 
-Cada uno de esos, si llega,
+Cada uno de esos, si llega, irá en una spec futura propia.
