@@ -83,6 +83,11 @@ const { data, error } = await supabase.from("users").select();
 - Comando `/verify-spec <spec>` (`.opencode/commands/verify-spec.md`): invoca ese agente. Ej.: `/verify-spec specs/01-feed-home.md` o `/verify-spec 01`.
 - Flujo: `/spec` → `/spec-impl` → implementar → `/verify-spec` → commit solo si los checks quedan en verde.
 
+## React best practices
+
+- Agente `react-best-practices` (`.opencode/agents/react-best-practices.md`): aplica las mejores prácticas de React 19 + Next.js 16 (Server Components) a los archivos indicados — hooks, You Might Not Need an Effect, memoización disciplinada, boundary Server/Client, composición, TypeScript, listas/keys. Corrige las violaciones con diffs mínimos y valida cada recomendación contra la documentación oficial vía Context7 (`/reactjs/react.dev`, `/vercel/next.js`); nunca juzga solo con datos de entrenamiento. Verifica con `npm run lint` y `npx tsc --noEmit`.
+- Comando `/react-check <files>` (`.opencode/commands/react-check.md`): invoca ese agente. Ej.: `/react-check components/feed-screen.tsx` o `/react-check components/`.
+
 ## Reglas de código
 
 - Usar código limpio, nombres, funciones, variables, etc. en inglés.
