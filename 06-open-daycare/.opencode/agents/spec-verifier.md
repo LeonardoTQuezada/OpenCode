@@ -1,6 +1,6 @@
 ---
 description: Verifies acceptance criteria of a spec file. Reviews implementation against each criterion, fixes code/spec issues found, and marks checkboxes. Uses Playwright MCP with vision to compare screenshots against references, and Context7 MCP to validate Next.js best practices. Use when a spec has been implemented and needs verification, or to check which acceptance criteria pass/fail.
-mode: all
+mode: subagent
 model: opencode/mimo-v2.6-flash-free
 color: success
 steps: 75

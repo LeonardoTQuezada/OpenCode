@@ -83,6 +83,34 @@ const { data, error } = await supabase.from("users").select();
 - Comando `/verify-spec <spec>` (`.opencode/commands/verify-spec.md`): invoca ese agente. Ej.: `/verify-spec specs/01-feed-home.md` o `/verify-spec 01`.
 - Flujo: `/spec` → `/spec-impl` → implementar → `/verify-spec` → commit solo si los checks quedan en verde.
 
+## React best practices
+
+- Agente `react-best-practices` (`.opencode/agents/react-best-practices.md`): aplica las mejores prácticas de React 19 + Next.js 16 (Server Components) a los archivos indicados — hooks, You Might Not Need an Effect, memoización disciplinada, boundary Server/Client, composición, TypeScript, listas/keys. Corrige las violaciones con diffs mínimos y valida cada recomendación contra la documentación oficial vía Context7 (`/reactjs/react.dev`, `/vercel/next.js`); nunca juzga solo con datos de entrenamiento. Verifica con `npm run lint` y `npx tsc --noEmit`.
+- Comando `/react-check <files>` (`.opencode/commands/react-check.md`): invoca ese agente. Ej.: `/react-check components/feed-screen.tsx` o `/react-check components/`.
+
+## Accessibility
+
+- Agente `accessibility-check` (`.opencode/agents/accessibility-check.md`): revisa y corrige accesibilidad **WCAG 2.2 AA** en los targets indicados. Checklist estático mapeado a Success Criteria exactos (1.1.1, 1.3.1, 1.4.3, 1.4.11, 2.1.1, 2.4.3, 2.4.7, 2.5.8, 3.3.2, 3.3.3, 3.3.7, 3.3.8, 4.1.2, 4.1.3, patrones WAI-ARIA) + verificación runtime con Playwright (accessibility snapshot, orden de foco con Tab, **axe-core inyectado desde CDN** — nunca se instala en `package.json`) y validación de cada recomendación vía Context7 (fuentes W3C/WAI + `/reactjs/react.dev`); nunca juzga solo con datos de entrenamiento. Deja las capturas en `.playwright-mcp/`.
+- Comando `/a11y <files|urls>` (`.opencode/commands/a11y.md`): invoca ese agente. Ej.: `/a11y components/feed-screen.tsx`, `/a11y components/` o `/a11y https://example.com/login`.
+- **Modos por tipo de target:** archivos/carpetas locales y URLs de este proyecto → modo fix (corrige con diffs mínimos y verifica con `npm run lint` + `npx tsc --noEmit`); URLs externas → solo reporte con hallazgos por SC + recomendación accionable, nunca edita.
+- **Evidencias de auditorías externas autocontenidas:** cada auditoría de URL externa guarda todo (capturas, `axe-results.json`, `report.md`) en `.playwright-mcp/a11y/<dominio>/<página>/<timestamp>/`, agrupadas por dominio (varias páginas del mismo sitio quedan como carpetas hermanas) y aisladas por run con su timestamp.
+- Flujo: `/a11y` → corregir → commit solo si lint/tsc quedan en verde.
+
+## DB migrator
+
+- Agente `db-migrator` (`.opencode/agents/db-migrator.md`): asegura que existan las migraciones y las aplica. Reconcilia los archivos locales de `supabase/migrations/` contra el historial real de la BD (`supabase_migrations.schema_migrations` vía MCP), hace backfill de migraciones aplicadas sin archivo local, redacta archivos `NNN_*.sql` nuevos cuando se le describe un cambio de esquema (spec de `specs/database/`, reference `../07-DB-Schema` o descripción libre), aplica los pendientes con `apply_migration` y verifica con `execute_sql` + `get_advisors`.
+- Invocación: pedirle directamente "usa el agente db-migrator ..." o lanzarlo como subagente. No tiene comando `/migrate`.
+- Reglas que aplica: todo cambio de esquema vive en un archivo de migración y pasa por `apply_migration` (nunca DDL suelto por `execute_sql`); match difuso strippeando el prefijo `NNN_` para no reaplicar por falso positivo; nunca editar/borrar migraciones ya aplicadas (arreglar hacia adelante); para en el primer fallo de `apply_migration`.
+- Carga las skills `supabase` y `supabase-postgres-best-practices` antes de escribir SQL.
+
+## DB security auditor
+
+- Agente `db-security-auditor` (`.opencode/agents/db-security-auditor.md`): audita la seguridad de la BD para **prevenir fugas de datos entre niños y padres** por roles/RLS mal configurados. Inventario de solo lectura (tablas + RLS, `pg_policies`, funciones `SECURITY DEFINER`, views sin `security_invoker`, grants a `anon`/`authenticated`, `storage.objects`), `get_advisors` tipo `security`, **matriz de aislamiento** (parent solo ve sus hijos vinculados — nunca `medical_notes`/`allergy_tags`/fotos de otros niños ni enlaces de otros padres; staff/admin solo su `daycare_id`; `anon` nada personal) y checklist de 12 anti-patrones (`auth.role()`, `TO authenticated` sin predicado de ownership, UPDATE sin `WITH CHECK`, `user_metadata` para autorización, etc.). Verificación opcional en runtime con impersonación de rol siempre dentro de `begin ... rollback` (solo lectura).
+- Comando `/db-audit [scope]` (`.opencode/commands/db-audit.md`): invoca ese agente. Ej.: `/db-audit` (esquema completo), `/db-audit children, parent_children` o `/db-audit puede un padre ver notas médicas de otros niños?`.
+- **Modo:** audita + escribe las migraciones correctivas `supabase/migrations/NNN_*.sql` (idempotentes, identifiers en inglés, comentarios en español) y **NO las aplica** — la aplicación la hace `db-migrator` (regla de oro de migraciones).
+- Carga las skills `supabase` y `supabase-postgres-best-practices` y consulta docs vía `supabase_search_docs` antes de juzgar; nunca solo datos de entrenamiento.
+- Flujo: `/db-audit` → revisar hallazgos → `db-migrator` aplica → commit solo si todo quedó en verde.
+
 ## Reglas de código
 
 - Usar código limpio, nombres, funciones, variables, etc. en inglés.

@@ -11,12 +11,6 @@ import { AlertTriangleIcon, ArrowLeftIcon, SunIcon } from "./icons";
 import { Avatar } from "./avatar";
 import { ParentsSection } from "./kids/ParentsSection";
 
-const DETAIL_ROWS: { label: string; value: string }[] = [
-  { label: "Fecha de nacimiento", value: "birthDate" },
-  { label: "Sala", value: "room" },
-  { label: "Ingreso", value: "joinedAt" },
-];
-
 /** Ficha completa de un niño: columna principal + columna de 300px.
  *  Recibe el child real de Supabase y el nombre de su sala (SPEC 10).
  *  Los padres vinculados salen de ParentsSection (SPEC 11). */
@@ -28,11 +22,13 @@ export function ChildProfileView({ child, roomName }: { child: Child; roomName: 
   const notesText = child.medical_notes?.trim() ?? "";
   const alertText = [allergiesText, notesText].filter(Boolean).join(" — ");
 
-  const details: Record<string, string> = {
-    birthDate: formatDateIso(child.birth_date),
-    room: roomName,
-    joinedAt: formatMonthYearIso(child.enrolled_at),
-  };
+  // Filas de "Datos": cada label va emparejado con su valor ya formateado.
+  // Evita el lookup por clave string, que TS no puede validar contra las keys.
+  const detailRows = [
+    { label: "Fecha de nacimiento", value: formatDateIso(child.birth_date) },
+    { label: "Sala", value: roomName },
+    { label: "Ingreso", value: formatMonthYearIso(child.enrolled_at) },
+  ];
 
   return (
     <>
@@ -88,17 +84,15 @@ export function ChildProfileView({ child, roomName }: { child: Child; roomName: 
 
           {/* Datos */}
           <div className="overflow-hidden rounded-2xl border border-card-border bg-card">
-            {DETAIL_ROWS.map(({ label, value }, index) => (
+            {detailRows.map(({ label, value }, index) => (
               <div
                 key={label}
                 className={`flex justify-between px-[18px] py-[15px] ${
-                  index < DETAIL_ROWS.length - 1 ? "border-b border-card-divider" : ""
+                  index < detailRows.length - 1 ? "border-b border-card-divider" : ""
                 }`}
               >
                 <span className="text-[14.5px] text-faint">{label}</span>
-                <span className="text-[14.5px] font-extrabold text-ink">
-                  {details[value]}
-                </span>
+                <span className="text-[14.5px] font-extrabold text-ink">{value}</span>
               </div>
             ))}
           </div>

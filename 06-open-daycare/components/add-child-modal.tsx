@@ -225,10 +225,14 @@ export function AddChildModal({
                 >
                   <CalendarIcon width={18} height={18} />
                 </button>
-                {/* Date picker nativo: invisible, solo lo abre el botón */}
+                {/* Date picker nativo: invisible, solo lo abre el botón.
+                    Controlado con value="" para que elegir la misma fecha dos
+                    veces vuelva a disparar onChange (uno no controlado retiene
+                    el valor interno y el segundo pick se perdería). */}
                 <input
                   ref={dateInputRef}
                   type="date"
+                  value=""
                   tabIndex={-1}
                   aria-hidden="true"
                   onChange={handlePickedDate}
