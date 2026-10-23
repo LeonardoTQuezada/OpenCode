@@ -66,6 +66,44 @@ export const POST_TYPE_OPTIONS: { type: PostType; label: string }[] = [
   { type: "ANUNCIO", label: "Anuncio" },
 ];
 
+/** Valores del enum `post_type` de la BD (migración 009). */
+export type DbPostType =
+  | "meal"
+  | "nap"
+  | "activity"
+  | "achievement"
+  | "mood"
+  | "photo"
+  | "announcement";
+
+/** Mapa UI → BD del enum post_type (SPEC 12). 'mood' = Ánimo. */
+export const BD_TYPE_BY_UI: Record<PostType, DbPostType> = {
+  COMIDA: "meal",
+  SIESTA: "nap",
+  ACTIVIDAD: "activity",
+  LOGRO: "achievement",
+  ÁNIMO: "mood",
+  FOTO: "photo",
+  ANUNCIO: "announcement",
+};
+
+/** Mapa inverso BD → UI, para leer posts de la BD. */
+export const UI_TYPE_BY_BD: Record<DbPostType, PostType> = {
+  meal: "COMIDA",
+  nap: "SIESTA",
+  activity: "ACTIVIDAD",
+  achievement: "LOGRO",
+  mood: "ÁNIMO",
+  photo: "FOTO",
+  announcement: "ANUNCIO",
+};
+
+/** Máximo de fotos por publicación (validado en cliente y en la action). */
+export const MAX_PHOTOS = 10;
+
+/** Peso máximo por foto: 5 MB (validado en cliente y en la action). */
+export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
 /** Clases Tailwind del badge por tipo. Literales, no se pueden armar con
  *  template: Tailwind no detectaría las clases construidas en runtime. */
 const BADGE_CLASSES: Record<PostType, { bg: string; text: string }> = {
