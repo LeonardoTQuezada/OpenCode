@@ -18,10 +18,10 @@ SPEC 06 dejó el feed entero en memoria: los posts mueren al recargar y las foto
 - Crear tabla `post_children` con columnas: `post_id` (uuid FK → `posts`), `child_id` (uuid FK → `children`), PK compuesta (`post_id`, `child_id`).
 - Crear tabla `post_photos` con columnas: `id` (uuid PK), `post_id` (uuid FK → `posts`), `url` (text), `width` / `height` (int, nullable), `position` (int), `created_at` (timestamptz).
 - Agregar `users.room_id` (uuid FK → `rooms`, nullable) con backfill: cada usuario con guardería queda en la sala "Soles" de su propia guardería.
-- Crear bucket público `post-photos` y sus políticas en `storage.objects`: insert y delete solo para staff/admin autenticado con path `{daycare_id}/{user_id}/…`, lectura vía bucket público.
+- Crear bucket público `post-photos` y sus políticas en `storage.objects`: insert, select y delete solo para staff/admin autenticado con path `{daycare_id}/{user_id}/…`, lectura pública de las fotos vía URL canónica del bucket.
 - Habilitar RLS en `posts`, `post_children` y `post_photos`: lectura para el mismo daycare (vía autor del post), insert solo staff/admin del mismo daycare. UPDATE y DELETE quedan en default-deny.
 - Índices: `posts (published_at)`, `post_children (child_id)`, `post_photos (post_id)`, `posts (author_id)`.
-- Una única migración `supabase/migrations/009_posts_and_storage.sql` aplicada con `apply_migration`.
+- Migraciones `supabase/migrations/009_posts_and_storage.sql` y `010_storage_select_policy.sql`, aplicadas con `apply_migration` (la 010 es un forward-fix agregado durante la verificación, ver Decisions).
 - Verificación con `execute_sql` y `get_advisors` (security).
 
 **Fuera de alcance (specs futuras):**
@@ -211,6 +211,17 @@ CREATE POLICY "post_photos_insert_own_path" ON storage.objects
     AND (storage.foldername(name))[2] = (SELECT auth.uid())::text
   );
 
+-- Select: el usuario ve (y el upload devuelve) solo los archivos de su path.
+-- Agregado en la migración 010 (forward-fix): sin esta policy, el INSERT con
+-- RETURNING de storage-js puede fallar o devolver vacío.
+CREATE POLICY "post_photos_select_own_path" ON storage.objects
+  FOR SELECT TO authenticated
+  USING (
+    bucket_id = 'post-photos'
+    AND (storage.foldername(name))[1] = (SELECT private.current_user_daycare_id())::text
+    AND (storage.foldername(name))[2] = (SELECT auth.uid())::text
+  );
+
 -- Delete: el dueño del path limpia sus propios archivos (cleanup ante fallo)
 CREATE POLICY "post_photos_delete_own_path" ON storage.objects
   FOR DELETE TO authenticated
@@ -220,7 +231,7 @@ CREATE POLICY "post_photos_delete_own_path" ON storage.objects
   );
 ```
 
-Lectura: el bucket es público, las fotos se sirven por URL canónica sin pasar por PostgREST.
+Lectura de las fotos por la app: URL canónica del bucket público. La policy de select de arriba no cambia eso; solo habilita el upload y que el dueño vea sus propios archivos vía PostgREST.
 
 ### Índices
 
@@ -238,22 +249,24 @@ CREATE INDEX idx_post_photos_post_id ON public.post_photos (post_id);
 3. Verificar con `execute_sql`: enum con 7 valores, 3 tablas con sus columnas/FKs, `users.room_id` poblada en el staff seed con la sala Soles, bucket `post-photos` público, políticas `pg_policies` y `storage.objects` presentes.
 4. Correr `get_advisors` tipo `security` y revisar que no aparezcan hallazgos nuevos sobre estas tablas ni sobre `storage.objects`.
 5. Smoke test de RLS en `begin … rollback`: con `request.jwt.claims` del staff seed, insertar un post de sala y uno con un child; con claims de un usuario de otra guardería, comprobar que el select no devuelve nada.
+6. **Forward-fix durante la verificación:** el smoke test del bucket revela que `storage.objects` quedó con solo INSERT y DELETE (sin SELECT para `authenticated`), lo que puede romper el RETURNING del upload de storage-js. Escribir y aplicar `010_storage_select_policy.sql` con `post_photos_select_own_path` (select limitado al path propio) y re-verificar: el usuario ve sus archivos y no los ajenos.
 
 ## Acceptance criteria
 
-- [ ] La migración `009_posts_and_storage.sql` existe y está aplicada (visibles en `supabase_migrations.schema_migrations`).
-- [ ] `post_type` existe con exactamente los 7 valores, incluido `mood`.
-- [ ] `posts`, `post_children` y `post_photos` existen con las columnas, FKs y PK compuesta definidas en Data model.
-- [ ] `users.room_id` existe y el usuario staff seed quedó vinculado a la sala "Soles" de su guardería.
-- [ ] El bucket `post-photos` existe y es público.
-- [ ] Un insert en `storage.objects` del bucket con path ajeno a `{su_daycare}/{su_uid}/…` es rechazado para el staff seed.
-- [ ] El RLS de `posts` permite al staff seed insertar un post con `author_id` propio y `room_id` de su guardería; rechaza `author_id` de otro usuario y `room_id` de otra guardería.
-- [ ] El RLS de `posts` no devuelve posts de otra guardería.
-- [ ] `post_children` y `post_photos` solo aceptan insert sobre posts propios del autor autenticado.
-- [ ] No existen políticas UPDATE ni DELETE en `posts` (default-deny).
-- [ ] Los 4 índices existen.
-- [ ] `get_advisors` (security) no reporta hallazgos nuevos imputables a esta migración.
-- [ ] `npm run lint` y `npm run build` siguen en verde (la migración no toca código).
+- [x] Las migraciones `009_posts_and_storage.sql` y `010_storage_select_policy.sql` existen y están aplicadas (visibles en `supabase_migrations.schema_migrations`).
+- [x] `post_type` existe con exactamente los 7 valores, incluido `mood`.
+- [x] `posts`, `post_children` y `post_photos` existen con las columnas, FKs y PK compuesta definidas en Data model.
+- [x] `users.room_id` existe y el usuario staff seed quedó vinculado a la sala "Soles" de su guardería.
+- [x] El bucket `post-photos` existe y es público.
+- [x] Un insert en `storage.objects` del bucket con path ajeno a `{su_daycare}/{su_uid}/…` es rechazado para el staff seed; con path propio pasa.
+- [x] El select en `storage.objects` del staff seed devuelve sus archivos de path propio y no los de otro usuario (`post_photos_select_own_path`).
+- [x] El RLS de `posts` permite al staff seed insertar un post con `author_id` propio y `room_id` de su guardería; rechaza `author_id` de otro usuario y `room_id` de otra guardería.
+- [x] El RLS de `posts` no devuelve posts de otra guardería.
+- [x] `post_children` y `post_photos` solo aceptan insert sobre posts propios del autor autenticado.
+- [x] No existen políticas UPDATE ni DELETE en `posts` (default-deny).
+- [x] Los 4 índices existen.
+- [x] `get_advisors` (security) no reporta hallazgos nuevos imputables a esta migración (los 3 lints de `SECURITY DEFINER` son preexistentes de SPEC 08/11).
+- [x] `npm run lint` y `npm run build` siguen en verde (la migración no toca código).
 
 ## Decisions
 
@@ -268,6 +281,7 @@ CREATE INDEX idx_post_photos_post_id ON public.post_photos (post_id);
 - **Sí:** `title` persistido como snapshot del título de audiencia. Se descartó recalcularlo en cada lectura: renombrar un niño reescribiría el historial.
 - **No:** seed de posts, reactions o comments — el feed arranca vacío (decisión del usuario en el grill). Se descartó sembrar los 3 posts mock y también la variante de sembrar reactions/comments para reproducir los contadores inventados.
 - **No:** esta spec no toca una línea de código de la app. Todo el consumo es SPEC 13.
+- **Sí (forward-fix):** `post_photos_select_own_path` en `storage.objects`, agregada en `010_storage_select_policy.sql` durante la verificación de esta spec — decisión del usuario. El smoke test reveló que el bucket quedó con solo INSERT y DELETE; el upload() de storage-js puede requerir que el row insertado sea visible vía SELECT/RETURNING, y con default-deny hay uploads que fallan o devuelven vacío. Se descartó dejarlo para la SPEC 13 (riesgo de tropezar con el upload sin la causa a la vista) y asumir que upload funciona sin SELECT. La policy está limitada al path propio (`{su_daycare}/{su_uid}/…`): habilita el upload sin abrir lectura cruzada entre usuarios; las fotos se sirven igual por URL canónica del bucket público.
 
 ## Risks
 
