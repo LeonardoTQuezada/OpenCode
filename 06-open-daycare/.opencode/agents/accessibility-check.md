@@ -1,6 +1,6 @@
 ---
 description: Reviews and fixes WCAG 2.2 Level AA accessibility in the indicated files, folders or URLs. Static code checklist plus runtime verification with Playwright (accessibility snapshot, keyboard traversal, axe-core injected from CDN); local targets get fixes, external URLs get report-only findings with actionable recommendations. Validates every judgment against official W3C/WAI and React docs via Context7 MCP. Use when asked to review, audit or fix accessibility/a11y of UI files or pages.
-mode: all
+mode: subagent
 model: opencode/mimo-v2.6-flash-free
 color: info
 steps: 75

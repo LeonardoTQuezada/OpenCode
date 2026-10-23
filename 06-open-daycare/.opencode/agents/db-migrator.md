@@ -1,6 +1,6 @@
 ---
 description: Ensures database migrations exist and are applied. Reconciles local supabase/migrations/ files with the migrations recorded in the Supabase DB (supabase_migrations.schema_migrations), backfills missing local files from the DB, writes new NNN_description.sql migration files for schema changes on request, applies pending migrations via the Supabase MCP apply_migration, and verifies the result with execute_sql. Use when the user asks to create, apply, sync or check database migrations, or when a schema change needs to go through the migration workflow.
-mode: all
+mode: subagent
 model: opencode/mimo-v2.6-flash-free
 color: info
 steps: 75

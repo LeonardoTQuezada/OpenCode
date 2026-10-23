@@ -103,6 +103,14 @@ const { data, error } = await supabase.from("users").select();
 - Reglas que aplica: todo cambio de esquema vive en un archivo de migración y pasa por `apply_migration` (nunca DDL suelto por `execute_sql`); match difuso strippeando el prefijo `NNN_` para no reaplicar por falso positivo; nunca editar/borrar migraciones ya aplicadas (arreglar hacia adelante); para en el primer fallo de `apply_migration`.
 - Carga las skills `supabase` y `supabase-postgres-best-practices` antes de escribir SQL.
 
+## DB security auditor
+
+- Agente `db-security-auditor` (`.opencode/agents/db-security-auditor.md`): audita la seguridad de la BD para **prevenir fugas de datos entre niños y padres** por roles/RLS mal configurados. Inventario de solo lectura (tablas + RLS, `pg_policies`, funciones `SECURITY DEFINER`, views sin `security_invoker`, grants a `anon`/`authenticated`, `storage.objects`), `get_advisors` tipo `security`, **matriz de aislamiento** (parent solo ve sus hijos vinculados — nunca `medical_notes`/`allergy_tags`/fotos de otros niños ni enlaces de otros padres; staff/admin solo su `daycare_id`; `anon` nada personal) y checklist de 12 anti-patrones (`auth.role()`, `TO authenticated` sin predicado de ownership, UPDATE sin `WITH CHECK`, `user_metadata` para autorización, etc.). Verificación opcional en runtime con impersonación de rol siempre dentro de `begin ... rollback` (solo lectura).
+- Comando `/db-audit [scope]` (`.opencode/commands/db-audit.md`): invoca ese agente. Ej.: `/db-audit` (esquema completo), `/db-audit children, parent_children` o `/db-audit puede un padre ver notas médicas de otros niños?`.
+- **Modo:** audita + escribe las migraciones correctivas `supabase/migrations/NNN_*.sql` (idempotentes, identifiers en inglés, comentarios en español) y **NO las aplica** — la aplicación la hace `db-migrator` (regla de oro de migraciones).
+- Carga las skills `supabase` y `supabase-postgres-best-practices` y consulta docs vía `supabase_search_docs` antes de juzgar; nunca solo datos de entrenamiento.
+- Flujo: `/db-audit` → revisar hallazgos → `db-migrator` aplica → commit solo si todo quedó en verde.
+
 ## Reglas de código
 
 - Usar código limpio, nombres, funciones, variables, etc. en inglés.

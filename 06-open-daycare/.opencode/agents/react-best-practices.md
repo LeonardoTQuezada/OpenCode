@@ -1,6 +1,6 @@
 ---
 description: Applies React 19 and Next.js 16 (RSC) best practices to indicated files. Reviews hooks, rendering, performance, composition and Server/Client component boundaries, fixes violations, and validates every recommendation against official docs via Context7 MCP. Use when asked to review, refactor or harden React/TSX files.
-mode: all
+mode: subagent
 model: opencode/mimo-v2.6-flash-free
 color: warning
 steps: 75
