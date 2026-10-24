@@ -13,16 +13,19 @@ import type { Child } from "@/app/_actions/children";
 import { childToKidChip } from "@/lib/feed-kids";
 import type { Kid } from "@/lib/kids";
 import type { Audience, PostType } from "@/lib/posts";
-import { BD_TYPE_BY_UI, MAX_PHOTOS, MAX_PHOTO_BYTES, postTitle } from "@/lib/posts";
+import {
+  BD_TYPE_BY_UI,
+  MAX_PHOTOS,
+  MAX_PHOTO_BYTES,
+  PHOTO_MIME_TYPES,
+  postTitle,
+} from "@/lib/posts";
 import { createClient } from "@/utils/supabase/server";
 
 export type CreatePostResult = { ok: true } | { ok: false; message: string };
 
 /** Mensaje único para fallos inesperados de Storage o BD (SPEC 13). */
 const GENERIC_ERROR = "No se pudo publicar. Intentá de nuevo.";
-
-/** Formatos aceptados para las fotos del post. */
-const PHOTO_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 /** Extensión canónica del archivo en el bucket, por MIME. */
 const PHOTO_EXTENSIONS: Record<string, string> = {

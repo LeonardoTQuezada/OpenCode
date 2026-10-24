@@ -1,18 +1,30 @@
 "use client";
 
-// Modal "Nueva publicación" (SPEC 06): se abre desde el botón del sidebar y
-// desde el composer. El provider lo renderiza solo mientras está abierto, así
-// cada apertura monta una instancia nueva y el formulario nace vacío.
+// Modal "Nueva publicación" (SPEC 06 + SPEC 13): se abre desde el botón del
+// sidebar y desde el composer. El provider lo renderiza solo mientras está
+// abierto, así cada apertura monta una instancia nueva y el formulario nace
+// vacío. Publicar llama a createPostAction (BD + Storage) y refresca el feed.
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
+import { createPostAction } from "@/app/_actions/posts";
 import type { Kid } from "@/lib/kids";
-import type { Audience, NewPostInput, PostPhoto, PostType } from "@/lib/posts";
-import { POST_TYPE_OPTIONS, tipoClasses } from "@/lib/posts";
+import type { Audience, PostType } from "@/lib/posts";
+import {
+  MAX_PHOTOS,
+  MAX_PHOTO_BYTES,
+  PHOTO_MIME_TYPES,
+  POST_TYPE_OPTIONS,
+  tipoClasses,
+} from "@/lib/posts";
 
 import { CloseIcon, PlusIcon } from "./icons";
 
-type FieldKey = "audience" | "type" | "body";
+type FieldKey = "audience" | "type" | "body" | "photos";
+
+/** Foto elegida: el File es lo que se sube; previewUrl es su miniatura. */
+type PhotoEntry = { file: File; previewUrl: string };
 
 type FieldErrors = Partial<Record<FieldKey, string>>;
 
@@ -30,27 +42,24 @@ function firstName(kid: Kid): string {
   return kid.name.split(" ")[0];
 }
 
-export function CreatePostModal({
-  kids,
-  onClose,
-  onPublish,
-}: {
-  kids: Kid[];
-  onClose: () => void;
-  /** Paso transitorio (SPEC 13): la action real se conecta en el paso 6. */
-  onPublish?: (input: NewPostInput) => void;
-}) {
+export function CreatePostModal({ kids, onClose }: { kids: Kid[]; onClose: () => void }) {
+  const router = useRouter();
   // Arranca vacío: nada de PARA, ningún TIPO, descripción y fotos vacías.
   const [audience, setAudience] = useState<Audience>({ kind: "kids", slugs: [] });
   const [type, setType] = useState<PostType | null>(null);
   const [body, setBody] = useState("");
-  const [photos, setPhotos] = useState<PostPhoto[]>([]);
+  const [photos, setPhotos] = useState<PhotoEntry[]>([]);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Object URLs creadas por este modal. Al publicar se transfieren a la
-  // publicación; al desmontar se revocan las que quedaron sin publicar.
-  const ownedUrls = useRef<Set<string>>(new Set());
+  // Espejo de las fotos para revocar miniaturas al desmontar (el cleanup no
+  // debe leer el estado).
+  const photosRef = useRef<PhotoEntry[]>([]);
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
 
   /** Esc cierra el modal y bloquea el scroll de la página de fondo. */
   useEffect(() => {
@@ -67,18 +76,18 @@ export function CreatePostModal({
     };
   }, [onClose]);
 
-  /** Al desmontar quedan solo las fotos que no se publicaron. */
+  /** Al desmontar se revocan las miniaturas que quedaron sin publicar. */
   useEffect(() => {
-    const urls = ownedUrls.current;
     return () => {
-      for (const url of urls) URL.revokeObjectURL(url);
-      urls.clear();
+      for (const entry of photosRef.current) URL.revokeObjectURL(entry.previewUrl);
+      photosRef.current = [];
     };
   }, []);
 
   /** Limpia el error del bloque cuando el usuario vuelve a interactuar. */
   const clearError = (field: FieldKey) => {
     setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+    setPublishError(null);
   };
 
   /** Exclusión mutua: el clic en un niño libera "Toda la sala" y viceversa. */
@@ -108,44 +117,73 @@ export function CreatePostModal({
     setType(next);
   };
 
+  /** Agrega los Files elegidos; la miniatura es una object URL temporal. */
   const addFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
+    clearError("photos");
 
-    const added: PostPhoto[] = Array.from(files).map((file) => {
-      const src = URL.createObjectURL(file);
-      ownedUrls.current.add(src);
-      return { src, label: file.name, height: 200 };
-    });
+    const added: PhotoEntry[] = Array.from(files).map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
     setPhotos((prev) => [...prev, ...added]);
   };
 
   const removePhoto = (index: number) => {
+    clearError("photos");
     setPhotos((prev) => {
-      const photo = prev[index];
-      if (photo?.src && ownedUrls.current.has(photo.src)) {
-        URL.revokeObjectURL(photo.src);
-        ownedUrls.current.delete(photo.src);
-      }
+      const entry = prev[index];
+      if (entry) URL.revokeObjectURL(entry.previewUrl);
       return prev.filter((_, position) => position !== index);
     });
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (publishing) return;
 
+    // Validación en cliente (SPEC 13): no se llama a la action si hay algo
+    // inválido; los límites de fotos también se chequean acá.
     const next: FieldErrors = {};
     const hasTarget = audience.kind === "room" || audience.slugs.length > 0;
     if (!hasTarget) next.audience = "Elegí al menos un destinatario.";
     if (!type) next.type = "Elegí un tipo de publicación.";
     if (!body.trim()) next.body = "Escribí qué querés contar.";
+    if (photos.length > MAX_PHOTOS) {
+      next.photos = "Subí hasta 10 fotos.";
+    } else if (photos.some((entry) => entry.file.size > MAX_PHOTO_BYTES)) {
+      next.photos = "Cada foto puede pesar hasta 5 MB.";
+    } else if (photos.some((entry) => !PHOTO_MIME_TYPES.has(entry.file.type))) {
+      next.photos = "Usá archivos JPG, PNG o WEBP.";
+    }
     setErrors(next);
-    if (next.audience || next.type || next.body) return;
+    setPublishError(null);
+    if (next.audience || next.type || next.body || next.photos) return;
     if (!type) return;
 
-    // Las fotos pasan a la publicación: este modal ya no las revokea.
-    ownedUrls.current.clear();
-    onPublish?.({ audience, type, body, photos });
-    onClose();
+    const formData = new FormData();
+    formData.append("audience", audience.kind);
+    if (audience.kind === "kids") {
+      for (const slug of audience.slugs) formData.append("childIds", slug);
+    }
+    formData.append("type", type);
+    formData.append("body", body);
+    for (const entry of photos) formData.append("photos", entry.file);
+
+    setPublishing(true);
+    try {
+      const result = await createPostAction(formData);
+      if (result.ok) {
+        // El cierre desmonta el modal y revoca las miniaturas; el feed se
+        // revalida contra la BD con router.refresh().
+        onClose();
+        router.refresh();
+      } else {
+        setPublishError(result.message);
+      }
+    } finally {
+      setPublishing(false);
+    }
   };
 
   return (
@@ -181,13 +219,21 @@ export function CreatePostModal({
             </span>
             <button
               type="submit"
-              className="cursor-pointer text-[15px] font-extrabold text-coral-strong"
+              disabled={publishing}
+              className="cursor-pointer text-[15px] font-extrabold text-coral-strong disabled:cursor-default disabled:opacity-60"
             >
-              Publicar
+              {publishing ? "Publicando…" : "Publicar"}
             </button>
           </div>
 
           <div className="px-[26px] py-6">
+            {/* Error devuelto por la action (sala sin asignar, Storage/BD) */}
+            {publishError && (
+              <p role="alert" className="mb-[18px] text-[13.5px] font-bold text-coral-deep">
+                {publishError}
+              </p>
+            )}
+
             {/* PARA: selección múltiple + chip exclusivo "Toda la sala" */}
             <div className="mb-[22px]">
               <span className={labelClass}>PARA</span>
@@ -292,18 +338,18 @@ export function CreatePostModal({
             <div>
               <span className={labelClass}>FOTOS</span>
               <div className="flex flex-wrap gap-3">
-                {photos.map((photo, index) => (
-                  <div key={`${photo.src}-${index}`} className="relative size-24">
-                    {/* Object URL de la foto elegida: no pasa por next/image (SPEC 06) */}
+                {photos.map((entry, index) => (
+                  <div key={`${entry.file.name}-${index}`} className="relative size-24">
+                    {/* Miniatura: object URL del File, no pasa por next/image */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={photo.src}
-                      alt={photo.label}
+                      src={entry.previewUrl}
+                      alt={entry.file.name}
                       className="size-24 rounded-[14px] border border-card-border object-cover"
                     />
                     <button
                       type="button"
-                      aria-label={`Quitar ${photo.label}`}
+                      aria-label={`Quitar ${entry.file.name}`}
                       onClick={() => removePhoto(index)}
                       className="absolute -right-1.5 -top-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full bg-card-divider text-faint shadow-card"
                     >
@@ -334,6 +380,12 @@ export function CreatePostModal({
                   event.target.value = "";
                 }}
               />
+
+              {errors.photos && (
+                <p role="alert" className={errorClass}>
+                  {errors.photos}
+                </p>
+              )}
             </div>
           </div>
         </form>

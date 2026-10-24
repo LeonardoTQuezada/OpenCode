@@ -104,6 +104,9 @@ export const MAX_PHOTOS = 10;
 /** Peso máximo por foto: 5 MB (validado en cliente y en la action). */
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 
+/** Formatos aceptados para las fotos (cliente y action). */
+export const PHOTO_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
 /** Clases Tailwind del badge por tipo. Literales, no se pueden armar con
  *  template: Tailwind no detectaría las clases construidas en runtime. */
 const BADGE_CLASSES: Record<PostType, { bg: string; text: string }> = {
