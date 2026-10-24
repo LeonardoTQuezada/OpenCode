@@ -5,7 +5,7 @@
 - [x] 1.1 Crear directorio `/app/staff/` y verificar que existe
 - [x] 1.2 Crear directorio `/app/family/` y verificar que existe
 - [x] 1.3 Crear páginas placeholder en `/app/staff/`: `feed/page.tsx`, `kids/page.tsx`, `notices/page.tsx`, `my-account/page.tsx` y verificar que cada una renderiza sin errores
-- [ ] 1.4 Crear páginas placeholder en `/app/family/`: `feed/page.tsx`, `kids/page.tsx`, `notices/page.tsx`, `day-summary/page.tsx`, `my-account/page.tsx` y verificar que cada una renderiza sin errores
+- [x] 1.4 Crear páginas placeholder en `/app/family/`: `feed/page.tsx`, `kids/page.tsx`, `notices/page.tsx`, `day-summary/page.tsx`, `my-account/page.tsx` y verificar que cada una renderiza sin errores
 
 ## 2. Actualizar componentes compartidos para ser role-aware
 
