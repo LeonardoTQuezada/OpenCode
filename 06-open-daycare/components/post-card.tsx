@@ -3,8 +3,11 @@ import { badgeClasses } from "@/lib/posts";
 
 import { CommentIcon, HeartIcon, MegaphoneIcon } from "./icons";
 
-export function PostCard({ post }: { post: FeedPost }) {
+type Role = "staff" | "family";
+
+export function PostCard({ role, post }: { role: Role; post: FeedPost }) {
   const badge = badgeClasses(post.type);
+  const showEditButton = role === "staff" && post.isOwn;
 
   return (
     <article className="rounded-[20px] border border-card-border bg-card px-[22px] py-5 shadow-card">
@@ -63,7 +66,7 @@ export function PostCard({ post }: { post: FeedPost }) {
         </div>
       )}
 
-      {/* Pie: likes, comentarios y Editar (solo en posts propios, inerte) */}
+      {/* Pie: likes, comentarios y Editar (solo en posts propios para staff, inerte) */}
       <div className="mt-4 flex items-center gap-[18px] border-t border-card-divider pt-[14px]">
         <span className="flex items-center gap-[7px] text-sm font-bold leading-[1.36] text-coral">
           <HeartIcon width={19} height={19} />
@@ -77,7 +80,7 @@ export function PostCard({ post }: { post: FeedPost }) {
           {post.comments}
         </a>
         <span className="flex-1" />
-        {post.isOwn && (
+        {showEditButton && (
           <a href="#" className="text-sm font-extrabold leading-[1.36] text-coral-deep">
             Editar
           </a>
