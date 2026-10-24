@@ -26,10 +26,10 @@
 
 ## 4. Implementar detección de rol en proxy.ts
 
-- [ ] 4.1 Actualizar `proxy.ts` para leer el rol del usuario desde la sesión de Supabase (después de `supabase.auth.getUser()`, consultar `users.role`). Verificar que el rol se obtiene correctamente.
-- [ ] 4.2 Implementar redirección desde `/` según el rol: staff/admin → `/staff/feed`, parent → `/family/feed`, no autenticado → `/login`. Verificar que la redirección funciona para cada caso.
-- [ ] 4.3 Implementar protección de rutas `/staff/*`: si el usuario tiene rol "parent", redirigir a `/family/feed`. Verificar que un parent no puede acceder a rutas de staff.
-- [ ] 4.4 Implementar protección de rutas `/family/*`: si el usuario tiene rol "staff" o "admin", redirigir a `/staff/feed`. Verificar que un staff no puede acceder a rutas de familia.
+- [x] 4.1 Actualizar `proxy.ts` para leer el rol del usuario desde la sesión de Supabase (después de `supabase.auth.getUser()`, consultar `users.role`). Verificar que el rol se obtiene correctamente.
+- [x] 4.2 Implementar redirección desde `/` según el rol: staff/admin → `/staff/feed`, parent → `/family/feed`, no autenticado → `/login`. Verificar que la redirección funciona para cada caso.
+- [x] 4.3 Implementar protección de rutas `/staff/*`: si el usuario tiene rol "parent", redirigir a `/family/feed`. Verificar que un parent no puede acceder a rutas de staff.
+- [x] 4.4 Implementar protección de rutas `/family/*`: si el usuario tiene rol "staff" o "admin", redirigir a `/staff/feed`. Verificar que un staff no puede acceder a rutas de familia.
 
 ## 5. Actualizar layout raíz con contexto de rol
 
