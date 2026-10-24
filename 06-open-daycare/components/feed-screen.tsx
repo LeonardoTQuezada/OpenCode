@@ -1,16 +1,38 @@
 "use client";
 
-// Pantalla del feed (SPEC 06): header, composer que abre el modal "Nueva
-// publicación" y la lista de posts que vive en PostsProvider.
+// Pantalla del feed (SPEC 06 + SPEC 13): header con el perfil real de la
+// sesión, composer que abre el modal "Nueva publicación" y la lista de posts
+// del día que el server trae desde Supabase (props `posts`).
+
+import type { FeedPost } from "@/lib/feed-posts";
 
 import { CameraIcon } from "./icons";
+import { LoadMorePosts } from "./load-more-posts";
 import { MobileNav } from "./mobile-nav";
 import { PostCard } from "./post-card";
 import { usePosts } from "./posts-provider";
 import { Sidebar } from "./sidebar";
+import { useUserProfile } from "./user-profile-provider";
 
-export function FeedScreen() {
-  const { posts, openComposer } = usePosts();
+// Fecha de hoy en el mismo formato del mockup: "martes 17 jun".
+function todayLabel(): string {
+  const now = new Date();
+  const weekday = new Intl.DateTimeFormat("es-ES", { weekday: "long" }).format(now);
+  const dayMonth = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short" }).format(now);
+  return `${weekday} ${dayMonth}`;
+}
+
+export function FeedScreen({
+  posts,
+  olderCursor,
+  hasOlder,
+}: {
+  posts: FeedPost[];
+  olderCursor: string;
+  hasOlder: boolean;
+}) {
+  const { openComposer, kids } = usePosts();
+  const profile = useUserProfile();
 
   return (
     <div className="flex min-h-screen bg-cream">
@@ -24,10 +46,10 @@ export function FeedScreen() {
               GUARDERÍA · SALA SOLES
             </div>
             <h1 className="font-display text-[30px] font-semibold leading-[1.2] text-ink">
-              Buenas, Caro
+              Buenas, {profile?.fullName.split(" ")[0] ?? "-"}
             </h1>
             <p className="mt-[5px] text-[14.5px] leading-[1.36] text-faint">
-              12 niños · martes 17 jun
+              {kids.length} niños · {todayLabel()}
             </p>
           </div>
 
@@ -38,7 +60,7 @@ export function FeedScreen() {
             className="mb-6 flex w-full cursor-pointer items-center gap-[14px] rounded-[18px] border border-card-border bg-card px-[18px] py-[14px] text-left shadow-composer"
           >
             <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-avatar font-display text-base font-semibold text-white">
-              C
+              {profile?.initials ?? "?"}
             </span>
             <span className="flex-1 text-[15px] leading-[1.36] text-muted">
               Compartí un momento…
@@ -56,12 +78,21 @@ export function FeedScreen() {
             <span className="h-px flex-1 bg-divider" />
           </div>
 
-          {/* Posts */}
-          <div className="flex flex-col gap-4">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
+          {/* Posts reales del día; estado vacío si aún no hay ninguno */}
+          {posts.length === 0 ? (
+            <p className="text-[15px] leading-[1.55] text-faint">
+              Todavía no hay publicaciones. Compartí el primer momento del día.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
+
+          {/* Lotes anteriores bajo su separador de día (SPEC 13, paso 8) */}
+          <LoadMorePosts cursor={olderCursor} hasOlder={hasOlder} />
         </main>
       </div>
     </div>

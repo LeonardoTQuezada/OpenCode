@@ -1,6 +1,7 @@
-// Tipos y helpers de las publicaciones del feed. El estado vive en memoria
-// (posts-provider) y se pierde al recargar (SPEC 06). Módulo puro, sin React,
-// para que la migración futura a base de datos toque solo esta capa.
+// Tipos y helpers de las publicaciones del feed. Los posts viven en la BD
+// (SPEC 13: lectura en lib/feed-posts.ts, escritura en la Server Action
+// app/_actions/posts.ts); este módulo queda como capa pura de tipos,
+// mapeos UI↔BD, límites de fotos y clases Tailwind, sin React.
 
 import type { Kid } from "./kids";
 
@@ -13,47 +14,9 @@ export type PostType =
   | "FOTO"
   | "ANUNCIO";
 
-export type PostPhoto = {
-  /** Object URL de la foto elegida. Ausente = placeholder del mockup. */
-  src?: string;
-  /** "Foto · pintando con témperas" solo en los posts semilla. */
-  label: string;
-  /** Altura de la caja, 200. */
-  height: number;
-};
-
-export type Post = {
-  id: string;
-  type: PostType;
-  /** Clases Tailwind del pill: `bg-*` derivada del token @theme. */
-  badgeBg: string;
-  /** Clase Tailwind `text-*` derivada del token @theme. */
-  badgeText: string;
-  /** Clase Tailwind `bg-*` del avatar. */
-  avatarBg: string;
-  /** Clase Tailwind `text-*` de la letra del avatar. */
-  avatarInk: string;
-  /** Letra para el avatar del niño, o vacío para el ícono de anuncio. */
-  avatarLabel: string;
-  title: string; // "Mateo" / "Varios niños" / "Toda la sala"
-  time: string; // "14:20 · publicado por vos"
-  audience: string; // "Para: familia de Mateo"
-  body: string;
-  photos: PostPhoto[];
-  likes: number;
-  comments: number;
-};
-
 export type Audience =
   | { kind: "room" } // "Toda la sala"
   | { kind: "kids"; slugs: string[] }; // selección múltiple, sin "room"
-
-export type NewPostInput = {
-  audience: Audience;
-  type: PostType;
-  body: string;
-  photos: PostPhoto[];
-};
 
 /** Orden y rótulos de las 7 pastillas del bloque TIPO (mockup). */
 export const POST_TYPE_OPTIONS: { type: PostType; label: string }[] = [
@@ -65,6 +28,47 @@ export const POST_TYPE_OPTIONS: { type: PostType; label: string }[] = [
   { type: "FOTO", label: "Foto" },
   { type: "ANUNCIO", label: "Anuncio" },
 ];
+
+/** Valores del enum `post_type` de la BD (migración 009). */
+export type DbPostType =
+  | "meal"
+  | "nap"
+  | "activity"
+  | "achievement"
+  | "mood"
+  | "photo"
+  | "announcement";
+
+/** Mapa UI → BD del enum post_type (SPEC 12). 'mood' = Ánimo. */
+export const BD_TYPE_BY_UI: Record<PostType, DbPostType> = {
+  COMIDA: "meal",
+  SIESTA: "nap",
+  ACTIVIDAD: "activity",
+  LOGRO: "achievement",
+  ÁNIMO: "mood",
+  FOTO: "photo",
+  ANUNCIO: "announcement",
+};
+
+/** Mapa inverso BD → UI, para leer posts de la BD. */
+export const UI_TYPE_BY_BD: Record<DbPostType, PostType> = {
+  meal: "COMIDA",
+  nap: "SIESTA",
+  activity: "ACTIVIDAD",
+  achievement: "LOGRO",
+  mood: "ÁNIMO",
+  photo: "FOTO",
+  announcement: "ANUNCIO",
+};
+
+/** Máximo de fotos por publicación (validado en cliente y en la action). */
+export const MAX_PHOTOS = 10;
+
+/** Peso máximo por foto: 5 MB (validado en cliente y en la action). */
+export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
+/** Formatos aceptados para las fotos (cliente y action). */
+export const PHOTO_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 /** Clases Tailwind del badge por tipo. Literales, no se pueden armar con
  *  template: Tailwind no detectaría las clases construidas en runtime. */
@@ -126,98 +130,3 @@ export function postTitle(audience: Audience, kids: Kid[]): string {
   if (names.length === 1) return names[0];
   return "Varios niños";
 }
-
-/** Avatar: megáfono de anuncio para "Toda la sala", avatar del primer niño. */
-export function postAvatar(
-  audience: Audience,
-  kids: Kid[],
-): { bg: string; ink: string; label: string; useMegaphone: boolean } {
-  const room = { bg: "bg-badge-anuncio-bg", ink: "text-badge-anuncio", label: "" };
-
-  if (audience.kind === "room") return { ...room, useMegaphone: true };
-
-  const kid = kidBySlug(kids, audience.slugs[0]);
-  if (!kid) return { ...room, useMegaphone: true };
-
-  return { bg: kid.avatarBg, ink: kid.avatarInk, label: kid.initial, useMegaphone: false };
-}
-
-function clock(now: Date): string {
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
-
-export function createPost(input: NewPostInput, kids: Kid[], now: Date): Post {
-  const avatar = postAvatar(input.audience, kids);
-  const badge = badgeClasses(input.type);
-
-  return {
-    id: crypto.randomUUID(),
-    type: input.type,
-    badgeBg: badge.bg,
-    badgeText: badge.text,
-    avatarBg: avatar.bg,
-    avatarInk: avatar.ink,
-    avatarLabel: avatar.label,
-    title: postTitle(input.audience, kids),
-    time: `${clock(now)} · publicado por vos`,
-    audience: audienceLabel(input.audience, kids),
-    body: input.body.trim(),
-    photos: input.photos,
-    likes: 0,
-    comments: 0,
-  };
-}
-
-/** Los 3 posts del mockup del feed (SPEC 01). */
-export const SEED_POSTS: Post[] = [
-  {
-    id: "logro-orinal-mateo",
-    type: "LOGRO",
-    badgeBg: "bg-badge-logro-bg",
-    badgeText: "text-badge-logro",
-    avatarBg: "bg-avatar-m-bg",
-    avatarInk: "text-avatar-m",
-    avatarLabel: "M",
-    title: "Mateo",
-    time: "14:20 · publicado por vos",
-    audience: "Para: familia de Mateo",
-    body: "¡Usó el orinal solito por primera vez! Estaba feliz de contárselo a todos. Un gran paso.",
-    photos: [],
-    likes: 3,
-    comments: 1,
-  },
-  {
-    id: "actividad-temperas",
-    type: "ACTIVIDAD",
-    badgeBg: "bg-badge-actividad-bg",
-    badgeText: "text-badge-actividad",
-    avatarBg: "bg-avatar-m-bg",
-    avatarInk: "text-avatar-m",
-    avatarLabel: "M",
-    title: "Mateo",
-    time: "09:40 · publicado por vos",
-    audience: "Para: familia de Mateo",
-    body: "Pintamos con témperas esta mañana. Mateo eligió el azul para todo y se concentró un montón mezclando colores.",
-    photos: [{ label: "Foto · pintando con témperas", height: 200 }],
-    likes: 5,
-    comments: 2,
-  },
-  {
-    id: "anuncio-parque",
-    type: "ANUNCIO",
-    badgeBg: "bg-badge-anuncio-bg",
-    badgeText: "text-badge-anuncio",
-    avatarBg: "bg-badge-anuncio-bg",
-    avatarInk: "text-badge-anuncio",
-    avatarLabel: "",
-    title: "Anuncio general",
-    time: "07:50 · publicado por vos",
-    audience: "Para: toda la sala",
-    body: "El viernes salimos al parque por la mañana. Recuerden mandar gorra y una botellita de agua.",
-    photos: [],
-    likes: 8,
-    comments: 0,
-  },
-];
