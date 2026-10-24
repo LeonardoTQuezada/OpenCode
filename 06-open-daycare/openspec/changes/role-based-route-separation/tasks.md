@@ -40,10 +40,10 @@
 
 ## 6. Eliminar rutas obsoletas
 
-- [ ] 6.1 Eliminar directorio `/app/family-feed/` y verificar que ya no existe
-- [ ] 6.2 Eliminar `/app/kids/` (la versión sin prefijo de rol) y verificar que ya no existe
-- [ ] 6.3 Eliminar `/app/notices/` (la versión sin prefijo de rol) y verificar que ya no existe
-- [ ] 6.4 Reemplazar `/app/page.tsx` con un redirect simple a `/staff/feed` o `/family/feed` según el rol (o delegar al proxy). Verificar que `/` redirige correctamente.
+- [x] 6.1 Eliminar directorio `/app/family-feed/` y verificar que ya no existe
+- [x] 6.2 Eliminar `/app/kids/` (la versión sin prefijo de rol) y verificar que ya no existe
+- [x] 6.3 Eliminar `/app/notices/` (la versión sin prefijo de rol) y verificar que ya no existe
+- [x] 6.4 Reemplazar `/app/page.tsx` con un redirect simple a `/staff/feed` o `/family/feed` según el rol (o delegar al proxy). Verificar que `/` redirige correctamente.
 
 ## 7. Pruebas de integración
 
