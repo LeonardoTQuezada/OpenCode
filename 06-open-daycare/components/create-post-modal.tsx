@@ -37,7 +37,8 @@ export function CreatePostModal({
 }: {
   kids: Kid[];
   onClose: () => void;
-  onPublish: (input: NewPostInput) => void;
+  /** Paso transitorio (SPEC 13): la action real se conecta en el paso 6. */
+  onPublish?: (input: NewPostInput) => void;
 }) {
   // Arranca vacío: nada de PARA, ningún TIPO, descripción y fotos vacías.
   const [audience, setAudience] = useState<Audience>({ kind: "kids", slugs: [] });
@@ -143,7 +144,7 @@ export function CreatePostModal({
 
     // Las fotos pasan a la publicación: este modal ya no las revokea.
     ownedUrls.current.clear();
-    onPublish({ audience, type, body, photos });
+    onPublish?.({ audience, type, body, photos });
     onClose();
   };
 

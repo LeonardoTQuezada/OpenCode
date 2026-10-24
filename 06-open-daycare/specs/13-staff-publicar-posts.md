@@ -50,6 +50,11 @@ export type FeedPost = {
   id: string;
   type: PostType; // tipo de la UI, ya mapeado desde la BD
   title: string; // snapshot de la BD ("Mateo" / "Varios niños" / "Toda la sala")
+  // Avatar calculado al leer: paleta del niño (por child.id, igual que los
+  // chips del modal) o colores de anuncio con label vacío para el megáfono.
+  avatarBg: string;
+  avatarInk: string;
+  avatarLabel: string; // "" = ícono de megáfono ("Toda la sala")
   authorFirstName: string;
   isOwn: boolean; // author_id === sesión actual
   time: string; // "14:20"
@@ -92,6 +97,7 @@ Convenciones:
 - El separador de día de un lote viejo: "PUBLICADO AYER" para ayer; "PUBLICADO EL {d} {MON}" con mes corto en español en mayúsculas para todo lo demás.
 - La fecha del header: weekday en español minúscula, día y mes corto ("martes 17 jun"), generada con `Intl.DateTimeFormat("es-ES")`.
 - El título de audienceLabel/postTitle se calcula en el server al leer, usando los `children` etiquetados y `room_id`; el `title` de la BD manda cuando existe.
+- El `FeedPost` lleva el avatar calculado en el server (`avatarBg`/`avatarInk`/`avatarLabel`): paleta del primer niño por `child.id` (mismo color que su chip en el modal) o megáfono con colores de anuncio para "Toda la sala". Sin estos campos el card no podría reproducir el avatar de memoria.
 - Los hijos etiquetados se resuelven con los `children` visibles (RLS) del post; si un hijo quedó archivado, el nombre igual se muestra (viene del join).
 - `router.refresh()` tras el éxito: revalida el Server Component del feed sin realtime.
 - La limpieza de archivos ante fallo de insert usa el cliente de Storage del server y continúa con el mejor esfuerzo: si el delete falla, se loguea el error y se devuelve el mensaje genérico igual.

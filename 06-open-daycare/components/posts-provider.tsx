@@ -1,25 +1,22 @@
 "use client";
 
-// Estado compartido del feed (SPEC 06): los posts publicados viven en memoria
-// (se pierden al recargar) y este provider monta el modal "Nueva publicación"
-// mientras composerOpen sea true, así cada apertura crea una instancia nueva
-// y el formulario arranca vacío.
+// Estado del composer (SPEC 06 + SPEC 13): este provider controla si el
+// modal "Nueva publicación" está abierto y reparte los chips de niños.
+// El modal se monta solo mientras composerOpen sea true, así cada apertura
+// crea una instancia nueva y el formulario arranca vacío. Los posts ya no
+// viven en memoria: el feed los lee server-side desde Supabase.
 
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 
 import type { Kid } from "@/lib/kids";
-import { createPost, SEED_POSTS, type NewPostInput, type Post } from "@/lib/posts";
 
 import { CreatePostModal } from "./create-post-modal";
 
 type PostsContextValue = {
-  posts: Post[];
   kids: Kid[];
   composerOpen: boolean;
   openComposer: () => void;
   closeComposer: () => void;
-  /** Crea el post con la hora actual y lo deja primero en el feed. */
-  addPost: (input: NewPostInput) => void;
 };
 
 const PostsContext = createContext<PostsContextValue | null>(null);
@@ -31,33 +28,21 @@ export function PostsProvider({
   initialKids: Kid[];
   children: ReactNode;
 }) {
-  const [posts, setPosts] = useState<Post[]>(SEED_POSTS);
   const [composerOpen, setComposerOpen] = useState(false);
 
   const closeComposer = useCallback(() => setComposerOpen(false), []);
 
   const openComposer = useCallback(() => setComposerOpen(true), []);
 
-  const addPost = useCallback(
-    (input: NewPostInput) => {
-      setPosts((prev) => [createPost(input, initialKids, new Date()), ...prev]);
-    },
-    [initialKids],
-  );
-
   return (
     <PostsContext.Provider
-      value={{ posts, kids: initialKids, composerOpen, openComposer, closeComposer, addPost }}
+      value={{ kids: initialKids, composerOpen, openComposer, closeComposer }}
     >
       {children}
 
       {/* Solo monta mientras está abierto: reabrir arranca con el form vacío */}
       {composerOpen && (
-        <CreatePostModal
-          kids={initialKids}
-          onClose={closeComposer}
-          onPublish={addPost}
-        />
+        <CreatePostModal kids={initialKids} onClose={closeComposer} />
       )}
     </PostsContext.Provider>
   );
