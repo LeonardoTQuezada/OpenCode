@@ -33,10 +33,10 @@
 
 ## 5. Actualizar layout raíz con contexto de rol
 
-- [ ] 5.1 Actualizar `/app/layout.tsx` para leer el rol del usuario desde la sesión de Supabase. Verificar que el rol se lee correctamente.
-- [ ] 5.2 Pasar el rol como prop a `<Sidebar role={role} />` en el layout. Verificar que el sidebar recibe el rol correcto.
-- [ ] 5.3 Pasar el rol como prop a `<MobileNav role={role} />` en el layout. Verificar que el mobile nav recibe el rol correcto.
-- [ ] 5.4 Verificar que el layout renderiza el contenido de la ruta activa dentro de `<main>` correctamente para ambas rutas de staff y family.
+- [x] 5.1 Actualizar `/app/layout.tsx` para leer el rol del usuario desde la sesión de Supabase. Verificar que el rol se lee correctamente.
+- [x] 5.2 Pasar el rol como prop a `<Sidebar role={role} />` en el layout. Verificar que el sidebar recibe el rol correcto.
+- [x] 5.3 Pasar el rol como prop a `<MobileNav role={role} />` en el layout. Verificar que el mobile nav recibe el rol correcto.
+- [x] 5.4 Verificar que el layout renderiza el contenido de la ruta activa dentro de `<main>` correctamente para ambas rutas de staff y family.
 
 ## 6. Eliminar rutas obsoletas
 
