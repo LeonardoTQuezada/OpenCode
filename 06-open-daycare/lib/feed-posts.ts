@@ -21,6 +21,7 @@ export type FeedPost = {
   avatarLabel: string; // "" = ícono de megáfono ("Toda la sala")
   authorFirstName: string;
   isOwn: boolean; // author_id === viewer
+  publishedAt: string; // ISO original: cursor de "Ver más" y agrupación por día
   time: string; // "14:20"
   audience: string; // "Para: familia de Mateo" / "Para: toda la sala"
   body: string;
@@ -132,6 +133,7 @@ function toFeedPost(
     avatarLabel,
     authorFirstName: (author?.full_name ?? "").split(" ")[0],
     isOwn: row.author_id === viewerId,
+    publishedAt: row.published_at,
     time: `${hh}:${mm}`,
     audience: audienceLabel(audience, kids),
     body: row.body,
@@ -170,7 +172,9 @@ export async function getTodayPosts(viewerId: string): Promise<FeedPost[]> {
   return ((data ?? []) as PostRow[]).map((row) => toFeedPost(row, viewerId, supabase));
 }
 
-/** Lote de posts más viejos que el cursor `before` (ISO), orden desc. */
+/** Lote de posts más viejos que el cursor `before` (ISO del published_at
+ *  del post más viejo ya cargado — decisión: nunca saltea posts de un día
+ *  con más de `limit` publicaciones), orden desc. */
 export async function getOlderPosts(
   viewerId: string,
   before: string,

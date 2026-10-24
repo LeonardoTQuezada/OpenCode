@@ -68,7 +68,7 @@ export type FeedPost = {
 export async function getTodayPosts(viewerId: string): Promise<FeedPost[]>;
 export async function getOlderPosts(
   viewerId: string,
-  before: string, // ISO del inicio del día más viejo ya cargado
+  before: string, // ISO del published_at del post más viejo ya cargado (nunca saltea posts de un día con >10)
   limit: number, // 10
 ): Promise<FeedPost[]>;
 ```

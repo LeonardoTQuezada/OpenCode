@@ -7,6 +7,7 @@
 import type { FeedPost } from "@/lib/feed-posts";
 
 import { CameraIcon } from "./icons";
+import { LoadMorePosts } from "./load-more-posts";
 import { MobileNav } from "./mobile-nav";
 import { PostCard } from "./post-card";
 import { usePosts } from "./posts-provider";
@@ -21,7 +22,15 @@ function todayLabel(): string {
   return `${weekday} ${dayMonth}`;
 }
 
-export function FeedScreen({ posts }: { posts: FeedPost[] }) {
+export function FeedScreen({
+  posts,
+  olderCursor,
+  hasOlder,
+}: {
+  posts: FeedPost[];
+  olderCursor: string;
+  hasOlder: boolean;
+}) {
   const { openComposer, kids } = usePosts();
   const profile = useUserProfile();
 
@@ -81,6 +90,9 @@ export function FeedScreen({ posts }: { posts: FeedPost[] }) {
               ))}
             </div>
           )}
+
+          {/* Lotes anteriores bajo su separador de día (SPEC 13, paso 8) */}
+          <LoadMorePosts cursor={olderCursor} hasOlder={hasOlder} />
         </main>
       </div>
     </div>
