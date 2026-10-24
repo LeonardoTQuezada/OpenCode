@@ -11,12 +11,12 @@
 
 - [x] 2.1 Actualizar `components/sidebar.tsx` para aceptar prop `role: "staff" | "family"` y renderizar condicionalmente los ítems de navegación (staff: Feed, Niños, Avisos, Mi cuenta + botón "Nueva publicación"; family: Feed, Resumen del día, Mi cuenta sin botón de publicar). Verificar que el sidebar muestra los ítems correctos según el rol.
 - [x] 2.2 Actualizar `components/mobile-nav.tsx` para aceptar prop `role: "staff" | "family"` y renderizar los mismos ítems que el sidebar correspondiente. Verificar que la navegación móvil muestra los ítems correctos según el rol.
-- [ ] 2.3 Actualizar `components/feed-screen.tsx` para aceptar prop `role: "staff" | "family"` y ajustar el header según el rol (staff: "GUARDERÍA · SALA SOLES" + botón "Nueva publicación"; family: "TU FAMILIA" + saludo personalizado + pills de filtro por hijo). Verificar que el feed muestra el header correcto según el rol.
-- [ ] 2.4 Actualizar `components/post-card.tsx` para aceptar prop `role: "staff" | "family"` y mostrar/ocultar el botón "Editar" según el rol (staff ve "Editar", family no). Verificar que el botón "Editar" solo aparece para staff.
+- [x] 2.3 Actualizar `components/feed-screen.tsx` para aceptar prop `role: "staff" | "family"` y ajustar el header según el rol (staff: "GUARDERÍA · SALA SOLES" + botón "Nueva publicación"; family: "TU FAMILIA" + saludo personalizado + pills de filtro por hijo). Verificar que el feed muestra el header correcto según el rol.
+- [x] 2.4 Actualizar `components/post-card.tsx` para aceptar prop `role: "staff" | "family"` y mostrar/ocultar el botón "Editar" según el rol (staff ve "Editar", family no). Verificar que el botón "Editar" solo aparece para staff.
 
 ## 3. Mover contenido existente a nuevas rutas
 
-- [ ] 3.1 Mover el contenido de `/app/page.tsx` (FeedScreen actual) a `/app/staff/feed/page.tsx`, ajustando para que use el rol "staff". Verificar que `/staff/feed` muestre el feed completo de la sala.
+- [x] 3.1 Mover el contenido de `/app/page.tsx` (FeedScreen actual) a `/app/staff/feed/page.tsx`, ajustando para que use el rol "staff". Verificar que `/staff/feed` muestre el feed completo de la sala.
 - [ ] 3.2 Mover `/app/kids/page.tsx` a `/app/staff/kids/page.tsx` y crear `/app/family/kids/page.tsx` con filtrado por hijos vinculados. Verificar que staff ve todos los niños y family solo ve sus hijos.
 - [ ] 3.3 Mover `/app/kids/[id]/page.tsx` a `/app/staff/kids/[id]/page.tsx` y crear `/app/family/kids/[id]/page.tsx` con verificación de que el niño pertenece al padre. Verificar que staff puede ver cualquier niño y family solo puede ver sus hijos.
 - [ ] 3.4 Crear `/app/staff/notices/page.tsx` con noticias internas del staff + noticias de familia, y `/app/family/notices/page.tsx` solo con anuncios generales. Verificar que cada rol ve el contenido correcto.
