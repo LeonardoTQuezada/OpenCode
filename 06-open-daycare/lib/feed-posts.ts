@@ -5,7 +5,7 @@
 import { cookies } from "next/headers";
 
 import type { Kid } from "@/lib/kids";
-import { ageLabelFromIso } from "@/lib/kids";
+import { ageLabelFromIso, avatarPaletteFor } from "@/lib/kids";
 import type { Audience, DbPostType, PostType } from "@/lib/posts";
 import { UI_TYPE_BY_BD, audienceLabel, postTitle } from "@/lib/posts";
 import { createClient } from "@/utils/supabase/server";
@@ -14,6 +14,11 @@ export type FeedPost = {
   id: string;
   type: PostType; // tipo de la UI, ya mapeado desde la BD
   title: string; // snapshot de la BD ("Mateo" / "Varios niños" / "Toda la sala")
+  // Avatar calculado al leer: paleta del niño (por child.id, igual que los
+  // chips del modal) o colores de anuncio con label vacío para megáfono.
+  avatarBg: string;
+  avatarInk: string;
+  avatarLabel: string; // "" = ícono de megáfono ("Toda la sala")
   authorFirstName: string;
   isOwn: boolean; // author_id === viewer
   time: string; // "14:20"
@@ -65,17 +70,18 @@ function toOne<T>(value: T | T[] | null): T | null {
   return value;
 }
 
-/** Kid mínimo para los helpers de título/audiencia (solo se usa el nombre;
- *  avatares y edad no intervienen en esas cadenas). */
+/** Kid mínimo para los helpers de título/audiencia y para el avatar (la
+ *  paleta se hashea por child.id, igual que los chips del modal). */
 function kidForLabel(child: EmbeddedChild): Kid {
+  const palette = avatarPaletteFor(child.id);
   return {
     slug: child.id,
     name: child.full_name,
     initial: child.full_name.trim().charAt(0).toUpperCase(),
     age: ageLabelFromIso(child.birth_date),
     room: "",
-    avatarBg: "",
-    avatarInk: "",
+    avatarBg: palette.bg,
+    avatarInk: palette.ink,
   };
 }
 
@@ -102,6 +108,16 @@ function toFeedPost(
     ? { kind: "room" }
     : { kind: "kids", slugs: kids.map((kid) => kid.slug) };
 
+  // Avatar: megáfono de anuncio para sala; paleta del primer niño para kids
+  // (mismo criterio que el Post de memoria: primer slug de la audiencia).
+  const firstKid =
+    audience.kind === "kids"
+      ? kids.find((kid) => kid.slug === audience.slugs[0])
+      : undefined;
+  const avatarBg = firstKid?.avatarBg ?? "bg-badge-anuncio-bg";
+  const avatarInk = firstKid?.avatarInk ?? "text-badge-anuncio";
+  const avatarLabel = firstKid?.initial ?? "";
+
   const published = new Date(row.published_at);
   const hh = String(published.getHours()).padStart(2, "0");
   const mm = String(published.getMinutes()).padStart(2, "0");
@@ -111,6 +127,9 @@ function toFeedPost(
     type: UI_TYPE_BY_BD[row.type],
     // El title de la BD manda cuando existe; si no, se calcula al leer.
     title: row.title || postTitle(audience, kids),
+    avatarBg,
+    avatarInk,
+    avatarLabel,
     authorFirstName: (author?.full_name ?? "").split(" ")[0],
     isOwn: row.author_id === viewerId,
     time: `${hh}:${mm}`,
