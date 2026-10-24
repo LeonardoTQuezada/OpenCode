@@ -17,7 +17,7 @@
 ## 3. Mover contenido existente a nuevas rutas
 
 - [x] 3.1 Mover el contenido de `/app/page.tsx` (FeedScreen actual) a `/app/staff/feed/page.tsx`, ajustando para que use el rol "staff". Verificar que `/staff/feed` muestre el feed completo de la sala.
-- [ ] 3.2 Mover `/app/kids/page.tsx` a `/app/staff/kids/page.tsx` y crear `/app/family/kids/page.tsx` con filtrado por hijos vinculados. Verificar que staff ve todos los niños y family solo ve sus hijos.
+- [x] 3.2 Mover `/app/kids/page.tsx` a `/app/staff/kids/page.tsx` y crear `/app/family/kids/page.tsx` con filtrado por hijos vinculados. Verificar que staff ve todos los niños y family solo ve sus hijos.
 - [ ] 3.3 Mover `/app/kids/[id]/page.tsx` a `/app/staff/kids/[id]/page.tsx` y crear `/app/family/kids/[id]/page.tsx` con verificación de que el niño pertenece al padre. Verificar que staff puede ver cualquier niño y family solo puede ver sus hijos.
 - [ ] 3.4 Crear `/app/staff/notices/page.tsx` con noticias internas del staff + noticias de familia, y `/app/family/notices/page.tsx` solo con anuncios generales. Verificar que cada rol ve el contenido correcto.
 - [ ] 3.5 Mover `/app/family-feed/page.tsx` a `/app/family/feed/page.tsx` y actualizar para que use el rol "family" y el feed filtrado. Verificar que family-feed muestra publicaciones solo de los hijos vinculados.
