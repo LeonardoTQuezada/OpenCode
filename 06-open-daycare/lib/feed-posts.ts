@@ -110,7 +110,7 @@ function toFeedPost(
     : { kind: "kids", slugs: kids.map((kid) => kid.slug) };
 
   // Avatar: megáfono de anuncio para sala; paleta del primer niño para kids
-  // (mismo criterio que el Post de memoria: primer slug de la audiencia).
+  // (mismo criterio que los chips: primer slug de la audiencia).
   const firstKid =
     audience.kind === "kids"
       ? kids.find((kid) => kid.slug === audience.slugs[0])
