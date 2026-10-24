@@ -1,6 +1,6 @@
 # SPEC 13 — Publicar posts reales desde el staff y feed desde la BD
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 06 (modal nueva publicación), SPEC 09 (login real), SPEC 10 (children reales), SPEC 12 (posts tables + bucket)
 > **Fecha:** 2026-10-23
 > **Objetivo:** Que el modal "Nueva publicación" persista posts reales del staff en Supabase —con fotos en Storage o sin ellas— y que el feed lea los posts de hoy desde la BD con carga paginada de días anteriores.
@@ -117,34 +117,34 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` sirve `/` sin errores en consola.
-- [ ] Con PARA, TIPO y DESCRIPCIÓN válidos y sin fotos, "Publicar" crea una fila en `posts` con `author_id` de la sesión y el post aparece como primera tarjeta del feed.
-- [ ] El post publicado sobrevive a recargar `/` (lee de la BD, no de memoria).
-- [ ] Con 3 fotos se crean 3 filas en `post_photos` con `position` 0, 1, 2 y los archivos existen en el bucket con path `{daycare_id}/{user_id}/…`.
-- [ ] Publicando sin seleccionar destinatarios no crea la fila y muestra "Elegí al menos un destinatario."
-- [ ] Sin TIPO muestra "Elegí un tipo de publicación."; sin DESCRIPCIÓN muestra "Escribí qué querés contar."
-- [ ] Elegir 11 fotos no publica y muestra "Subí hasta 10 fotos."
-- [ ] Un archivo de 6 MB no publica y muestra "Cada foto puede pesar hasta 5 MB."
-- [ ] Un archivo `.gif` no publica y muestra "Usá archivos JPG, PNG o WEBP."
-- [ ] Elegir "Toda la sala" crea el post con `room_id` = sala del staff y cero filas en `post_children`.
-- [ ] Elegir 2 niños crea exactamente 2 filas en `post_children` con sus ids y `room_id` NULL.
-- [ ] Con "Toda la sala" y un usuario sin sala asignada, la action rechaza con "No tenés una sala asignada. Hablá con el administrador."
-- [ ] Si el insert en BD falla, no queda el post y los archivos subidos se eliminan del bucket (mejor esfuerzo verificable en el código de la action).
-- [ ] Mientras la publicación está en curso, el botón dice "Publicando…" y está deshabilitado.
-- [ ] Al éxito el modal se cierra, el feed muestra el post nuevo y el form reabre vacío.
-- [ ] El feed vacío muestra "Todavía no hay publicaciones. Compartí el primer momento del día." bajo PUBLICADO HOY.
-- [ ] La tarjeta propia muestra "HH:MM · publicado por vos"; una tarjeta de otro autor muestra "HH:MM · publicado por {nombre}".
-- [ ] Todos los posts muestran 0 likes y 0 comentarios.
-- [ ] "Editar" no aparece en tarjetas ajenas; en las propias aparece pero no ejecuta nada.
-- [ ] Con posts de hoy y de ayer sembrados por SQL, el feed inicial muestra solo los de hoy; "Ver más posts" carga los de ayer bajo "PUBLICADO AYER".
-- [ ] Cada clic de "Ver más" carga como máximo 10 posts y muestra "Cargando…" mientras.
-- [ ] Sin más posts viejos, el link "Ver más posts" desaparece.
-- [ ] El header muestra "Buenas, {nombre real de la sesión}" y "{n} niños · {fecha real}".
-- [ ] El avatar del composer muestra la inicial del usuario real.
-- [ ] El eyebrow "GUARDERÍA · SALA SOLES" y el sidebar se ven igual que antes (regresión).
-- [ ] `/kids`, `/kids/[id]` y `/login` se ven y responden igual que antes (regresión SPEC 09/10).
-- [ ] `npm run lint` y `npm run build` terminan sin errores.
-- [ ] Las capturas quedan guardadas en `.playwright-mcp/`.
+- [x] `npm run dev` sirve `/` sin errores en consola. (dev vivo en :3000, GET / 200 y 0 errores de consola en los 3 runs de Playwright)
+- [x] Con PARA, TIPO y DESCRIPCIÓN válidos y sin fotos, "Publicar" crea una fila en `posts` con `author_id` de la sesión y el post aparece como primera tarjeta del feed. (SQL: `author_id = ef5f78b3…`; primera tarjeta en `13-ac-publicados.png`; caso 0 fotos OK en la sesión previa)
+- [x] El post publicado sobrevive a recargar `/` (lee de la BD, no de memoria). (recarga en run2: 2 cards, la de sala sigue presente)
+- [x] Con 3 fotos se crean 3 filas en `post_photos` con `position` 0, 1, 2 y los archivos existen en el bucket con path `{daycare_id}/{user_id}/…`. (SQL: 3 filas 0/1/2 con `path_ok = true`; fotos renderizadas en la tarjeta)
+- [x] Publicando sin seleccionar destinatarios no crea la fila y muestra "Elegí al menos un destinatario." (alerta en cliente + `posts = 0` en SQL tras intentarlo)
+- [x] Sin TIPO muestra "Elegí un tipo de publicación."; sin DESCRIPCIÓN muestra "Escribí qué querés contar." (los 3 mensajes juntos en el run1, modal sigue abierto)
+- [x] Elegir 11 fotos no publica y muestra "Subí hasta 10 fotos." (`setInputFiles` ×11 → alerta + modal abierto; `13-ac-11-fotos.png`)
+- [x] Un archivo de 6 MB no publica y muestra "Cada foto puede pesar hasta 5 MB." (archivo de 6 291 456 B → alerta + modal abierto)
+- [x] Un archivo `.gif` no publica y muestra "Usá archivos JPG, PNG o WEBP." (alerta + modal abierto; `13-ac-gif-error.png`)
+- [x] Elegir "Toda la sala" crea el post con `room_id` = sala del staff y cero filas en `post_children`. (SQL: `room_id = a73b8d81…` Soles, `kids_rows = 0`)
+- [x] Elegir 2 niños crea exactamente 2 filas en `post_children` con sus ids y `room_id` NULL. (2do niño sembrado solo para el test y borrado al final; SQL: `room_id NULL` + 2 filas con los ids exactos de Jessica y el de prueba; tarjeta "Varios niños")
+- [x] Con "Toda la sala" y un usuario sin sala asignada, la action rechaza con "No tenés una sala asignada. Hablá con el administrador." (código: `app/_actions/posts.ts:129-134`)
+- [x] Si el insert en BD falla, no queda el post y los archivos subidos se eliminan del bucket (mejor esfuerzo verificable en el código de la action). (`removeUploadedPhotos` en `posts.ts:171` y `:194`; RPC `create_post` transaccional en migración 011)
+- [x] Mientras la publicación está en curso, el botón dice "Publicando…" y está deshabilitado. (run2 con POST demorado: `visible = true`, `disabled = true`; `13-ac-publicando.png`)
+- [x] Al éxito el modal se cierra, el feed muestra el post nuevo y el form reabre vacío. (dialog detached + card nueva + form reabierto: textarea "", 0 chips activos, 0 miniaturas)
+- [x] El feed vacío muestra "Todavía no hay publicaciones. Compartí el primer momento del día." bajo PUBLICADO HOY. (`13-ac-feed-vacio.png`)
+- [x] La tarjeta propia muestra "HH:MM · publicado por vos"; una tarjeta de otro autor muestra "HH:MM · publicado por {nombre}". ("18:49 · publicado por vos" / ajena "18:47 · publicado por Edwin")
+- [x] Todos los posts muestran 0 likes y 0 comentarios. (pie "00" en tarjeta propia y ajena; `13-ac-feed-publicados.png`)
+- [x] "Editar" no aparece en tarjetas ajenas; en las propias aparece pero no ejecuta nada. (count "Editar": propia 1, ajena 0; enlace `href="#"` inerte en `post-card.tsx`)
+- [x] Con posts de hoy y de ayer sembrados por SQL, el feed inicial muestra solo los de hoy; "Ver más posts" carga los de ayer bajo "PUBLICADO AYER". (run3: 3 cards solo de hoy → 13 cards con 1 separador "PUBLICADO AYER")
+- [x] Cada clic de "Ver más posts" carga como máximo 10 posts y muestra "Cargando…" mientras. (3→13 = 10 y 13→15 = 2 de 12 sembrados; botón "Cargando…" visible y disabled)
+- [x] Sin más posts viejos, el link "Ver más posts" desaparece. (tras el 2do lote: `count = 0`, `visible = false`)
+- [x] El header muestra "Buenas, {nombre real de la sesión}" y "{n} niños · {fecha real}". ("Buenas, Edwin" / "1 niños · sábado 24 oct")
+- [x] El avatar del composer muestra la inicial del usuario real. ("E" en `13-ac-feed-vacio.png`, no "?")
+- [x] El eyebrow "GUARDERÍA · SALA SOLES" y el sidebar se ven igual que antes (regresión). (visión vs `spec06-regresion-home.png`: logo, botón y nav idénticos; cambia solo el usuario real del pie)
+- [x] `/kids`, `/kids/[id]` y `/login` se ven y responden igual que antes (regresión SPEC 09/10). (run1: "Niños", "Jessica Tinitana", form de login; `13-ac-kids/kid-detalle/login.png`, 0 errores)
+- [x] `npm run lint` y `npm run build` terminan sin errores. (`eslint` y `npx tsc --noEmit` OK hoy; `npm run build` OK en la sesión previa)
+- [x] Las capturas quedan guardadas en `.playwright-mcp/`. (13 capturas `13-*.png` previas + 13 nuevas `13-ac-*.png` de esta verificación)
 
 ## Decisions
 
