@@ -10,11 +10,13 @@ export type RoomGroup = {
   children: Child[];
 };
 
+type Role = "staff" | "family";
+
 /** Buscador + encabezados de sala + grilla de niños (SPEC 10).
  *  Recibe los grupos por prop desde el server component; solo se muestran
  *  las salas con al menos un niño, y el buscador filtra por nombre en el
  *  cliente sobre todas las salas. */
-export function KidsList({ groups }: { groups: RoomGroup[] }) {
+export function KidsList({ groups, role }: { groups: RoomGroup[]; role: Role }) {
   const [query, setQuery] = useState("");
 
   const term = query.trim().toLowerCase();
@@ -65,7 +67,7 @@ export function KidsList({ groups }: { groups: RoomGroup[] }) {
             {/* Grilla */}
             <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
               {group.children.map((child) => (
-                <KidCard key={child.id} child={child} />
+                <KidCard key={child.id} child={child} role={role} />
               ))}
             </div>
           </section>

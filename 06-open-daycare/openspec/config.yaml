@@ -1,0 +1,5 @@
+schema: spec-driven
+
+context: |
+  Aplicación de gestión para una guardería (daycare). Permite a padres y personal administrar niños, actividades, notas médicas, alergias y comunicación entre ambos roles. Construida sobre Next.js 16 + React 19 + Supabase.
+  Los artefactos deben estar en español.

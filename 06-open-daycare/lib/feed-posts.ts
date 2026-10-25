@@ -196,3 +196,45 @@ export async function getOlderPosts(
 
   return ((data ?? []) as PostRow[]).map((row) => toFeedPost(row, viewerId, supabase));
 }
+
+/** Posts filtrados por children IDs (para feed familiar).
+ *  Incluye posts donde al menos un child_id está en la lista + announcements. */
+export async function getPostsByChildrenIds(
+  viewerId: string,
+  childrenIds: string[],
+): Promise<FeedPost[]> {
+  const supabase = await getClient();
+
+  if (childrenIds.length === 0) return [];
+
+  // Posts dirigidos a los hijos vinculados
+  const { data: childPosts, error: childError } = await supabase
+    .from("posts")
+    .select(POST_SELECT)
+    .in("post_children.child_id", childrenIds)
+    .order("published_at", { ascending: false })
+    .order("position", { referencedTable: "post_photos", ascending: true });
+
+  if (childError) {
+    throw new Error(`No se pudieron cargar las publicaciones: ${childError.message}`);
+  }
+
+  // Anuncios generales (type = 'announcement' sin child específico)
+  const { data: announcements, error: annError } = await supabase
+    .from("posts")
+    .select(POST_SELECT)
+    .eq("type", "announcement")
+    .is("room_id", null)
+    .order("published_at", { ascending: false })
+    .order("position", { referencedTable: "post_photos", ascending: true });
+
+  if (annError) {
+    throw new Error(`No se pudieron cargar los anuncios: ${annError.message}`);
+  }
+
+  // Combinar y deduplicar por id
+  const allPosts = [...(childPosts ?? []), ...(announcements ?? [])] as PostRow[];
+  const uniquePosts = Array.from(new Map(allPosts.map((p) => [p.id, p])).values());
+
+  return uniquePosts.map((row) => toFeedPost(row, viewerId, supabase));
+}

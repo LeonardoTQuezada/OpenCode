@@ -18,6 +18,8 @@ import { useUserProfile } from "./user-profile-provider";
 /** Ítem de navegación activo en el sidebar. */
 export type NavKey = "feed" | "kids" | "notices" | "account";
 
+type Role = "staff" | "family";
+
 type NavItem = {
   key: NavKey;
   label: string;
@@ -25,14 +27,21 @@ type NavItem = {
   icon: typeof HomeIcon;
 };
 
-const NAV_ITEMS: NavItem[] = [
-  { key: "feed", label: "Feed", href: "/", icon: HomeIcon },
-  { key: "kids", label: "Niños", href: "/kids", icon: PeopleIcon },
-  { key: "notices", label: "Avisos", href: "/notices", icon: BellIcon },
-  { key: "account", label: "Mi cuenta", href: "/my-account", icon: UserIcon },
+const STAFF_NAV_ITEMS: NavItem[] = [
+  { key: "feed", label: "Feed", href: "/staff/feed", icon: HomeIcon },
+  { key: "kids", label: "Niños", href: "/staff/kids", icon: PeopleIcon },
+  { key: "notices", label: "Avisos", href: "/staff/notices", icon: BellIcon },
+  { key: "account", label: "Mi cuenta", href: "/staff/my-account", icon: UserIcon },
+];
+
+const FAMILY_NAV_ITEMS: NavItem[] = [
+  { key: "feed", label: "Feed", href: "/family/feed", icon: HomeIcon },
+  { key: "kids", label: "Resumen del día", href: "/family/day-summary", icon: SunIcon },
+  { key: "account", label: "Mi cuenta", href: "/family/my-account", icon: UserIcon },
 ];
 
 type SidebarContentsProps = {
+  role: Role;
   /** Ítem resaltado, o `null` cuando la pantalla no pertenece al nav (p. ej. /login). */
   active: NavKey | null;
   /** Se ejecuta además de abrir el modal (el drawer móvil se cierra). */
@@ -41,9 +50,12 @@ type SidebarContentsProps = {
 
 /** Contenido compartido del sidebar (logo, botón, nav y tarjeta de usuario).
  *  Lo usa el aside de escritorio y el drawer móvil. */
-export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
+export function SidebarContents({ role, active, onNewPost }: SidebarContentsProps) {
   const { openComposer } = usePosts();
   const profile = useUserProfile();
+
+  const navItems = role === "staff" ? STAFF_NAV_ITEMS : FAMILY_NAV_ITEMS;
+  const showNewPostButton = role === "staff";
 
   // Datos reales del usuario de la sesión (layout raíz). Fallback neutro
   // si por algún motivo no hay perfil cargado.
@@ -57,7 +69,7 @@ export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
     <>
       {/* Logo */}
       <Link
-        href="/"
+        href={role === "staff" ? "/staff/feed" : "/family/feed"}
         className="flex items-center gap-[11px] px-2 pb-[22px] pt-1"
       >
         <span className="flex size-[38px] shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(155deg,#F8C3A8,#F2937A)]">
@@ -73,22 +85,24 @@ export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
         </span>
       </Link>
 
-      {/* Nueva publicación: abre el modal en lugar de navegar (SPEC 06) */}
-      <button
-        type="button"
-        onClick={() => {
-          openComposer();
-          onNewPost?.();
-        }}
-        className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold leading-[1.36] text-white shadow-button"
-      >
-        <PlusIcon width={17} height={17} />
-        Nueva publicación
-      </button>
+      {/* Nueva publicación: solo para staff (SPEC 06) */}
+      {showNewPostButton && (
+        <button
+          type="button"
+          onClick={() => {
+            openComposer();
+            onNewPost?.();
+          }}
+          className="mb-[18px] flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-3 text-[14.5px] font-extrabold leading-[1.36] text-white shadow-button"
+        >
+          <PlusIcon width={17} height={17} />
+          Nueva publicación
+        </button>
+      )}
 
       {/* Navegación */}
       <nav className="flex flex-1 flex-col gap-1">
-        {NAV_ITEMS.map(({ key, label, href, icon: Icon }) => (
+        {navItems.map(({ key, label, href, icon: Icon }) => (
           <Link
             key={key}
             href={href}
@@ -135,14 +149,15 @@ export function SidebarContents({ active, onNewPost }: SidebarContentsProps) {
 }
 
 type SidebarProps = {
+  role: Role;
   active: NavKey | null;
 };
 
 /** Sidebar de escritorio (oculto por debajo de 768px). */
-export function Sidebar({ active }: SidebarProps) {
+export function Sidebar({ role, active }: SidebarProps) {
   return (
     <aside className="sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col border-r border-card-border bg-card px-4 py-6 md:flex">
-      <SidebarContents active={active} />
+      <SidebarContents role={role} active={active} />
     </aside>
   );
 }

@@ -5,13 +5,16 @@ import { MenuIcon } from "./icons";
 import { SidebarContents, type NavKey } from "./sidebar";
 import { useUserProfile } from "./user-profile-provider";
 
+type Role = "staff" | "family";
+
 type MobileNavProps = {
+  role: Role;
   active: NavKey | null;
 };
 
 /** Barra superior móvil con hamburguesa que abre el sidebar como drawer
  *  (reutiliza `SidebarContents`). Visible solo por debajo de 768px. */
-export function MobileNav({ active }: MobileNavProps) {
+export function MobileNav({ role, active }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const profile = useUserProfile();
 
@@ -74,7 +77,7 @@ export function MobileNav({ active }: MobileNavProps) {
             >
               ✕
             </button>
-            <SidebarContents active={active} onNewPost={() => setOpen(false)} />
+            <SidebarContents role={role} active={active} onNewPost={() => setOpen(false)} />
           </div>
         </div>
       )}

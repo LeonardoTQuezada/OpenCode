@@ -4,15 +4,18 @@ import { ageLabelFromIso, avatarPaletteFor } from "@/lib/kids";
 import { Avatar } from "./avatar";
 import { ChevronRightIcon } from "./icons";
 
-/** Tarjeta de un niño en el listado `/kids`. Todo el card enlaza al perfil. */
-export function KidCard({ child }: { child: Child }) {
+type Role = "staff" | "family";
+
+/** Tarjeta de un niño en el listado. Todo el card enlaza al perfil. */
+export function KidCard({ child, role }: { child: Child; role: Role }) {
   const palette = avatarPaletteFor(child.id);
   const age = ageLabelFromIso(child.birth_date);
   const firstAllergy = child.allergy_tags[0]?.trim();
+  const profileHref = role === "staff" ? `/staff/kids/${child.id}` : `/family/kids/${child.id}`;
 
   return (
     <Link
-      href={`/kids/${child.id}`}
+      href={profileHref}
       className="flex min-w-0 items-center gap-[14px] rounded-[18px] border border-card-border bg-card p-4 shadow-kid transition duration-150 hover:-translate-y-0.5 hover:border-[#F2A78E]"
     >
       <Avatar

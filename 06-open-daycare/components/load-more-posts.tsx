@@ -60,7 +60,9 @@ function Separator({ label }: { label: string }) {
   );
 }
 
-export function LoadMorePosts({ cursor, hasOlder }: { cursor: string; hasOlder: boolean }) {
+type Role = "staff" | "family";
+
+export function LoadMorePosts({ role, cursor, hasOlder }: { role: Role; cursor: string; hasOlder: boolean }) {
   const [groups, setGroups] = useState<DayGroup[]>([]);
   const [nextCursor, setNextCursor] = useState(cursor);
   const [hasMore, setHasMore] = useState(hasOlder);
@@ -104,7 +106,7 @@ export function LoadMorePosts({ cursor, hasOlder }: { cursor: string; hasOlder: 
           <Separator label={group.label} />
           <div className="flex flex-col gap-4">
             {group.posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} role={role} post={post} />
             ))}
           </div>
         </div>

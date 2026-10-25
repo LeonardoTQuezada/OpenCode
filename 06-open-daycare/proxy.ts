@@ -8,6 +8,26 @@ import { type NextRequest, NextResponse } from "next/server";
 // Rutas públicas exactas: no requieren sesión; con sesión, redirigen a /.
 const PUBLIC_ROUTES = ["/login", "/activate-account", "/forgot-password"];
 
+type UserRole = "staff" | "parent" | "admin" | null;
+
+/** Obtiene el rol del usuario desde la tabla users. Retorna null si no hay sesión. */
+async function getUserRole(request: NextRequest): Promise<UserRole> {
+  const { supabase } = createClient(request);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return (profile?.role as UserRole) ?? null;
+}
+
 export async function proxy(request: NextRequest) {
   const { supabase, supabaseResponse } = createClient(request);
 
@@ -46,6 +66,51 @@ export async function proxy(request: NextRequest) {
     }
 
     return redirectResponse;
+  }
+
+  // Si hay sesión, detectar el rol y redirigir según la ruta
+  if (hasSession) {
+    const role = await getUserRole(request);
+
+    // Ruta raíz /: redirigir según el rol
+    if (pathname === "/") {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = role === "parent" ? "/family/feed" : "/staff/feed";
+      redirectUrl.search = "";
+      const redirectResponse = NextResponse.redirect(redirectUrl);
+      for (const cookie of supabaseResponse.cookies.getAll()) {
+        redirectResponse.cookies.set(cookie);
+      }
+      return redirectResponse;
+    }
+
+    // Protección de rutas /staff/*: solo staff/admin
+    if (pathname.startsWith("/staff/")) {
+      if (role === "parent") {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = "/family/feed";
+        redirectUrl.search = "";
+        const redirectResponse = NextResponse.redirect(redirectUrl);
+        for (const cookie of supabaseResponse.cookies.getAll()) {
+          redirectResponse.cookies.set(cookie);
+        }
+        return redirectResponse;
+      }
+    }
+
+    // Protección de rutas /family/*: solo parent y admin
+    if (pathname.startsWith("/family/")) {
+      if (role === "staff") {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = "/staff/feed";
+        redirectUrl.search = "";
+        const redirectResponse = NextResponse.redirect(redirectUrl);
+        for (const cookie of supabaseResponse.cookies.getAll()) {
+          redirectResponse.cookies.set(cookie);
+        }
+        return redirectResponse;
+      }
+    }
   }
 
   // IMPORTANTE: devolver supabaseResponse tal cual. Si se crea una nueva

@@ -7,6 +7,8 @@ import { AddChildModal, type NewChildInput } from "./add-child-modal";
 import { KidsList } from "./kids-list";
 import { PlusIcon } from "./icons";
 
+type Role = "staff" | "family";
+
 /** "12/03/2022" → "2022-03-12" (el modal maneja dd/mm/aaaa, la BD ISO). */
 function toIsoDate(value: string): string {
   const [day, month, year] = value.split("/");
@@ -16,7 +18,7 @@ function toIsoDate(value: string): string {
 /** Pantalla de niños con su modal "Agregar niño" (SPEC 04 + SPEC 10).
  *  La lista y las salas salen de datos reales por prop; el modal da de alta
  *  el niño con createChild y revalidatePath refresca el listado. */
-export function KidsScreen({ groups }: { groups: RoomGroup[] }) {
+export function KidsScreen({ groups, role }: { groups: RoomGroup[]; role: Role }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   /** Alta real: el modal ya validó en cliente; createChild revalida /kids. */
@@ -58,7 +60,7 @@ export function KidsScreen({ groups }: { groups: RoomGroup[] }) {
       </div>
 
       {/* Buscador + encabezados + grilla */}
-      <KidsList groups={groups} />
+      <KidsList groups={groups} role={role} />
 
       {/* Modal de alta de niño (salas reales de la guardería) */}
       <AddChildModal
