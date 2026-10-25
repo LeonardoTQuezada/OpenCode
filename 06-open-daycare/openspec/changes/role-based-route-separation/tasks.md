@@ -47,11 +47,11 @@
 
 ## 7. Pruebas de integración
 
-- [ ] 7.1 Probar flujo completo de staff: login como staff → redirect a `/staff/feed` → navegar a `/staff/kids` → ver todos los niños → ver sidebar con opciones de staff → verificar que puede publicar
-- [ ] 7.2 Probar flujo completo de familia: login como parent → redirect a `/family/feed` → navegar a `/family/kids` → ver solo sus hijos → ver sidebar con opciones de family → verificar que NO puede publicar
-- [ ] 7.3 Probar protección de rutas: intentar acceder a `/staff/*` como parent (debe redirigir a `/family/*`) y viceversa
-- [ ] 7.4 Probar mobile nav: verificar que la navegación móvil muestra las opciones correctas según el rol en dispositivos móviles
-- [ ] 7.5 Probar que los filtros de feed familiar funcionan: familia con múltiples hijos puede filtrar por hijo específico o ver "Todos"
+- [x] 7.1 Probar flujo completo de staff: login como staff → redirect a `/staff/feed` → navegar a `/staff/kids` → ver todos los niños → ver sidebar con opciones de staff → verificar que puede publicar
+- [x] 7.2 Probar flujo completo de familia: login como parent → redirect a `/family/feed` → navegar a `/family/kids` → ver solo sus hijos → ver sidebar con opciones de family → verificar que NO puede publicar
+- [x] 7.3 Probar protección de rutas: intentar acceder a `/staff/*` como parent (debe redirigir a `/family/*`) y viceversa
+- [x] 7.4 Probar mobile nav: verificar que la navegación móvil muestra las opciones correctas según el rol en dispositivos móviles
+- [x] 7.5 Probar que los filtros de feed familiar funcionan: familia con múltiples hijos puede filtrar por hijo específico o ver "Todos"
 
 ## Workflow follow-up
 

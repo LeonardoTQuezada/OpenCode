@@ -128,7 +128,7 @@ export function FeedScreen({
           )}
 
           {/* Lotes anteriores bajo su separador de día (SPEC 13, paso 8) */}
-          <LoadMorePosts cursor={olderCursor} hasOlder={hasOlder} />
+          <LoadMorePosts role={role} cursor={olderCursor} hasOlder={hasOlder} />
         </main>
       </div>
     </div>
