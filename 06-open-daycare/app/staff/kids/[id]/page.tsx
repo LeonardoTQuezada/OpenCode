@@ -39,7 +39,7 @@ export default async function StaffChildProfilePage({
         <MobileNav role="staff" active="kids" />
         <main className="mx-auto w-full max-w-[820px] px-10 pb-20 pt-[34px]">
           {child ? (
-            <ChildProfileView child={child} roomName={roomName} />
+            <ChildProfileView child={child} roomName={roomName} role="staff" />
           ) : (
             <div>
               <p className="text-[15px] text-muted">Niño no encontrado.</p>

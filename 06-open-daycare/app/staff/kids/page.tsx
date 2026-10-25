@@ -39,7 +39,7 @@ export default async function StaffKidsPage() {
       <div className="flex min-w-0 flex-1 flex-col md:h-screen md:overflow-y-auto">
         <MobileNav role="staff" active="kids" />
         <main className="mx-auto w-full max-w-[880px] px-10 pb-20 pt-[34px]">
-          <KidsScreen groups={groups} />
+          <KidsScreen groups={groups} role="staff" />
         </main>
       </div>
     </div>

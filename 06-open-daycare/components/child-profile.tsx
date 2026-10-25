@@ -11,10 +11,12 @@ import { AlertTriangleIcon, ArrowLeftIcon, SunIcon } from "./icons";
 import { Avatar } from "./avatar";
 import { ParentsSection } from "./kids/ParentsSection";
 
+type Role = "staff" | "family";
+
 /** Ficha completa de un niño: columna principal + columna de 300px.
  *  Recibe el child real de Supabase y el nombre de su sala (SPEC 10).
  *  Los padres vinculados salen de ParentsSection (SPEC 11). */
-export function ChildProfileView({ child, roomName }: { child: Child; roomName: string }) {
+export function ChildProfileView({ child, roomName, role }: { child: Child; roomName: string; role: Role }) {
   const palette = avatarPaletteFor(child.id);
   const age = ageLabelFromIso(child.birth_date);
 
@@ -23,18 +25,21 @@ export function ChildProfileView({ child, roomName }: { child: Child; roomName: 
   const alertText = [allergiesText, notesText].filter(Boolean).join(" — ");
 
   // Filas de "Datos": cada label va emparejado con su valor ya formateado.
-  // Evita el lookup por clave string, que TS no puede validar contra las keys.
+  // Evita el lookup por clave string, el TS no puede validar contra las keys.
   const detailRows = [
     { label: "Fecha de nacimiento", value: formatDateIso(child.birth_date) },
     { label: "Sala", value: roomName },
     { label: "Ingreso", value: formatMonthYearIso(child.enrolled_at) },
   ];
 
+  const kidsListHref = role === "staff" ? "/staff/kids" : "/family/kids";
+  const daySummaryHref = role === "staff" ? "/staff/day-summary" : "/family/day-summary";
+
   return (
     <>
       {/* Volver al listado */}
       <Link
-        href="/kids"
+        href={kidsListHref}
         className="mb-5 inline-flex items-center gap-[7px] text-[14px] font-bold text-faint"
       >
         <ArrowLeftIcon width={18} height={18} />
@@ -101,7 +106,7 @@ export function ChildProfileView({ child, roomName }: { child: Child; roomName: 
         {/* Columna lateral */}
         <div className="flex w-full flex-none flex-col gap-[14px] md:w-[300px]">
           <Link
-            href="/day-summary"
+            href={daySummaryHref}
             className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-ink px-[13px] py-[13px] text-[15px] font-extrabold text-white"
           >
             <SunIcon width={18} height={18} />

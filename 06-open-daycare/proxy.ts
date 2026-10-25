@@ -98,9 +98,9 @@ export async function proxy(request: NextRequest) {
       }
     }
 
-    // Protección de rutas /family/*: solo parent
+    // Protección de rutas /family/*: solo parent y admin
     if (pathname.startsWith("/family/")) {
-      if (role === "staff" || role === "admin") {
+      if (role === "staff") {
         const redirectUrl = request.nextUrl.clone();
         redirectUrl.pathname = "/staff/feed";
         redirectUrl.search = "";
